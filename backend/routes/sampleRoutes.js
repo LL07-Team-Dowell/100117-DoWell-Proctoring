@@ -1,6 +1,5 @@
 const { Router } = require("express");
 const sampleController = require("../controller/sampleController");
-const EventController = require('./path/to/EventController');
 const { validateMongoIdParam } = require("../middlewares/validateMongoIdParam");
 
 // creating a new router

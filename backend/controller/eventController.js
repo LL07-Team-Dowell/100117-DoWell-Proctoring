@@ -91,7 +91,7 @@ class EventController {
             const { id } = req.params;
             const event = await Event.findByIdAndDelet(id);
             if (!event) {
-                result res.status(404).json(generateDefaultResponseObject({
+                return res.status(404).json(generateDefaultResponseObject({
                     success: false,
                     message: 'Event not found',
                     data: {},

@@ -12,18 +12,18 @@ const eventSchema = new Schema({
         required: true,
     },
     user_id: {
-        type: Schema.Types.ObjectId,
+        type: String,
         required: true,
     },
-    participants: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }],
+    participants: {
+        type: Array,
+        default: []
+    },
     max_cap: {
         type: Number,
-        required: true,
     }
 });
+
 
 const Event = model("Event", eventSchema);
 
