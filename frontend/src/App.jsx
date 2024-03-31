@@ -1,35 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useUserContext } from './contexts'
+import LoadingPage from './pages/LoadingPage/LoadingPage'
+import useDowellLogin from './hooks/useDowellLogin'
+import { Route, Routes } from 'react-router-dom'
+import React from 'react'
+import { publicUserRoutes } from './routes/publicUserRoutes'
+import { loggedInUserRoutes } from './routes/loggedInUserRoutes'
+import AppLayout from './layouts/AppLayout/AppLayout'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const {
+    currentUser,
+    isPublicUser,
+    userDetailLoading,
+  } = useUserContext();
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  useDowellLogin();
+
+  if (userDetailLoading) return <Routes>
+    <Route path='*' element={<LoadingPage />} />  
+  </Routes>
+
+  if (isPublicUser) return <Routes>
+    {
+      React.Children.toArray(publicUserRoutes.map(item => {
+        return <Route 
+          path={item.route}
+          element={<item.component />}
+        />
+      }))
+    }
+  </Routes>
+
+  if (!currentUser) return <Routes>
+    <Route path='*' element={<>User detail not found</>} />
+  </Routes>
+  
+  return <Routes>
+    {
+      React.Children.toArray(loggedInUserRoutes.map(item => {
+        return <Route 
+          path={item.route}
+          element={
+            <AppLayout>
+              <item.component />  
+            </AppLayout>
+          }
+        />
+      }))
+    }
+  </Routes>
 }
 
 export default App
