@@ -1,4 +1,4 @@
-const { SampleModel, validateSampleData } = require("../models/SampleModel");
+const { SampleModel, validateSampleData } = require("../models/sampleModel");
 const { generateDefaultResponseObject } = require("../utils/defaultResponseObject");
 
 exports.get_all_samples = async (req, res) => {
