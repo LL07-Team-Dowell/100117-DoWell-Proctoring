@@ -45,7 +45,6 @@ exports.get_single_sample = async (req, res) => {
 
 exports.create_new_sample = async (req, res) => {
     const { error, value } = validateSampleData(req.body);
-
     if (error) return res.status(400).json(generateDefaultResponseObject({
         success: false,
         message: error.details[0].message,
