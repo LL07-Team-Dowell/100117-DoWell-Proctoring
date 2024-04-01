@@ -1,17 +1,18 @@
-const { Event, validateEvent } = require('../models/eventModel');
 const { generateDefaultResponseObject } = require("../utils/defaultResponseObject");
+const { Event, validateEvent } = require('../models/eventModel');
+
 
 class EventController {
 
     // Method to create an event
-    static async createEvent(reg, res) {
+    static async createEvent(req, res) {
         try {
             const validationResult = validateEvent(req.body);
             if (validationResult.error) {
                 return res.status(400).json(generateDefaultResponseObject({
                     success: false,
-                    message: 'Event validation error',
-                    data: validationResult.error.details,
+                    message: validationResult.error.details[0].message,
+                    data: null,
                 }));
             }
 
@@ -23,10 +24,10 @@ class EventController {
                 data: event,
             }));
         } catch (error) {
-            return res.satus(500).json(generateDefaultResponseObject({
+            return res.status(500).json(generateDefaultResponseObject({
                 success: false,
-                message: 'Server error',
-                data: error.message,
+                message: error.message,
+                data: null,
             }));
         }
     }
@@ -43,8 +44,8 @@ class EventController {
         } catch (error) {
             return res.status(500).json(generateDefaultResponseObject({
                 success: false,
-                message: 'Server error',
-                data: error.message,
+                message: error.message,
+                data: null,
             }));
         }
     }
@@ -52,17 +53,17 @@ class EventController {
     // Method to update and event
     static async updateEvent(req, res) {
         try {
-            const { id} = reg.params;
-            const validationResult = validateEvent(req.body);
+            const { id } = req.params;
+            const validationResult = validateEvent(req.body, true);
             if (validationResult.error) {
                 return res.status(400).json(generateDefaultResponseObject({
                     success: false,
-                    message: 'Even validation error',
-                    data: validationResult.error.datails,
+                    message: validationResult.error.details[0].message,
+                    data: null,
                 }));
             }
 
-            const event = await Event.findByIdAndUpdate(id, { $set: validationResult.value}, { new: true });
+            const event = await Event.findByIdAndUpdate(id, { $set: validationResult.value }, { new: true });
             if (!event) {
                 return res.status(404).json(generateDefaultResponseObject({
                     success: false,
@@ -73,15 +74,42 @@ class EventController {
 
             return res.status(200).json(generateDefaultResponseObject({
                 success: true,
-                message: 'Event found',
+                message: 'Event Updated',
                 data: event,
             }));
         } catch (error) {
-            return res,status(500).json(generateDefaultResponseObject({
+            return res.status(500).json(generateDefaultResponseObject({
+                success: false,
+                message: error.messge,
+                data: null,
+            }));
+        }
+    }
+
+    // Method to get a single event by ID
+    static async getEventById(req, res) {
+        try {
+            const { id } = req.params;
+            const event = await Event.findById(id);
+            if (!event) {
+                return res.status(404).json(generateDefaultResponseObject({
                     success: false,
-                    message: 'Server error',
-                    data: error.messge,
+                    message: 'Event not found',
+                    data: null,
                 }));
+            }
+
+            return res.status(200).json(generateDefaultResponseObject({
+                success: true,
+                message: 'Successfully fetched the event',
+                data: event,
+            }));
+        } catch (error) {
+            return res.status(500).json(generateDefaultResponseObject({
+                success: false,
+                message: error.message,
+                data: null,
+            }));
         }
     }
 
@@ -89,7 +117,7 @@ class EventController {
     static async deleteEvent(req, res) {
         try {
             const { id } = req.params;
-            const event = await Event.findByIdAndDelet(id);
+            const event = await Event.findByIdAndDelete(id);
             if (!event) {
                 return res.status(404).json(generateDefaultResponseObject({
                     success: false,
@@ -106,8 +134,8 @@ class EventController {
         } catch (error) {
             return res.status(500).json(generateDefaultResponseObject({
                 success: false,
-                message: 'Server error',
-                data: error.message,
+                message: error.message,
+                data: null,
             }));
         }
     }
