@@ -25,13 +25,14 @@ exports.add = async (req, res) => {
         return ResponseObject({
             success: true,
             message: `Screenshots created successfully`,
-            response: newScreenShot,
+            data: newScreenShot,
         }, res.status(201));
 
     } catch (error) {
         return ResponseObject({
             success: false,
             message: 'ScreenShot failed to be created',
+            error: error,
         }, res.status(500));
     }
 }
@@ -56,11 +57,13 @@ exports.getByParams = async (req, res) => {
         return ResponseObject({
             success: true,
             message: 'Screenshots retrieved successfully',
-            response: screenshots}, res.status(200));
+            data: screenshots}, res.status(200));
     } catch (error) {
         return ResponseObject({
             success: false,
-            message: 'Failed to retrieve screenshots'}, res.status(400));
+            message: 'Failed to retrieve screenshots',
+            error: error,
+        }, res.status(400));
     }
 }
 
@@ -95,7 +98,7 @@ exports.delete = async (req, res) => {
                 return ResponseObject({
                     success: false,
                     message: 'Failed to retrieve screenshots',
-                    response: `Screen shot with id: ${id} not deleted`
+                    error: `Screen shot with id: ${id} not deleted`
                 }, res.status(404));
             }
         }
@@ -107,7 +110,9 @@ exports.delete = async (req, res) => {
     } catch (error) {
         return ResponseObject({
             success: true,
-            message: 'Failed to deleted ScreenShot(s).', response:error.message}, res.status(500));
+            message: 'Failed to deleted ScreenShot(s).', 
+            error:error.message
+        }, res.status(500));
     }
 }
 

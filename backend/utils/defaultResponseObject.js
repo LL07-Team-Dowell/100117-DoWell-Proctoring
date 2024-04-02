@@ -1,22 +1,27 @@
 exports.generateDefaultResponseObject = ({ 
     success=false,
     message='',
-    response=null
+    data=null,
+    error=null,
 }) => {
     return {
         success: success,
         message: message,
-        response: response,
+        data: data,
+        error: error,
     }
 }
+
 exports.ResponseObject = ({ 
     success=false,
     message='',
-    response=null
+    data=null,
+    error=null,
 }, status) => {
     return status.json({
         success: success,
         message: message,
-        response: response,
+        data: data,
+        error: error,
     })
 }
