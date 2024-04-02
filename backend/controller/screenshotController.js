@@ -32,7 +32,34 @@ exports.add = async (req, res) => {
         return ResponseObject({
             success: false,
             message: 'ScreenShot failed to be created',
-            response: newScreenShot,
         }, res.status(500));
     }
 }
+
+exports.getByParams = async (req, res) => {
+    try {
+        const screenshots = await ScreenShot.find(req.body);
+        return ResponseObject({
+            success: true,
+            message: 'Screenshots retrieved successfully',
+            response: screenshots}, res.status(200));
+    } catch (error) {
+        return ResponseObject({
+            success: false,
+            message: 'Failed to retrieve screenshots'}, res.status(400));
+    }
+}
+exports.getByDateRange = async (req, res) => {
+    try {
+        const screenshots = await ScreenShot.find(req.body);
+        return ResponseObject({
+            success: true,
+            message: 'Screenshots retrieved successfully',
+            response: screenshots}, res.status(200));
+    } catch (error) {
+        return ResponseObject({
+            success: false,
+            message: 'Failed to retrieve screenshots'}, res.status(400));
+    }
+}
+
