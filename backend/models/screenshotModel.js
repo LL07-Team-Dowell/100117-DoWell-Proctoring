@@ -35,8 +35,8 @@ const screenshotSchema = new Schema({
 const validateScreenShotData = (ScreenShotData) => {
     const validation = Joi.object({
         event_id:Joi.string().length(24).hex().required(),
-        user_id: Joi.alternatives().try(Joi.string().length(24).hex()).required(),
-        company_id: Joi.alternatives().try(Joi.string().length(24).hex()).required(),
+        user_id: Joi.string().length(24).hex().required(),
+        company_id: Joi.string().length(24).hex().required(),
         name: Joi.string().required(),
         email: Joi.string().email({ minDomainSegments: 2 }).required(),
         image: Joi.string().required(),
