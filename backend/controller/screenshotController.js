@@ -81,11 +81,17 @@ exports.delete = async (req, res) => {
 
     try {
         const screenshots = await ScreenShot.find(query);
+        if (screenshots.length==0){
+            return ResponseObject({
+                success: false,
+                message: 'No screenshots found matching query criteria'
+            }, res.status(404));
+        }
         for (let i = 0; i < screenshots.length; i++) {
             const id = screenshots[i]._id;
-            const deletedScreenshots = await ScreenShot.findByIdAndDelete(id);
+            const deletedScreenshot = await ScreenShot.findByIdAndDelete(id);
             
-            if (!deletedScreenshots) {
+            if (!deletedScreenshot) {
                 return ResponseObject({
                     success: false,
                     message: 'Failed to retrieve screenshots',
