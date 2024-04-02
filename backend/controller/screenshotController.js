@@ -94,10 +94,7 @@ exports.delete = async (req, res) => {
 
     try {
         const screenshots = await ScreenShot.find(query);
-        console.log(`${screenshots.length} ScreenShot(s) found`);
-
         for (let i = 0; i < screenshots.length; i++) {
-            console.log(`${screenshots.length} ----ScreenShot(s) found`);
             const id = screenshots[i]._id;
             const deletedScreenshots = await ScreenShot.findByIdAndDelete(id);
             
