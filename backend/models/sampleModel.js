@@ -3,6 +3,13 @@ const { Schema, SchemaTypes, model } = require("mongoose");
 
 // creating a sample schema
 const sampleSchema = new Schema({
+    event_id: {
+        type: SchemaTypes.ObjectId,
+        required: true,
+        ref:"Event"
+    },
+
+
     name: {
         type: SchemaTypes.String,
         required: true,
@@ -25,7 +32,7 @@ const sampleSchema = new Schema({
         required: true,
         enum: ['M', 'F'],
     },
-})
+}, {timestamps:true})
 
 // function to validate sample data
 const validateSampleData = (sampleData, isExistingData=false) => {

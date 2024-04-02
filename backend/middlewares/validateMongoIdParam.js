@@ -11,7 +11,6 @@ const validateMongooseId = (id) => {
      */
     
     try {
-
         // creating a new mongo id
         let validId = new mongoose.Types.ObjectId(id);
         return true;
