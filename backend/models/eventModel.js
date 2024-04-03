@@ -10,7 +10,7 @@ const eventSchema = new Schema({
         type: SchemaTypes.Date,
         required: true,
     },
-    end_time: {
+    close_date: {
         type: SchemaTypes.Date,
         required: true,
     },
@@ -43,7 +43,7 @@ const validateEvent = (eventData, isExistingData = false) => {
         eventValidationSchema = Joi.object({
             name: Joi.string(),
             start_time: Joi.date(),
-            end_time: Joi.date(),
+            close_date: Joi.date(),
             duration_in_hours: Joi.number(),
             user_id: Joi.string(),
             participants: Joi.array().items(Joi.string()),
@@ -56,7 +56,7 @@ const validateEvent = (eventData, isExistingData = false) => {
         eventValidationSchema = Joi.object({
             name: Joi.string().required(),
             start_time: Joi.date().required(),
-            end_time: Joi.date().required(),
+            close_date: Joi.date().required(),
             duration_in_hours: Joi.number().required(),
             user_id: Joi.string().required(),
             participants: Joi.array().items(Joi.string()),
