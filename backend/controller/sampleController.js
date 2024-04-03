@@ -15,6 +15,7 @@ exports.get_all_samples = async (req, res) => {
         return res.status(500).json(generateDefaultResponseObject({
             success: false,
             message: 'Failed to retrieve samples',
+            error: error,
         }))
     }
 }
@@ -39,13 +40,13 @@ exports.get_single_sample = async (req, res) => {
         return res.status(500).json(generateDefaultResponseObject({
             success: false,
             message: 'Failed to retrieve single sample',
+            error: error,
         }))
     }
 }
 
 exports.create_new_sample = async (req, res) => {
     const { error, value } = validateSampleData(req.body);
-
     if (error) return res.status(400).json(generateDefaultResponseObject({
         success: false,
         message: error.details[0].message,
@@ -63,6 +64,7 @@ exports.create_new_sample = async (req, res) => {
         return res.status(500).json(generateDefaultResponseObject({
             success: false,
             message: 'Failed to create new sample',
+            error: error,
         }))
     }
 
@@ -81,6 +83,7 @@ exports.create_new_sample = async (req, res) => {
         return res.status(500).json(generateDefaultResponseObject({
             success: false,
             message: 'Failed to create new sample',
+            error: error,
         }))
     }
 }
@@ -112,6 +115,7 @@ exports.update_sample = async (req, res) => {
         return res.status(500).json(generateDefaultResponseObject({
             success: false,
             message: 'Failed to update sample',
+            error: error,
         }))
     }   
 }
@@ -136,6 +140,7 @@ exports.delete_sample = async (req, res) => {
         return res.status(500).json(generateDefaultResponseObject({
             success: false,
             message: 'Failed to delete sample',
+            error: error,
         }))
     }
 }
