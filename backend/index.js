@@ -26,6 +26,18 @@ const io = new Server(httpServer, {
 // listening when a client connects to our socket instance
 io.on("connection", (socket) => {
     console.log("connected with: ", socket.id);
+
+    socket.on("join-event", (eventId, userPeerId, userEmail, nameOfUser) => {
+        console.log(nameOfUser + " with email '" + userEmail + "' and peer id: '" + userPeerId + "' joined event: " + eventId);
+        
+        socket.join(eventId);
+        socket.broadcast.to(eventId).emit('user-connected', userPeerId, userEmail, nameOfUser);
+
+        socket.on('disconnect', (reason) => {
+            console.log("User with socket id disconnected: '" + socket.id +"' because '" + reason + "'");
+            socket.broadcast.to(eventId).emit('user-disconnected', userPeerId, userEmail, nameOfUser);
+        })
+    })
 });
 
 

@@ -25,3 +25,8 @@
 img {
   max-width: 100%;
 }
+
+#webgazerVideoContainer {
+  bottom: 0 !important;
+  top: unset !important;
+}
