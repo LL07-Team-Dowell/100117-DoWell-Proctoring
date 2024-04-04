@@ -4,6 +4,7 @@ const sampleRoutes = require("./sampleRoutes");
 const eventRoutes = require("./eventRoutes");
 const screenshotRoutes = require("./screenshotRoutes");
 const eyetrackingdataRoutes = require("./eyetrackingdataRoutes")
+const participantRoutes = require("./participantRoutes")
 
 
 module.exports = (app) => {
@@ -13,7 +14,7 @@ module.exports = (app) => {
     app.use("/api/v1/events", eventRoutes);
     app.use("/api/v1/screenshots", screenshotRoutes);
     app.use("/api/v1/eyetrackingdata", eyetrackingdataRoutes);
-
+    app.use("/api/v1/participants", participantRoutes);
     
     
     // handle unknown routes
