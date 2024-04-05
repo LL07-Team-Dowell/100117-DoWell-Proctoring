@@ -11,14 +11,7 @@ exports.add = async (req, res) => {
     }
 
     try {
-        const existingWithEventId = await ScreenShot.findOne({ event_id: value.event_id });
-        if (existingWithEventId) {
-            return ResponseObject({
-                success: false,
-                message: `Screenshots with "Event Id: "+ ${value.event_id} already exists`,
-            }, res.status(409));
-        }
-
+    
         const newScreenShot = new ScreenShot(value);
         await newScreenShot.save();
 
@@ -38,12 +31,17 @@ exports.add = async (req, res) => {
 }
 
 exports.getByParams = async (req, res) => {
-    let query = {
-        createdAt: {
-            $gte: req.body.start_date,
-            $lte: req.body.end_date,
-        },
-    };
+    let query = {};
+    if (req.body.start_date) {
+        query.createdAt = {
+            $gte: req.body.start_date
+        };
+    }
+    if (req.body.end_date) {
+        query.createdAt = {
+            $lte: req.body.end_date
+        };
+    }
 
     // Construct the query object dynamically based on the parameters received
     if (req.body.event_id) query.event_id = req.body.event_id;
@@ -68,12 +66,17 @@ exports.getByParams = async (req, res) => {
 }
 
 exports.delete = async (req, res) => {
-    let query = {
-        createdAt: {
-            $gte: req.body.start_date,
-            $lte: req.body.end_date,
-        },
-    };
+    let query = {};
+    if (req.body.start_date) {
+        query.createdAt = {
+            $gte: req.body.start_date
+        };
+    }
+    if (req.body.end_date) {
+        query.createdAt = {
+            $lte: req.body.end_date
+        };
+    }
 
     // Construct the query object dynamically based on the parameters received
     if (req.body.event_id) query.event_id = req.body.event_id;
