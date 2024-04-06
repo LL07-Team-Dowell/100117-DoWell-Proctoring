@@ -106,7 +106,7 @@ exports.getByParams = async (req, res) => {
         }, res.status(400));
     }
 }
-exports.delete = async (req, res) => {
+exports.harddelete = async (req, res) => {
     let query = {};
     if (req.body.start_date) {
         query.createdAt = {
