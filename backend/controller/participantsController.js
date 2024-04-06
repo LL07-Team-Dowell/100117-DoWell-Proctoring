@@ -162,3 +162,58 @@ exports.harddelete = async (req, res) => {
         }, res.status(400));
     }
 }
+exports.softdelete = async (req, res) => {
+    let query = {};
+    if (req.body.start_date) {
+        query.createdAt = {
+            $gte: req.body.start_date
+        };
+    }
+    if (req.body.end_date) {
+        query.createdAt = {
+            ...query.createdAt,
+            $lte: req.body.end_date
+        };
+    }
+
+    // Construct the query object dynamically based on the parameters received
+    if (req.body.event_id) query.event_id = req.body.event_id;
+    if (req.body.name) query.name = req.body.name;
+    if (req.body._id) query._id = req.body._id;
+    if (req.body.email) query.email = req.body.email;
+    if (req.body.user_lat) query.user_lat = req.body.user_lat;
+    if (req.body.user_lon) query.user_lon = req.body.user_lon;
+    if (req.body.hours_spent_in_event) query.hours_spent_in_event = req.body.hours_spent_in_event;
+    if (req.body.createdAt) query.createdAt = req.body.createdAt;
+
+    try {
+        const participants = await Participant.find(query);
+        if (participants.length == 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No participants found matching query criteria'
+            });
+        }
+        for (let i = 0; i < participants.length; i++) {
+            const id = participants[i]._id;
+            // Soft delete by updating the deleted field to true
+            const deletedparticipant = await Participant.findByIdAndUpdate(id, { deleted: true });
+            if (!deletedparticipant) {
+                return res.status(404).json({
+                    success: false,
+                    message: `Participant with id: ${id} not found`
+                });
+            }
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'Successfully deleted participant(s)'
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: 'Failed to delete participant(s)',
+            error: error.message
+        });
+    }
+}
