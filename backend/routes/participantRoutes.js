@@ -5,5 +5,6 @@ const participantController = require("../controller/participantsController");
 const router = Router();
 
 router.post('/add', participantController.add_new_participant);
+router.get('/get', participantController.getByParams);
 
 module.exports = router;

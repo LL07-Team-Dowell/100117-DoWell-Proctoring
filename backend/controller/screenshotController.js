@@ -4,8 +4,6 @@ const { ResponseObject } = require("../utils/defaultResponseObject");
 const { compressString,decompressString } = require("../utils/imageoptimizer");
 
 exports.add = async (req, res) => {
-    
-    
     try {
         const participantsList = await Participant.find({ event_id: req.body.event_id, _id: req.body.participant_id });
 
