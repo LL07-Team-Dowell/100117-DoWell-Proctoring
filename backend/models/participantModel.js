@@ -31,6 +31,10 @@ const participantSchema = new Schema({
         type: SchemaTypes.Number,
         default: 0,
     },
+    deleted: {
+        type: SchemaTypes.Boolean,
+        default: false
+    }
 }, { timestamps: true })
 
 const validateParticipantData = (participantObj) => {
