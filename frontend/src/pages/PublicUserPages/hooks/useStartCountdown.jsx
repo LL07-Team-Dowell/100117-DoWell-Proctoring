@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { addHoursToDate } from "../../../utils/utils";
 
-const dummyDate = new Date('2024-04-06');
+const dummyDate = addHoursToDate(new Date(), 10);
 
 
 export default function useStartCountDown(
