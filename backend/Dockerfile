@@ -22,9 +22,5 @@ COPY --chown=node:node . .
 # Expose the port your app runs on
 EXPOSE 5000
 
-# Set environment variables
-ENV FRONTEND_URL='http://localhost:5173'
-ENV MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'
-
 # Command to run your app using nodemon
 CMD ["npm", "run", "dev"]
