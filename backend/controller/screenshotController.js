@@ -1,25 +1,50 @@
 const { ScreenShot, validateScreenShotData } = require("../models/screenshotModel");
+const { Participant, validateParticipantData } = require("../models/participantModel");
 const { ResponseObject } = require("../utils/defaultResponseObject");
+const { compressString,decompressString } = require("../utils/imageoptimizer");
 
 exports.add = async (req, res) => {
-    const { error, value } = validateScreenShotData(req.body);
-    if (error) {
-        return ResponseObject({
-            success: false,
-            message: error.details[0].message,
-        }, res.status(400));
-    }
-
     try {
-        const existingWithEventId = await ScreenShot.findOne({ event_id: value.event_id });
-        if (existingWithEventId) {
-            return ResponseObject({
+        const participantsList = await Participant.find({ event_id: req.body.event_id, _id: req.body.participant_id });
+
+        if (!participantsList || participantsList.length === 0) {
+            return res.status(404).json({
                 success: false,
-                message: `Screenshots with "Event Id: "+ ${value.event_id} already exists`,
-            }, res.status(409));
+                message: 'ScreenShot failed to be created',
+                error: "No participant with this id found",
+            });
         }
 
-        const newScreenShot = new ScreenShot(value);
+        const participant = participantsList[0]; 
+
+        const ver = { "participants name": participant.name, "participants email": participant.email };
+        for (let key in ver) {
+            if (!ver[key]) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'ScreenShot failed to be created',
+                    error: key + " does not exist",
+                });
+            }
+        }
+        
+        const screenshotvalue={
+            event_id: req.body.event_id,
+            participant_id: req.body.participant_id,
+            name: participant.name,
+            email: participant.email,
+            image: compressString(req.body.image),
+        }
+        
+        const { error, value } = validateScreenShotData(screenshotvalue);
+        if (error) {
+            return ResponseObject({
+                success: false,
+                message: error.details[0].message,
+            }, res.status(400));
+        }
+        
+        const newScreenShot = new ScreenShot(screenshotvalue);
         await newScreenShot.save();
 
         return ResponseObject({
@@ -38,18 +63,23 @@ exports.add = async (req, res) => {
 }
 
 exports.getByParams = async (req, res) => {
-    let query = {
-        createdAt: {
-            $gte: req.body.start_date,
-            $lte: req.body.end_date,
-        },
-    };
+    let query = {};
+    if (req.body.start_date) {
+        query.createdAt = {
+            $gte: req.body.start_date
+        };
+    }
+    if (req.body.end_date) {
+        query.createdAt = {
+            $lte: req.body.end_date
+        };
+    }
 
     // Construct the query object dynamically based on the parameters received
     if (req.body.event_id) query.event_id = req.body.event_id;
     if (req.body.name) query.name = req.body.name;
     if (req.body.user_id) query.user_id = req.body.user_id;
-    if (req.body.company_id) query.company_id = req.body.company_id;
+    if (req.body.participant_id) query.participant_id = req.body.participant_id;
     if (req.body.createdAt) query.createdAt = req.body.createdAt;
     
     try {
@@ -68,18 +98,23 @@ exports.getByParams = async (req, res) => {
 }
 
 exports.delete = async (req, res) => {
-    let query = {
-        createdAt: {
-            $gte: req.body.start_date,
-            $lte: req.body.end_date,
-        },
-    };
+    let query = {};
+    if (req.body.start_date) {
+        query.createdAt = {
+            $gte: req.body.start_date
+        };
+    }
+    if (req.body.end_date) {
+        query.createdAt = {
+            $lte: req.body.end_date
+        };
+    }
 
     // Construct the query object dynamically based on the parameters received
     if (req.body.event_id) query.event_id = req.body.event_id;
     if (req.body.name) query.name = req.body.name;
     if (req.body.user_id) query.user_id = req.body.user_id;
-    if (req.body.company_id) query.company_id = req.body.company_id;
+    if (req.body.participant_id) query.company_id = req.body.participant_id;
     if (req.body.createdAt) query.createdAt = req.body.createdAt;
 
     try {

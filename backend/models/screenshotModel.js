@@ -8,13 +8,10 @@ const screenshotSchema = new Schema({
         required: true,
         ref:"Event"
     },
-    user_id: {
-        type: SchemaTypes.ObjectId,
+    participant_id: {
+        type: Schema.Types.ObjectId,
         required: true,
-    },
-    company_id: {
-        type: SchemaTypes.ObjectId,
-        required: true,
+        ref:"participant"
     },
     name: {
         type: SchemaTypes.String,
@@ -35,8 +32,7 @@ const screenshotSchema = new Schema({
 const validateScreenShotData = (ScreenShotData) => {
     const validation = Joi.object({
         event_id:Joi.string().length(24).hex().required(),
-        user_id: Joi.string().length(24).hex().required(),
-        company_id: Joi.string().length(24).hex().required(),
+        participant_id: Joi.string().length(24).hex().required(),
         name: Joi.string().required(),
         email: Joi.string().email({ minDomainSegments: 2 }).required(),
         image: Joi.string().required(),
