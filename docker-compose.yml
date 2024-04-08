@@ -10,7 +10,7 @@ services:
     volumes:
       - ./backend:/home/node/app
     env_file:
-      - ./.env
+      - ./backend/.env
 
   frontend:
     build: 

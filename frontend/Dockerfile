@@ -20,7 +20,7 @@ RUN npm install
 COPY --chown=node:node . .
 
 # Expose the port your app runs on
-EXPOSE 8080
+EXPOSE 5173
 
 # Command to run your app using nodemon
 CMD ["npm", "run", "dev"]
