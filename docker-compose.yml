@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/home/node/app
+    env_file:
+      - ./.env
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    # volumes:
+    #   - ./frontend:/home/node/app
+
+  peerjs:
+    image: node:20-alpine
+    ports:
+      - "9000:9000"
+    command: sh -c "npm install -g peer && peerjs --port 9000 --key peerjs --path /myapp"
+    # volumes:
+    #   - ./peerjs:/home/node/app
+
+volumes:
+  backend:
+  frontend:
+  # peerjs:
