@@ -189,7 +189,11 @@ const EventRegistrationPage = () => {
         })
     }
 
-    if (eventStarted) return <ScreenCapture captureScreen={true}>
+    if (eventStarted) return <ScreenCapture 
+        captureScreen={true}
+        eventId={foundEventDetail?._id}
+        participantId={userDetails?._id}
+    >
         <div className={styles.event__Wrapper}>
             <div className={styles.event__Live__Info}>
                 <h3>{foundEventDetail?.name}</h3>
