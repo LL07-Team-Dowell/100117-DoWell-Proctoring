@@ -49,15 +49,7 @@ const create_new_eyetracking = async (req, res) => {
                 message: error.details[0].message,
             }));
         }
-
-        // Check if event_id exists
-        if (!value.event_id) {
-            return res.status(400).json(generateDefaultResponseObject({
-                success: false,
-                message: 'event_id is required',
-            }));
-        }
-
+        
         // Find the event using event_id
         const foundEvent = await Event.findById(value.event_id);
         if (!foundEvent) {
