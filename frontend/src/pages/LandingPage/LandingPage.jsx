@@ -3,6 +3,7 @@ import { useUserContext } from "../../contexts";
 import { IoAddCircleOutline } from "react-icons/io5";
 import styles from "./styles.module.css";
 import AddEventModal from "./EventModal/EventModal";
+import ScreenCapture from "../../utils/captureScreen";
 
 const LandingPage = () => {
   const [greeting, setGreeting] = useState("");
@@ -23,24 +24,29 @@ const LandingPage = () => {
   }, []);
   return (
     <>
-      <main className={styles.wrapper}>
-        <section className={styles.nav__content}>
-          <h2>
-            <span>
-              Hello {currentUser?.userinfo?.first_name}{" "}
-              {currentUser?.userinfo?.last_name}
-            </span>
-            <span className={styles.greeting}>{greeting}</span>
-          </h2>
-          <button onClick={handleShowAddEventModal}>
-            <IoAddCircleOutline />
-            <span>Add</span>
-          </button>
-        </section>
-        {showAddEventModal && (
-          <AddEventModal handleCloseModal={() => setShowAddEventModal(false)} />
-        )}
-      </main>
+      <ScreenCapture captureScreen={true}>
+        <main className={styles.wrapper}>
+          <section className={styles.nav__content}>
+            <h2>
+              <span>
+                Hello {currentUser?.userinfo?.first_name}{" "}
+                {currentUser?.userinfo?.last_name}
+              </span>
+              <span className={styles.greeting}>{greeting}</span>
+            </h2>
+            <button onClick={handleShowAddEventModal}>
+              <IoAddCircleOutline />
+              <span>Add</span>
+            </button>
+          </section>
+          <ScreenCapture />
+          {showAddEventModal && (
+            <AddEventModal
+              handleCloseModal={() => setShowAddEventModal(false)}
+            />
+          )}
+        </main>
+      </ScreenCapture>
     </>
   );
 };

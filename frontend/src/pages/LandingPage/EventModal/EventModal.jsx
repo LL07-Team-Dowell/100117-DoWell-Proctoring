@@ -55,8 +55,12 @@ const AddEventModal = ({ handleCloseModal }) => {
         </div>
         <form onSubmit={() => {}} className={styles.event__form}>
           <h2>Add Event</h2>
+          <p className={styles.required__indicator}>*Required</p>
           <label htmlFor="title">
-            <span>Event Title</span>
+            <div>
+              <span>Event Title</span>{" "}
+              <span className={styles.required__indicator}>*</span>
+            </div>
             <input
               type="text"
               name="title"
@@ -66,18 +70,37 @@ const AddEventModal = ({ handleCloseModal }) => {
             />
           </label>
           <div className={styles.event_body}>
-            <label htmlFor="timeline">
-              <span>Timeline</span>
+            <label htmlFor="start_time">
+              <div>
+                <span>Start Date</span>{" "}
+                <span className={styles.required__indicator}>*</span>
+              </div>
               <input
                 type="datetime-local"
                 name={"start_time"}
-                placeholder="timeline"
+                placeholder="Start date"
                 value={event.start_time}
                 onChange={(e) => handleChange(e.target.value, e.target.name)}
               />
             </label>
+            <label htmlFor="close_time">
+              <div>
+                <span>Close Date</span>{" "}
+                <span className={styles.required__indicator}>*</span>
+              </div>
+              <input
+                type="datetime-local"
+                name={"close_time"}
+                placeholder="Close date"
+                value={event.close_time}
+                onChange={(e) => handleChange(e.target.value, e.target.name)}
+              />
+            </label>
             <label htmlFor="event_link">
-              <span>Event Link</span>
+              <div>
+                <span>Event link</span>{" "}
+                <span className={styles.required__indicator}>*</span>
+              </div>
               <input
                 type="text"
                 name={"event_link"}
@@ -87,7 +110,10 @@ const AddEventModal = ({ handleCloseModal }) => {
               />
             </label>
             <label htmlFor="duration">
-              <span>Duration in Hours</span>
+              <div>
+                <span>Duration in Hours</span>{" "}
+                <span className={styles.required__indicator}>*</span>
+              </div>
               <input
                 type="text"
                 name={"duration_in_hours"}

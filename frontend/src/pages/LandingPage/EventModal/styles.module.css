@@ -18,6 +18,10 @@
   overflow-y: auto;
 }
 
+.required__indicator {
+  color: #fe0000;
+}
+
 .close__event__modal {
   margin-left: auto;
   display: block;
