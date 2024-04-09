@@ -1,6 +1,8 @@
 
 const { Eyetracking, validateEyetracking } = require("../models/eyetrackingmodel");
 const { generateDefaultResponseObject } = require("../utils/defaultResponseObject");
+const { Event } = require("../models/eventModel");
+const mongoose = require("mongoose");
 
 const get_all_eyetracking = async (req, res) => {
     try {
@@ -48,6 +50,25 @@ const create_new_eyetracking = async (req, res) => {
             }));
         }
 
+        // Check if event_id exists
+        if (!value.event_id) {
+            return res.status(400).json(generateDefaultResponseObject({
+                success: false,
+                message: 'event_id is required',
+            }));
+        }
+
+        // Find the event using event_id
+        const foundEvent = await Event.findById(value.event_id);
+        if (!foundEvent) {
+            // If event not found, return 404
+            return res.status(404).json(generateDefaultResponseObject({
+                success: false,
+                message: 'Event could not be found',
+            }));
+        }
+
+        // Create new eyetracking data only if event is found
         const eyetrackingData = new Eyetracking(value);
         await eyetrackingData.save();
 
@@ -60,10 +81,10 @@ const create_new_eyetracking = async (req, res) => {
         return res.status(500).json(generateDefaultResponseObject({
             success: false,
             message: 'Failed to create new eyetracking data',
+            error: error.message
         }));
     }
 };
-
 
 const update_eyetracking = async (req, res) => {
     const { error } = validateEyetracking(req.body);
