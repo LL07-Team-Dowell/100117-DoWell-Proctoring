@@ -7,5 +7,5 @@ export const getEventById = async (eventId) => {
 }
 
 export const registerForEvent = async (data) => {
-    return await defaultAxiosInstance.post(`${participantRoutePrefix}/new`, data);
+    return await defaultAxiosInstance.post(`${participantRoutePrefix}/add`, data);
 }

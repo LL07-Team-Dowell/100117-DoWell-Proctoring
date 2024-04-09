@@ -1,9 +1,9 @@
-import EventRegistrationPage from "../pages/PublicUserPages/EventRegistrationPage/EventRegistrationPage";
+import LiveEventPage from "../pages/PublicUserPages/LiveEventPage/LiveEventPage";
 
 export const publicUserRoutes = [
     {
         route: '/',
-        component: EventRegistrationPage
+        component: LiveEventPage,
     },
     {
         route: '*',
