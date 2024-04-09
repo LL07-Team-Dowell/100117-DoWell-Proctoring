@@ -39,7 +39,6 @@ const LandingPage = () => {
               <span>Add</span>
             </button>
           </section>
-          <ScreenCapture />
           {showAddEventModal && (
             <AddEventModal
               handleCloseModal={() => setShowAddEventModal(false)}

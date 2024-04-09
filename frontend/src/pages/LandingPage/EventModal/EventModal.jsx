@@ -7,22 +7,27 @@ import { BiRightTopArrowCircle } from "react-icons/bi";
 import styles from "./styles.module.css";
 
 const AddEventModal = ({ handleCloseModal }) => {
-  const [title, setTitle] = useState("");
   const [event, setEvent] = useState({
+    name: "",
     start_time: "",
+    close_time: "",
     duration_in_hours: "",
-    max_cap: 0,
+    max_cap: "",
     event_link: "",
   });
-
-  const handleTitleChange = (value) => {
-    setTitle(value);
-  };
 
   const handleChange = (valueEntered, inputName) => {
     setEvent((prevValue) => ({
       ...prevValue,
       [inputName]: valueEntered,
+    }));
+  };
+
+  const handleNumericChange = (valueEntered, inputName) => {
+    const filteredValue = valueEntered.replace(/[^0-9]/g, "");
+    setEvent((prevValue) => ({
+      ...prevValue,
+      [inputName]: filteredValue,
     }));
   };
 
@@ -34,11 +39,12 @@ const AddEventModal = ({ handleCloseModal }) => {
     e.preventDefault();
 
     const newEvent = {
+      name: event.name,
       start_time: event.start_time,
+      close_time: event.close_time,
       duration_in_hours: event.duration_in_hours,
       max_cap: event.max_cap,
       event_link: event.event_link,
-      event_title: title,
     };
     // handleAddEvent(newEvent);
     console.log(newEvent);
@@ -55,47 +61,78 @@ const AddEventModal = ({ handleCloseModal }) => {
         </div>
         <form onSubmit={() => {}} className={styles.event__form}>
           <h2>Add Event</h2>
-          <p className={styles.required__indicator}>*Required</p>
-          <label htmlFor="title">
+          <p className={styles.required__indicator__label}>*Required</p>
+          <label htmlFor="name">
             <div>
               <span>Event Title</span>{" "}
               <span className={styles.required__indicator}>*</span>
             </div>
             <input
               type="text"
-              name="title"
+              name={"name"}
               placeholder="Event title"
-              value={title}
-              onChange={(e) => handleTitleChange(e.target.value)}
+              value={event.name}
+              onChange={(e) => handleChange(e.target.value, e.target.name)}
             />
           </label>
           <div className={styles.event_body}>
-            <label htmlFor="start_time">
-              <div>
-                <span>Start Date</span>{" "}
-                <span className={styles.required__indicator}>*</span>
-              </div>
-              <input
-                type="datetime-local"
-                name={"start_time"}
-                placeholder="Start date"
-                value={event.start_time}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-              />
-            </label>
-            <label htmlFor="close_time">
-              <div>
-                <span>Close Date</span>{" "}
-                <span className={styles.required__indicator}>*</span>
-              </div>
-              <input
-                type="datetime-local"
-                name={"close_time"}
-                placeholder="Close date"
-                value={event.close_time}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-              />
-            </label>
+            <div className={styles.event_desc}>
+              <label htmlFor="start_time">
+                <div>
+                  <span>Start Date</span>{" "}
+                  <span className={styles.required__indicator}>*</span>
+                </div>
+                <input
+                  type="datetime-local"
+                  name={"start_time"}
+                  placeholder="Start date"
+                  value={event.start_time}
+                  onChange={(e) => handleChange(e.target.value, e.target.name)}
+                />
+              </label>
+              <label htmlFor="close_time">
+                <div>
+                  <span>Close Date</span>{" "}
+                  <span className={styles.required__indicator}>*</span>
+                </div>
+                <input
+                  type="datetime-local"
+                  name={"close_time"}
+                  placeholder="Close date"
+                  value={event.close_time}
+                  onChange={(e) => handleChange(e.target.value, e.target.name)}
+                />
+              </label>
+            </div>
+            <div className={styles.event_desc}>
+              <label htmlFor="duration_in_hours">
+                <div>
+                  <span>Duration in Hours</span>{" "}
+                  <span className={styles.required__indicator}>*</span>
+                </div>
+                <input
+                  type="text"
+                  name={"duration_in_hours"}
+                  placeholder="Duration in Hours"
+                  value={event.duration_in_hours}
+                  onChange={(e) =>
+                    handleNumericChange(e.target.value, e.target.name)
+                  }
+                />
+              </label>
+              <label htmlFor="max_cap">
+                <span>Maximum Participants</span>
+                <input
+                  type="text"
+                  name={"max_cap"}
+                  placeholder="Max participants"
+                  value={event.max_cap}
+                  onChange={(e) =>
+                    handleNumericChange(e.target.value, e.target.name)
+                  }
+                />
+              </label>
+            </div>
             <label htmlFor="event_link">
               <div>
                 <span>Event link</span>{" "}
@@ -107,31 +144,6 @@ const AddEventModal = ({ handleCloseModal }) => {
                 placeholder="Event link"
                 value={event.event_link}
                 onChange={(e) => handleChange(e.target.value, e.target.name)}
-              />
-            </label>
-            <label htmlFor="duration">
-              <div>
-                <span>Duration in Hours</span>{" "}
-                <span className={styles.required__indicator}>*</span>
-              </div>
-              <input
-                type="text"
-                name={"duration_in_hours"}
-                placeholder="Duration in Hours"
-                value={event.duration_in_hours}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-              />
-            </label>
-            <label htmlFor="max-cap">
-              <span>Maximum Participants</span>
-              <input
-                type="number"
-                name={"max_cap"}
-                placeholder="Max participants"
-                value={event.max_cap}
-                onChange={(e) =>
-                  handleChange(Number(e.target.value), e.target.name)
-                }
               />
             </label>
           </div>
