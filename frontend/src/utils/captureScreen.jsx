@@ -14,7 +14,7 @@ const ScreenCapture = ({ children, captureScreen }) => {
         console.log(imgData);
       })
       .catch((error) => {
-        console.error("Error while capturing:", error);
+        console.error("Error while capturingg:", error);
       });
   };
 
