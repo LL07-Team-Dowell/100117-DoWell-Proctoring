@@ -12,7 +12,6 @@ exports.add_new_participant = async (req, res) => {
     }));
 
     let foundEvent, existingParticipant;
-
     try {
         const promises = await Promise.all([
             Event.findById(value.event_id),
@@ -67,7 +66,6 @@ exports.add_new_participant = async (req, res) => {
         }));   
     }
 }
-
 exports.getByParams = async (req, res) => {
     let query = {};
     if (req.body.start_date) {
