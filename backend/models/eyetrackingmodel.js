@@ -1,5 +1,6 @@
 const Joi = require("joi");
 const { Schema, model } = require("mongoose");
+const Event = require("./eventModel");
 
 const eyetrackingSchema = new Schema({
     user_id: {
@@ -11,9 +12,9 @@ const eyetrackingSchema = new Schema({
         required: true,
     },
     event_id: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Event',
         required: true,
-        unique: true,
     },
 });
 
