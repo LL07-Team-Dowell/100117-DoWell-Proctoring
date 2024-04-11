@@ -1,11 +1,6 @@
 const { EventChatStore, validateEventsChatStore } = require('../models/eventschatstoreModel');
 const { Event } = require('../models/eventModel');
 
-
-const generateDefaultResponseObject = (options) => {
-    return options;
-};
-
 const createEventChat = async (req, res) => {
     try {
         // Validate request body
