@@ -9,3 +9,7 @@ export const getEventById = async (eventId) => {
 export const registerForEvent = async (data) => {
     return await defaultAxiosInstance.post(`${participantRoutePrefix}/add`, data);
 }
+
+export const addNewEvent = async (data) => {
+    return await defaultAxiosInstance.post(`${eventRoutePrefix}/new`, data);
+}

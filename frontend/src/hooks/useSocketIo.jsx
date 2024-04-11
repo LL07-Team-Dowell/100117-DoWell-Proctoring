@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { socketInstance } from "../utils/utils";
 import { Peer } from "peerjs";
+import { peerServerHost, peerServerPath, peerServerPort } from "../services/config";
 
 export default function useSocketIo(
     canStartUsing=false,
@@ -9,18 +10,20 @@ export default function useSocketIo(
     userName,
     currentUserStream=null,
     updateParticipants = () => {},
+    updateCurrentUserPeerId = () => {},
 ) {
     useEffect(() => {
         if (!canStartUsing) return;
 
         const peer = new Peer(undefined, {
-            host: "localhost",
-            port: 9000,
-            path: "/myapp",
+            host: peerServerHost,
+            port: peerServerPort,
+            path: peerServerPath,
         });
 
         peer.on('open', (id) => {
             console.log('current user peer id::' + id + ', and email::' + userEmail);
+            updateCurrentUserPeerId(id);
             socketInstance.emit('join-event', eventId, id, userEmail, userName);
         });
         
@@ -28,8 +31,8 @@ export default function useSocketIo(
             call.answer(currentUserStream);
 
             call.on('stream', (passedStream) => {
-                console.log('ew stream 1 ->', passedStream);
-                updateParticipants(passedStream);
+                console.log('new stream 1 ->', passedStream);
+                updateParticipants(peer.id, passedStream);
             })
         })
 
@@ -39,8 +42,8 @@ export default function useSocketIo(
             const peerCall = peer.call(userPeerId, currentUserStream);
             
             peerCall.on('stream', (passedStream) => {
-                console.log('ew stream 2 ->', passedStream);
-                updateParticipants(passedStream)
+                console.log('new stream 2 ->', passedStream);
+                updateParticipants(userPeerId, passedStream);
             })
 
             peerCall.on('close', () => {
@@ -50,6 +53,7 @@ export default function useSocketIo(
 
         socketInstance.on('user-disconnected', (userPeerId, emailConnected, nameOfUserDisconnected) => {
             console.log('user disconnecting->>>>>', userPeerId, emailConnected, nameOfUserDisconnected);
+            updateParticipants(userPeerId, null, true);
         })
 
     }, [socketInstance, canStartUsing])

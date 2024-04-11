@@ -1,6 +1,10 @@
 import axios from 'axios';
 
 
+export const peerServerHost = 'localhost';
+export const peerServerPort = 9000;
+export const peerServerPath = '/myapp';
+
 // different API base URLs
 const loginBaseUrl = 'https://100014.pythonanywhere.com/api/';
 const clientAdminBaseUrl = 'https://100014.pythonanywhere.com/api/';
