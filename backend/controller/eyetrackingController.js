@@ -1,5 +1,5 @@
 
-const { Eyetracking, validateEyetracking } = require("../models/eyetrackingmodel");
+const { Eyetracking, validateEyetracking } = require("../models/eyetrackingModel");
 const { generateDefaultResponseObject } = require("../utils/defaultResponseObject");
 const { Event } = require("../models/eventModel");
 const mongoose = require("mongoose");
