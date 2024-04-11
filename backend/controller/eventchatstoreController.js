@@ -1,6 +1,10 @@
 const { EventChatStore, validateEventsChatStore } = require('../models/eventschatstoreModel');
-const Event = require('../models/eventModel');
-const ObjectId = require('mongoose').Types.ObjectId;
+const { Event } = require('../models/eventModel');
+
+
+const generateDefaultResponseObject = (options) => {
+    return options;
+};
 
 const createEventChat = async (req, res) => {
     try {
@@ -18,20 +22,21 @@ const createEventChat = async (req, res) => {
         // Check if the event referenced by event_id exists
         const foundEvent = await Event.findById(value.event_id);
         if (!foundEvent) {
-            return res.status(404).json({
+            // If event not found, return 404
+            return res.status(404).json(generateDefaultResponseObject({
                 success: false,
-                message: 'Event not found',
-                data: null,
-                error: null
-            });
+                message: 'Event could not be found',
+            }));
         }
+
         // Create a new event chat entry
         const eventChat = new EventChatStore({
+            email: value.email,
             event_id: value.event_id,
             name: value.name,
             text: value.text
         });
-
+        console.log("3")
         // Save the event chat entry to the database
         await eventChat.save();
 
