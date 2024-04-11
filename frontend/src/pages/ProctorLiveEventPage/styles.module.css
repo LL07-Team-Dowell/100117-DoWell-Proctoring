@@ -1,0 +1,27 @@
+.wrapper {
+    padding: 0.5rem 1rem;
+}
+.nav__Wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.8rem;
+}
+
+.logo {
+    width: 6rem;
+    height: 6rem;
+    object-fit: cover;
+}
+
+.participants__Wrap {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 1rem;
+}
+
+.participants__Wrap video {
+    width: 100%;
+    height: 8rem;
+    max-width: 100%;
+    object-fit: cover;
+}

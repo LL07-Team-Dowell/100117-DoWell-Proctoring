@@ -60,7 +60,7 @@ const validateEvent = (eventData, isExistingData = false) => {
             duration_in_hours: Joi.number().required(),
             user_id: Joi.string().required(),
             participants: Joi.array().items(Joi.string()),
-            max_cap: Joi.number(),
+            max_cap: Joi.number().allow(''),
             link: Joi.string().uri().required()
         });
 

@@ -5,16 +5,24 @@ import { AiOutlineClose } from "react-icons/ai";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { BiRightTopArrowCircle } from "react-icons/bi";
 import styles from "./styles.module.css";
+import { toast } from 'sonner';
+import { addNewEvent } from "../../../services/eventServices";
+import { useUserContext } from "../../../contexts";
 
 const AddEventModal = ({ handleCloseModal }) => {
   const [event, setEvent] = useState({
     name: "",
     start_time: "",
-    close_time: "",
+    close_date: "",
     duration_in_hours: "",
     max_cap: "",
-    event_link: "",
+    link: "",
   });
+  const [loading, setLoading] = useState(false);
+
+  const {
+    currentUser
+  } = useUserContext();
 
   const handleChange = (valueEntered, inputName) => {
     setEvent((prevValue) => ({
@@ -35,19 +43,47 @@ const AddEventModal = ({ handleCloseModal }) => {
     setEvent((event) => [...event, newEvent]);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const requiredKeys = ['name', 'start_time', 'close_date', 'duration_in_hours', 'link'];
 
     const newEvent = {
       name: event.name,
       start_time: event.start_time,
-      close_time: event.close_time,
+      close_date: event.close_date,
       duration_in_hours: event.duration_in_hours,
       max_cap: event.max_cap,
-      event_link: event.event_link,
+      link: event.link,
+      user_id: currentUser?.userinfo?.userID,
     };
+    
+    const missingRequiredKey = Object.keys(newEvent || {}).find(key => 
+      requiredKeys.includes(key) && 
+      (!newEvent[key] || newEvent[key]?.length < 1)
+    );
+    
+    if (missingRequiredKey) return toast.info('Please fill in all required fields');
+    if (new Date(newEvent.start_time).getTime() > new Date(newEvent.close_date).getTime()) return toast.info("The 'Start Date' of the event should be before its 'Close Date'");
+    if (new Date(newEvent.start_time).getTime() < new Date().getTime()) return toast.info("'Start Date' of the event cannot be in the past");
+    
     // handleAddEvent(newEvent);
     console.log(newEvent);
+    setLoading(true);
+
+    try {
+      const res = (await addNewEvent(newEvent)).data;
+      console.log(res);
+
+      setLoading(false);
+
+      toast.success('Successfully added new event!');
+      handleCloseModal();
+    } catch (error) {
+      console.log(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,16 +126,16 @@ const AddEventModal = ({ handleCloseModal }) => {
                   onChange={(e) => handleChange(e.target.value, e.target.name)}
                 />
               </label>
-              <label htmlFor="close_time">
+              <label htmlFor="close_date">
                 <div>
                   <span>Close Date</span>{" "}
                   <span className={styles.required__indicator}>*</span>
                 </div>
                 <input
                   type="datetime-local"
-                  name={"close_time"}
+                  name={"close_date"}
                   placeholder="Close date"
-                  value={event.close_time}
+                  value={event.close_date}
                   onChange={(e) => handleChange(e.target.value, e.target.name)}
                 />
               </label>
@@ -133,26 +169,30 @@ const AddEventModal = ({ handleCloseModal }) => {
                 />
               </label>
             </div>
-            <label htmlFor="event_link">
+            <label htmlFor="link">
               <div>
                 <span>Event link</span>{" "}
                 <span className={styles.required__indicator}>*</span>
               </div>
               <input
                 type="text"
-                name={"event_link"}
+                name={"link"}
                 placeholder="Event link"
-                value={event.event_link}
+                value={event.link}
                 onChange={(e) => handleChange(e.target.value, e.target.name)}
               />
             </label>
           </div>
           <div className={styles.event__actions}>
-            <button type="submit" onClick={handleSubmit}>
+            <button type="submit" onClick={handleSubmit} disabled={loading}>
               <BiRightTopArrowCircle />
-              Submit
+              {
+                loading ? 'Saving...'
+                  :
+                'Submit'
+              }
             </button>
-            <button onClick={handleCloseModal}>
+            <button onClick={handleCloseModal} disabled={loading}>
               <MdOutlineDeleteOutline />
               <span>Cancel</span>
             </button>

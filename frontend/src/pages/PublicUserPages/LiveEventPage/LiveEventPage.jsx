@@ -14,6 +14,7 @@ import useStartCountDown from "../hooks/useStartCountdown";
 import useLoadEventDetail from "../hooks/useLoadEventDetail";
 import useSocketIo from "../../../hooks/useSocketIo";
 import ScreenCapture from "../../../utils/captureScreen";
+import { handleRequestCameraPermission } from "../../../utils/helpers";
 
 const dummyLink = "https://ll04-finance-dowell.github.io/100058-DowellEditor-V2/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9kdWN0X25hbWUiOiJXb3JrZmxvdyBBSSIsImRldGFpbHMiOnsiZmllbGQiOiJkb2N1bWVudF9uYW1lIiwiY2x1c3RlciI6IkRvY3VtZW50cyIsImRhdGFiYXNlIjoiRG9jdW1lbnRhdGlvbiIsImNvbGxlY3Rpb24iOiJDbG9uZVJlcG9ydHMiLCJkb2N1bWVudCI6IkNsb25lUmVwb3J0cyIsInRlYW1fbWVtYmVyX0lEIjoiMTIxMjAwMSIsImZ1bmN0aW9uX0lEIjoiQUJDREUiLCJjb21tYW5kIjoidXBkYXRlIiwiZmxhZyI6InNpZ25pbmciLCJfaWQiOiI2NWZlZDhjNzM3YzZkNmNmMTQ2YTFkOTAiLCJhY3Rpb24iOiJkb2N1bWVudCIsImF1dGhvcml6ZWQiOiJzYWdhci1oci1oaXJpbmciLCJ1c2VyX2VtYWlsIjoiIiwidXNlcl90eXBlIjoicHVibGljIiwiZG9jdW1lbnRfbWFwIjpbeyJjb250ZW50IjoiczEiLCJyZXF1aXJlZCI6ZmFsc2UsInBhZ2UiOjF9LHsiY29udGVudCI6ImkyIiwicmVxdWlyZWQiOmZhbHNlLCJwYWdlIjoyfSx7ImNvbnRlbnQiOiJpMyIsInJlcXVpcmVkIjpmYWxzZSwicGFnZSI6Mn0seyJjb250ZW50IjoiaTQiLCJyZXF1aXJlZCI6ZmFsc2UsInBhZ2UiOjJ9LHsiY29udGVudCI6Imk1IiwicmVxdWlyZWQiOmZhbHNlLCJwYWdlIjoyfV0sImRvY3VtZW50X3JpZ2h0IjoiYWRkX2VkaXQiLCJkb2N1bWVudF9mbGFnIjoicHJvY2Vzc2luZyIsInJvbGUiOiJGcmVlbGFuY2VyIiwicHJldmlvdXNfdmlld2VycyI6bnVsbCwibmV4dF92aWV3ZXJzIjpbIkR1bW15SFIiXSwibWV0YWRhdGFfaWQiOiI2NWZlZDhjODQwMDE2MmQ3MDRkNjk1MmEiLCJwcm9jZXNzX2lkIjoiNjVmZWQ4YzJiODZlM2E0ZTYwMGJiNDc3IiwidXBkYXRlX2ZpZWxkIjp7ImRvY3VtZW50X25hbWUiOiJVbnRpdGxlZCBEb2N1bWVudF9zYWdhci1oci1oaXJpbmciLCJjb250ZW50IjoiIiwicGFnZSI6IiJ9fX0.lX91uUpJY6oubfhKqLfJsX1IHW87-YkDXpHWqfshFQU&link_id=2130413081054482926";
 
@@ -63,7 +64,14 @@ const EventRegistrationPage = () => {
         setEventStarted,
         setUserDetails,
         async () => {
-            await handleRequestCameraPermission();
+            const res = await handleRequestCameraPermission();
+            if (res.error) toast.info(res.error);
+            if (!res.error) {
+                setCameraPermissionGranted(true);
+                setActiveUserStream(res);
+
+                if (videoRef.current) videoRef.current.srcObject = res;
+            }
             handleRequestLocationAccess();
         },
     )
@@ -152,29 +160,6 @@ const EventRegistrationPage = () => {
                 console.log("no case defined");
                 return;
         }
-    }
-
-    const handleRequestCameraPermission = async () => {
-        if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-            try {
-                let userStream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    // audio: true,
-                })
-
-                setCameraPermissionGranted(true);
-                setActiveUserStream(userStream);
-
-                if (videoRef.current) videoRef.current.srcObject = userStream;
-            } catch (error) {
-                console.log(error);
-                toast.info('Please approve audio and video permission requests');
-            }
-
-            return
-        }
-        
-        toast.info('Your device does not have a camera');
     }
 
     const handleRequestLocationAccess = () => {
@@ -319,7 +304,24 @@ const EventRegistrationPage = () => {
                                                     margin: '0 auto'
                                                 }} 
                                                 className={styles.back_Btn} 
-                                                onClick={handleRequestCameraPermission}
+                                                onClick={() => 
+                                                    {
+                                                        handleRequestCameraPermission().then(res => {
+                                                            if (res.error) {
+                                                                toast.info(res.error);
+                                                                return;
+                                                            }
+
+                                                            setCameraPermissionGranted(true);
+                                                            setActiveUserStream(res);
+
+                                                            if (videoRef.current) videoRef.current.srcObject = res;
+
+                                                        }).catch(err => {
+                                                            console.log(err);
+                                                        })
+                                                    }
+                                                }
                                             >
                                                 Grant permission
                                             </button>

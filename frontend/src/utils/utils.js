@@ -29,6 +29,7 @@ export const validateEmail = (email) => {
 export const addHoursToDate = (date, hours) => {
     return new Date(new Date(date).setHours(date.getHours() + hours));
 }
+
 export const compressString = (str) => {
     if (!str) return '';
     let compressed = '';
