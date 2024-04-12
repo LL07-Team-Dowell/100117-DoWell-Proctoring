@@ -77,6 +77,7 @@ exports.update_detail_for_participant = async (req, res) => {
     }));
 
     const isTimeStartedUpdate = type === 'time-started';
+    const isHoursSpentUpdate = type === 'hours-spent';
 
     const fieldsToUpdate = {...value};
     delete fieldsToUpdate['participant_id'];
@@ -86,10 +87,14 @@ exports.update_detail_for_participant = async (req, res) => {
 
     try {
         const updatedParticipantDetails = await Participant.findOneAndUpdate(
-            { _id: participant_id, event_id: event_id }, 
-            { $set: isTimeStartedUpdate ? 
-                { time_started: new Date() } 
+            { _id: participant_id, event_id: event_id, editing_allowed: true }, 
+            { $set: 
+                isTimeStartedUpdate ? 
+                    { time_started: new Date() } 
                 : 
+                isHoursSpentUpdate ?
+                    {...fieldsToUpdate, editing_allowed: false}
+                :
                 {...fieldsToUpdate} 
             }, 
             { new: true }
@@ -97,7 +102,7 @@ exports.update_detail_for_participant = async (req, res) => {
         
         if (!updatedParticipantDetails) return res.status(404).json(generateDefaultResponseObject({
             success: false,
-            message: 'Participant details does not exist',
+            message: 'Participant details either does not exist or editing of details has been disabled',
         }));
 
         return res.status(200).json(generateDefaultResponseObject({
