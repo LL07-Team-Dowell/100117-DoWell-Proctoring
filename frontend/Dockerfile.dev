@@ -1,8 +1,12 @@
 FROM node:20.11.1 AS build
 
+# Create a directory where our app will be placed
+RUN mkdir -p /usr/src/app/node_modules && chown -R node:node /usr/src/app
+
+# Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json first
+# Copy the package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
@@ -12,7 +16,7 @@ RUN npm install
 COPY . .
 
 # Expose the port your app runs on
-EXPOSE 5173
+EXPOSE 4173
 
 # Command to run your app
 CMD ["npm", "run", "dev"]
