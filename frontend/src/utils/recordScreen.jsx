@@ -10,9 +10,10 @@ const RecordView = ({ canStartRecording, stopRecording, children }) => {
     startRecording,
     stopRecording: stop,
   } = useReactMediaRecorder({
-    video: true,
+    screen: true,
     onStop: (blobUrl) => {
       if (stopRecording) stopRecording(blobUrl);
+      console.log("onStop", blobUrl);
     },
   });
 
