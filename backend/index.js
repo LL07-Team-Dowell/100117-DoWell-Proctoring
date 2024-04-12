@@ -32,13 +32,34 @@ io.on("connection", (socket) => {
         
         socket.join(eventId);
         socket.broadcast.to(eventId).emit('user-connected', userPeerId, userEmail, nameOfUser);
+        socket.broadcast.emit('new-message', `User ${socket.id}-() connected`);
+        
 
         socket.on('disconnect', (reason) => {
             console.log("User with socket id disconnected: '" + socket.id +"' because '" + reason + "'");
             socket.broadcast.to(eventId).emit('user-disconnected', userPeerId, userEmail, nameOfUser);
+        });
+        //listening for messages
+        socket.on('incoming-message', data => {
+            console.log(`User ${socket.id}-(${data}) connected`)
+
+            console.log(data.username + " with email '" + data.email + "' and proctor: '" + data.isProctor + "' messaged: " + data.eventId);
+            ///send message to the room
+            //socket.broadcast.to(eventId).emit('new-message', data.eventId, data.email,data.username,data.isProctor,data.message);
+            io.to(eventId).emit('new-message', data.eventId, data.email,data.username,data.isProctor,data.messageid,data.message);
+            ///add to the database--
         })
+
+        // Listen for activity 
+        socket.on('on-typing', data => {
+            //broadcast to everyone except you in the chatroom
+            socket.broadcast.to(eventId).emit('activity', data)
+        })
+        
     })
+    
 });
+
 
 
 // making sure the DB is connected before starting the server
