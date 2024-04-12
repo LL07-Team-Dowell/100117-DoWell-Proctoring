@@ -4,7 +4,7 @@
 - run `npm install` in your terminal to install all required dependencies
 - To start the app, simply run this in your terminal: 
 ```bash
-node
+nodemon .
 ``` 
 **OR** 
 ```bash
