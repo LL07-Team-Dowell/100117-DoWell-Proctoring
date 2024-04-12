@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  backend:
+  dowell-proctoring-backend:
     build: 
       context: ./backend
       dockerfile: Dockerfile.prod
@@ -20,7 +20,7 @@ services:
       retries: 3
       start_period: 30s
 
-  frontend:
+  dowell-proctoring-frontend:
     build: 
       context: ./frontend
       dockerfile: Dockerfile.prod
@@ -31,7 +31,7 @@ services:
     networks:
       - webnet
 
-  peerjs:
+  dowell-proctoring-peerjs:
     build:
       context: .
       dockerfile: Dockerfile.peerjs
