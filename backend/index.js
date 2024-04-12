@@ -31,9 +31,7 @@ io.on("connection", (socket) => {
         console.log(nameOfUser + " with email '" + userEmail + "' and peer id: '" + userPeerId + "' joined event: " + eventId);
         
         socket.join(eventId);
-        socket.broadcast.to(eventId).emit('user-connected', userPeerId, userEmail, nameOfUser);
-        socket.broadcast.emit('new-message', `User ${socket.id}-() connected`);
-        
+        socket.broadcast.to(eventId).emit('user-connected', userPeerId, userEmail, nameOfUser); 
 
         socket.on('disconnect', (reason) => {
             console.log("User with socket id disconnected: '" + socket.id +"' because '" + reason + "'");
@@ -47,7 +45,9 @@ io.on("connection", (socket) => {
             ///send message to the room
             //socket.broadcast.to(eventId).emit('new-message', data.eventId, data.email,data.username,data.isProctor,data.message);
             io.to(eventId).emit('new-message', data.eventId, data.email,data.username,data.isProctor,data.messageid,data.message);
+
             ///add to the database--
+            // call the controller function--
         })
 
         // Listen for activity 
