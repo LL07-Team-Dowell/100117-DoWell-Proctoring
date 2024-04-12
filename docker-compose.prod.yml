@@ -27,7 +27,7 @@ services:
     container_name: dowell-proctoring-frontend
     restart: always
     ports:
-      - "4173:8003"
+      - "4173:4173"
     networks:
       - webnet
 

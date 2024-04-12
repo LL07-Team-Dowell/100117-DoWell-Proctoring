@@ -7,7 +7,6 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const { connectToDb } = require('./config/db');
 
-
 // creating a new express application
 const app = express();
 
@@ -20,6 +19,7 @@ const httpServer = createServer(app);
 // configuring a new socket io instance
 const io = new Server(httpServer, {
     cors: process.env.FRONTEND_URL,
+    
     methods: ["GET", "POST"]
 })
 
