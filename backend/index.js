@@ -45,7 +45,9 @@ io.on("connection", (socket) => {
             ///send message to the room
             //socket.broadcast.to(eventId).emit('new-message', data.eventId, data.email,data.username,data.isProctor,data.message);
             io.to(eventId).emit('new-message', data.eventId, data.email,data.username,data.isProctor,data.messageid,data.message);
+
             ///add to the database--
+            // call the controller function--
         })
 
         // Listen for activity 
