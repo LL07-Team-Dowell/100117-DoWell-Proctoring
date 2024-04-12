@@ -2,10 +2,10 @@
 FROM node:20-alpine
 
 # Create a directory where our app will be placed
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+RUN mkdir -p /usr/src/app/node_modules && chown -R node:node /usr/src/app
 
-# # Set the working directory in the container
-WORKDIR /home/node/app
+# Set the working directory in the container
+WORKDIR /usr/src/app
 
 # Copy the package.json and package-lock.json
 COPY package*.json ./
@@ -20,7 +20,7 @@ RUN npm install
 COPY --chown=node:node . .
 
 # Expose the port your app runs on
-EXPOSE 5173
+EXPOSE 4173
 
 # Command to run your app using nodemon
 CMD ["npm", "run", "dev"]

@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: dowell-proctoring-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    expose:
+      - "5000"
+    volumes:
+      - ./backend:/usr/src/app
+    env_file:
+      - ./backend/.env
+    networks:
+      - webnet
+    command: ["npm", "run", "dev"]
+
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: dowell-proctoring-frontend
+    restart: always
+    ports:
+      - "4173:4173"
+    expose:
+      - "4173"
+    networks:
+      - webnet
+    command: ["npm", "run", "dev"]
+
+  peerjs:
+    build:
+      context: .
+      dockerfile: Dockerfile.peerjs
+    container_name: dowell-proctoring-peerjs
+    ports:
+      - "9000:9000"
+    networks:
+      - webnet
+
+networks:
+    webnet: {}
+
+volumes:
+  backend: {}
