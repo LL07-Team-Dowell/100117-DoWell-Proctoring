@@ -34,7 +34,11 @@ const participantSchema = new Schema({
     deleted: {
         type: SchemaTypes.Boolean,
         default: false
-    }
+    },
+    editing_allowed: {
+        type: SchemaTypes.Boolean,
+        default: true,
+    },
 }, { timestamps: true })
 
 const validParticipantUpdateTypes = ['time-started', 'hours-spent', 'location'];
