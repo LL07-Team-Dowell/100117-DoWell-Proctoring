@@ -1,35 +1,45 @@
-version: "3.8"
+version: '3.8'
 
 services:
   backend:
-    build: 
-      context: ./backend
-      dockerfile: Dockerfile
+    build:
+      context: ./backend 
+      dockerfile: Dockerfile  
+    container_name: proctoring-backend
+    restart: always
     ports:
-      - "5000:5000"
-    volumes:
-      - ./backend:/home/node/app
+      - "8005:8005"  
+    networks:
+      - webnet
     env_file:
-      - ./backend/.env
+      - ./backend/.env  
+    volumes:
+      - /usr/src/app/node_modules
+    depends_on:
+      - peerjs
 
   frontend:
-    build: 
-      context: ./frontend
+    build:
+      context: ./frontend  
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"
-    # volumes:
-    #   - ./frontend:/home/node/app
+      - "5173:5173" 
+    container_name: proctoring_frontend
+    volumes:
+      - /usr/src/app/node_modules
+    networks:
+      - webnet
+    depends_on:
+      - backend
 
   peerjs:
     image: node:20-alpine
     ports:
       - "9000:9000"
     command: sh -c "npm install -g peer && peerjs --port 9000 --key peerjs --path /myapp"
-    # volumes:
-    #   - ./peerjs:/home/node/app
+    networks:
+      - webnet
 
-volumes:
-  backend:
-  frontend:
-  # peerjs:
+networks:
+  webnet:
+    driver: bridge

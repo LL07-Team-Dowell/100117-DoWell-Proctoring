@@ -1,26 +1,18 @@
-# This is the Dockerfile for the frontend service
-FROM node:20-alpine
+FROM node:20.11.1 AS build
 
-# Create a directory where our app will be placed
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+WORKDIR /usr/src/app
 
-# # Set the working directory in the container
-WORKDIR /home/node/app
-
-# Copy the package.json and package-lock.json
+# Copy package.json and package-lock.json first
 COPY package*.json ./
-
-#Change the owner of the /home/node/app directory to the non-root user
-USER node
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of your application code
-COPY --chown=node:node . .
+# Copy the rest of the application code
+COPY . .
 
 # Expose the port your app runs on
 EXPOSE 5173
 
-# Command to run your app using nodemon
+# Command to run your app
 CMD ["npm", "run", "dev"]
