@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: dowell-proctoring-backend
+    restart: always
+    ports:
+      - "5000:5000"  # Expose the backend on port 5000 on the host
+    env_file:
+      - ./backend/.env  # Environment variables for the backend
+    networks:
+      - webnet  # Ensures it can communicate with other services in the same network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: dowell-proctoring-frontend
+    restart: always
+    ports:
+      - "4173:3000"
+    networks:
+      - webnet
+
+  peerjs:
+    build:
+      context: .
+      dockerfile: Dockerfile.peerjs
+    container_name: dowell-proctoring-peerjs
+    ports:
+      - "9000:9000"
+    networks:
+      - webnet
+
+networks:
+  webnet: {}
