@@ -48,7 +48,7 @@ exports.add_new_participant = async (req, res) => {
         message: `Sorry, this event closed on ${new Date(foundEvent?.close_date).toDateString()} at ${new Date(foundEvent?.close_date).toLocaleTimeString()}`,
     }));
 
-    const newParticipant = new Participant({ ...value, email: value.email.toLocaleLowerCase(), time_started: new Date() });
+    const newParticipant = new Participant({ ...value, email: value.email.toLocaleLowerCase() });
 
     try {
         await newParticipant.save();
@@ -66,6 +66,55 @@ exports.add_new_participant = async (req, res) => {
         }));   
     }
 }
+
+exports.update_detail_for_participant = async (req, res) => {
+    const { type } = req.params;
+    const { value, error } = validateParticipantData(req.body, true, type);
+
+    if (error) return res.status(400).json(generateDefaultResponseObject({
+        success: false,
+        message: error.details[0].message,
+    }));
+
+    const isTimeStartedUpdate = type === 'time-started';
+
+    const fieldsToUpdate = {...value};
+    delete fieldsToUpdate['participant_id'];
+    delete fieldsToUpdate['event_id'];
+
+    const { participant_id, event_id } = value;
+
+    try {
+        const updatedParticipantDetails = await Participant.findOneAndUpdate(
+            { _id: participant_id, event_id: event_id }, 
+            { $set: isTimeStartedUpdate ? 
+                { time_started: new Date() } 
+                : 
+                {...fieldsToUpdate} 
+            }, 
+            { new: true }
+        );
+        
+        if (!updatedParticipantDetails) return res.status(404).json(generateDefaultResponseObject({
+            success: false,
+            message: 'Participant details does not exist',
+        }));
+
+        return res.status(200).json(generateDefaultResponseObject({
+            success: true,
+            message: 'Successfully updated participant details',
+            data: updatedParticipantDetails,
+        }));
+
+    } catch (error) {
+        return res.status(500).json(generateDefaultResponseObject({
+            success: false,
+            message: 'An error occured trying to save participant details',
+            error: error,
+        }));
+    }
+}
+
 exports.getByParams = async (req, res) => {
     let query = {};
     if (req.body.start_date) {
