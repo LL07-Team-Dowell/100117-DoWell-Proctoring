@@ -29,7 +29,7 @@ WORKDIR /app
 COPY --from=builder /usr/src/app/dist /app
 
 # Expose the port serve uses
-EXPOSE 8003
+EXPOSE 4173
 
 # Run serve to serve the static files
-CMD ["serve", "-s", ".", "-l", "8003"]
+CMD ["serve", "-s", ".", "-l", "4173"]
