@@ -31,9 +31,7 @@ io.on("connection", (socket) => {
         console.log(nameOfUser + " with email '" + userEmail + "' and peer id: '" + userPeerId + "' joined event: " + eventId);
         
         socket.join(eventId);
-        socket.broadcast.to(eventId).emit('user-connected', userPeerId, userEmail, nameOfUser);
-        socket.broadcast.emit('new-message', `User ${socket.id}-() connected`);
-        
+        socket.broadcast.to(eventId).emit('user-connected', userPeerId, userEmail, nameOfUser); 
 
         socket.on('disconnect', (reason) => {
             console.log("User with socket id disconnected: '" + socket.id +"' because '" + reason + "'");
