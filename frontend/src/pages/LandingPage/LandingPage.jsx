@@ -38,9 +38,7 @@ const LandingPage = () => {
           </button>
         </section>
         {showAddEventModal && (
-          <AddEventModal
-            handleCloseModal={() => setShowAddEventModal(false)}
-          />
+          <AddEventModal handleCloseModal={() => setShowAddEventModal(false)} />
         )}
       </main>
     </>
