@@ -10,16 +10,26 @@ const { connectToDb } = require('./config/db');
 // creating a new express application
 const app = express();
 
+// loading and parsing all the permitted frontend urls for cors
+let allowedOrigins = [];
+try {
+    allowedOrigins = JSON.parse(process.env.FRONTEND_URLS);
+} catch (error) {
+    console.log("Error parsing the 'FRONTEND_URLS' variable stored in your .env file. Please make sure it is in this format: ", '["valid_url_1", "valid_url_2"]');
+}
+
+
 // adding routes and external configurations to the application
-require('./config/config')(app);
+require('./config/config')(app, allowedOrigins);
 
 // creating a new server using the express application to allow socket io also listen on the server
 const httpServer = createServer(app);
 
 // configuring a new socket io instance
 const io = new Server(httpServer, {
-    cors: process.env.FRONTEND_URL,
-    
+    cors: {
+        origin: Array.isArray(allowedOrigins) ? allowedOrigins : [],
+    },
     methods: ["GET", "POST"]
 })
 
