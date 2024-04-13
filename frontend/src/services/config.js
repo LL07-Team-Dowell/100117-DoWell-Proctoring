@@ -16,7 +16,7 @@ export const peerServerPath = '/myapp';
 
 // different API base URLs
 const loginBaseUrl = 'https://100014.pythonanywhere.com/api/';
-const clientAdminBaseUrl = 'https://100014.pythonanywhere.com/api/';
+const clientAdminBaseUrl = 'https://100093.pythonanywhere.com/api/';
 const localApiBaseUrl = 'http://localhost:5000/api/v1/';
 const prodApiBaseUrl = 'http://192.64.86.227:5000/api/v1/';
 
