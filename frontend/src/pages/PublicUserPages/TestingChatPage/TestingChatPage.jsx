@@ -36,19 +36,20 @@ export default function TestingChatPage() {
         
         socketInstance.emit('join-event', eventId, crypto.randomUUID(), testEmail, testUser);
         
-        socketInstance.on('new-message', (eventId, userEmail, userName, isProctor,messageid, message) => {
+        socketInstance.on('new-message', (eventId, userName,userEmail, isProctor,messageid, message, messagecreateddate) => {
             setMessages(prevMessages => {
                 // Check if there is already a message with the same messageid
                 const existingMessage = prevMessages.find(msg => msg.messageid === messageid);
                 // If no existing message with the same messageid is found and there is a username, add the new message
-                if (!existingMessage && !(userEmail==undefined)) {
+                if (!existingMessage && !(userName==undefined)) {
                     return [...prevMessages, {
                         eventId: eventId,
-                        email: userEmail,
                         name: userName,
+                        email:userEmail,
                         isProctor: isProctor,
                         messageid: messageid,
                         message: message,
+                        createddate: messagecreateddate
                     }];
                 }
                 return prevMessages;
@@ -89,6 +90,7 @@ export default function TestingChatPage() {
         <div className="message">
             {messages.map((messageItem, index) => (
                 <div key={index} style={{ backgroundColor: '#efefef', padding: '1rem', borderRadius: '10px', margin: '12px' }}>
+                    <small>Date: <span style={{ fontSize: '0.8rem' }}>{messageItem.createddate}</span></small>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         <p style={{ fontSize: '0.8rem' }}>{messageItem.name}</p>
                         <p style={{ fontSize: '0.8rem' }}>{messageItem.email}</p>
