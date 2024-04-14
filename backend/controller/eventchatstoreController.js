@@ -2,56 +2,59 @@ const { EventChatStore, validateEventsChatStore } = require('../models/eventscha
 const { generateDefaultResponseObject } = require("../utils/defaultResponseObject");
 const { Event } = require('../models/eventModel');
 
-const createEventChat = async (req, res) => {
+const createEventChat = async (data) => {
     try {
         // Validate request body
-        const { error, value } = validateEventsChatStore(req.body);
+        const { error, value } = validateEventsChatStore(data);
+        //const { error, value } = validateEventsChatStore(data);
         if (error) {
-            return res.status(400).json({
+            return {
                 success: false,
                 message: error.details[0].message,
                 data: null,
                 error: null
-            });
+            };
         }
 
         // Check if the event referenced by event_id exists
         const foundEvent = await Event.findById(value.event_id);
         if (!foundEvent) {
             // If event not found, return 404
-            return res.status(404).json(generateDefaultResponseObject({
+            return generateDefaultResponseObject({
                 success: false,
                 message: 'Event could not be found',
-            }));
+            });
         }
 
         // Create a new event chat entry
         const eventChat = new EventChatStore({
             email: value.email,
             event_id: value.event_id,
-            name: value.name,
-            text: value.text
+            username: value.username,
+            message_id: value.message_id,
+            message: value.message,
+            tagged: value.tagged
         });
         console.log("3")
         // Save the event chat entry to the database
         await eventChat.save();
 
         // Return the created event chat entry
-        return res.status(201).json({
+        return {
             success: true,
             message: "Event chat created successfully",
             data: eventChat,
             error: null
-        });
+        };
     } catch (err) {
         // Handle errors
         console.error("Error creating event chat:", err);
-        return res.status(500).json({
+        return {
             success: false,
             message: "Internal Server Error",
             data: null,
             error: err.message
-        });
+        };
     }
 };
 

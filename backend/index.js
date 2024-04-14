@@ -1,11 +1,13 @@
 // necessary imports
 require('dotenv').config();
-
+const mongoose = require('mongoose');
 const express = require("express");
 const PORT = process.env.PORT || 5000;
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const { connectToDb } = require('./config/db');
+const {createEventChat} = require('./controller/eventchatstoreController');
+const { Participant } = require("./models/participantModel");
 
 // creating a new express application
 const app = express();
@@ -37,9 +39,9 @@ const io = new Server(httpServer, {
 io.on("connection", (socket) => {
     console.log("connected with: ", socket.id);
 
+    // join event
     socket.on("join-event", (eventId, userPeerId, userEmail, nameOfUser) => {
         console.log(nameOfUser + " with email '" + userEmail + "' and peer id: '" + userPeerId + "' joined event: " + eventId);
-        
         socket.join(eventId);
         socket.broadcast.to(eventId).emit('user-connected', userPeerId, userEmail, nameOfUser); 
 
@@ -47,25 +49,35 @@ io.on("connection", (socket) => {
             console.log("User with socket id disconnected: '" + socket.id +"' because '" + reason + "'");
             socket.broadcast.to(eventId).emit('user-disconnected', userPeerId, userEmail, nameOfUser);
         });
-        //listening for messages
-        socket.on('incoming-message', data => {
-            console.log(`User ${socket.id}-(${data}) connected`)
+    })
 
-            console.log(data.username + " with email '" + data.email + "' and proctor: '" + data.isProctor + "' messaged: " + data.eventId);
-            ///send message to the room
-            //socket.broadcast.to(eventId).emit('new-message', data.eventId, data.email,data.username,data.isProctor,data.message);
-            io.to(eventId).emit('new-message', data.eventId, data.email,data.username,data.isProctor,data.messageid,data.message);
+    //listening for messages
+    socket.on('incoming-message', async (data) => {
+        console.log(`User ${socket.id}-(${data}) connected`)
 
-            ///add to the database--
-            // call the controller function--
-        })
+        ///add to the database--
+        const messageid = `${crypto.randomUUID()}`;
+        //console.log('Message ID:', messageid);
+        const participant = await Participant.find({event_id: data.eventId});
+        const chat = await createEventChat({
+            event_id: data.eventId,
+            email: data.email,
+            username: data.username,
+            message_id:messageid,
+            message: data.message,
+            tagged:participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
+        });
+        //console.log(chat);
 
-        // Listen for activity 
-        socket.on('on-typing', data => {
-            //broadcast to everyone except you in the chatroom
-            socket.broadcast.to(eventId).emit('activity', data)
-        })
-        
+        ///send message to the room
+        //socket.broadcast.to(eventId).emit('new-message', data.eventId, data.email,data.username,data.isProctor,data.message);
+        io.to(data.eventId).emit('new-message', data.eventId, data.email,data.username,data.isProctor,messageid,data.message);    
+    })
+
+    // Listen for typing activity 
+    socket.on('on-typing', data => {
+        //broadcast to everyone except you in the chatroom
+        socket.broadcast.to(data.eventId).emit('activity', data)
     })
     
 });
