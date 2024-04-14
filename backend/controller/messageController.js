@@ -1,4 +1,6 @@
 const { Message, validateMessage } = require('../models/messageModel');
+const { Types} = require("mongoose"); // Adjust import statement
+const { ObjectId } = Types; // Import ObjectId explicitly
 const { generateDefaultResponseObject } = require("../utils/defaultResponseObject");
 const { Event } = require('../models/eventModel');
 
@@ -20,10 +22,10 @@ exports.addmessage = async (data) => {
         const foundEvent = await Event.findById(value.eventId);
         if (!foundEvent) {
             // If event not found, return 404
-            return generateDefaultResponseObject({
+            return {
                 success: false,
                 message: 'Event could not be found',
-            });
+            };
         }
 
         // Create a new event chat entry
@@ -94,7 +96,6 @@ exports.updatemessage = async (req, res) => {
         }));
     }
 }
-
 exports.getByParams = async (req, res) => {
     let query = {};
     if (req.body.start_date) {
@@ -109,28 +110,32 @@ exports.getByParams = async (req, res) => {
     }
 
     // Construct the query object dynamically based on the parameters received
-    if (req.body.event_id) query.event_id = req.body.event_id;
-    if (req.body.name) query.name = req.body.name;
-    if (req.body._id) query._id = req.body._id;
-    if (req.body.email) query.email = req.body.email;
-    if (req.body.user_lat) query.user_lat = req.body.user_lat;
-    if (req.body.user_lon) query.user_lon = req.body.user_lon;
-    if (req.body.hours_spent_in_event) query.hours_spent_in_event = req.body.hours_spent_in_event;
-    // Assuming createdAt is a direct property of the participant document
+    if (req.body.eventId) query.eventId = req.body.eventId;
+    if (req.body.username) query.name = req.body.name;
+    if (req.body.messageId) query._id = req.body.messageId;
+    if (req.body.message) query.message = req.body.message;
+    
     if (req.body.createdAt) query.createdAt = req.body.createdAt;
+    if (req.body.deleted) query.deleted = req.body.deleted;
+    
     
     try {
-        const participant = await Participant.find(query);
-        return ResponseObject({
+        if (req.body.tagged && Array.isArray(req.body.tagged)) {
+            // Convert each string to a valid ObjectId
+            const taggedIds = req.body.tagged.map(id => new ObjectId(id));
+            query.tagged = taggedIds;
+        }
+        const messages = await Message.find(query);
+        return res.status(200).json(generateDefaultResponseObject({
             success: true,
-            message: 'Participants retrieved successfully',
-            data: participant}, res.status(200));
+            message: 'Messages retrieved successfully',
+            data: messages}, res.status(200)));
     } catch (error) {
-        return ResponseObject({
+        return res.status(200).json(generateDefaultResponseObject({
             success: false,
             message: 'Failed to retrieve participants',
             error: error,
-        }, res.status(400));
+        }, res.status(400)));
     }
 }
 exports.harddelete = async (req, res) => {
@@ -160,33 +165,33 @@ exports.harddelete = async (req, res) => {
     try {
         const participants = await Participant.find(query);
         if (participants.length==0){
-            return ResponseObject({
+            return res.status(200).json(generateDefaultResponseObject({
                 success: false,
                 message: 'No participants found matching query criteria'
-            }, res.status(404));
+            }, res.status(404)));
         }
         for (let i = 0; i < participants.length; i++) {
             const id = participants[i]._id;
             const deletedparticipant = await Participant.findByIdAndDelete(id);
             
             if (!deletedparticipant) {
-                return ResponseObject({
+                return res.status(200).json(generateDefaultResponseObject({
                     success: false,
                     message: 'Failed to retrieve participants',
                     error: `participant with id: ${id} not deleted`
-                }, res.status(404));
+                }, res.status(404)));
             }
         }
         
-        return ResponseObject({
+        return res.status(200).json(generateDefaultResponseObject({
             success: true,
-            message: 'Successfully deleted participants(s).'}, res.status(200));
+            message: 'Successfully deleted participants(s).'}, res.status(200)));
     } catch (error) {
-        return ResponseObject({
+        return res.status(200).json(generateDefaultResponseObject({
             success: false,
             message: 'Failed to retrieve participants',
             error: error,
-        }, res.status(400));
+        }, res.status(400)));
     }
 }
 exports.softdelete = async (req, res) => {
