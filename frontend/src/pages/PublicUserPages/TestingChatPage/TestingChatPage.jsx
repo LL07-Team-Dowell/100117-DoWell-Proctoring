@@ -8,7 +8,7 @@ export default function TestingChatPage() {
     const [ messages, setMessages ] = useState([]);
     const [ searchParams, setSearchParams ] = useSearchParams();
     
-
+    const eventId = '660b25bcd17611da52105b91';//searchParams.get('event_id');
     const testEmail = 'test@gmail.com';
     const testUser = 'John Doe';
 
@@ -19,13 +19,11 @@ export default function TestingChatPage() {
 
     const handleSend = () => {
         if (value.length < 1) return toast.info('Please enter a message');
-        const eventId = searchParams.get('event_id');
         const data={
             'eventId':eventId,
             'email':testEmail,
             'username':testUser,
             'isProctor':false,
-            'messageid':crypto.randomUUID(),
             'message':value
         }
         emmitter('incoming-message', data);
@@ -34,7 +32,7 @@ export default function TestingChatPage() {
     }
     
     useEffect(() => {
-        const eventId = searchParams.get('event_id');
+        
         
         socketInstance.emit('join-event', eventId, crypto.randomUUID(), testEmail, testUser);
         
@@ -43,7 +41,6 @@ export default function TestingChatPage() {
                 // Check if there is already a message with the same messageid
                 const existingMessage = prevMessages.find(msg => msg.messageid === messageid);
                 // If no existing message with the same messageid is found and there is a username, add the new message
-                console.log(userEmail+"||||||"+undefined);
                 if (!existingMessage && !(userEmail==undefined)) {
                     return [...prevMessages, {
                         eventId: eventId,
@@ -54,19 +51,18 @@ export default function TestingChatPage() {
                         message: message,
                     }];
                 }
-                    // If an existing message with the same messageid is found, return the previous state
                 return prevMessages;
             });
         });
 
-        socketInstance.on("activity", (name) => {
-            document.getElementById('activity').innerHTML = `${name.username} is typing...`
+        socketInstance.on("activity", (data) => {
+            document.getElementById('activity').innerHTML = `${data.username} is typing...`
 
-            // Clear after 2 seconds 
+            // Clear after 1.5 seconds 
             clearTimeout(activityTimer)
             activityTimer = setTimeout(() => {
                 document.getElementById('activity').textContent = ""
-            }, 2000)
+            }, 1500)
         })
 
     }, [])
@@ -84,7 +80,7 @@ export default function TestingChatPage() {
         <input 
             type="text"
             onChange={({ target }) => setValue(target.value)}
-            onKeyDown={( target ) => emmitter('on-typing', {'email':testEmail,'username':testUser})}
+            onKeyDown={( target ) => emmitter('on-typing', {'email':testEmail,'username':testUser,'eventId':eventId})}
             value={value}
         />
         <button onClick={handleSend}>Send</button>

@@ -13,22 +13,32 @@ const eventsChatStoreSchema = new Schema({
         ref: 'Event',
         required: true,
     },
-    name: {
+    username: {
         type: String,
         required: true,
     },
-    text: {
+    message_id: {
         type: String,
         required: true,
     },
+    message: {
+        type: String,
+        required: true,
+    },
+    tagged:{
+        type:Array,
+        required:true,
+    }
 });
 
 const validateEventsChatStore = (eventsChatStoreObject) => {
     const schema = Joi.object({
         email: Joi.string().email({ minDomainSegments: 2 }).required(),
         event_id: Joi.string().hex().required(),
-        name: Joi.string().min(2).required(),
-        text: Joi.string().required(),
+        username: Joi.string().min(2).required(),
+        message_id: Joi.string().required(),
+        message: Joi.string().required(),
+        tagged:Joi.array().required(),
     });
     return schema.validate(eventsChatStoreObject);
 };
