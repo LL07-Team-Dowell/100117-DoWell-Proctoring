@@ -120,10 +120,12 @@ exports.updatemessage = async (req, res) => {
     const value ={...req.body};
 
     try {
+        // Create a new event chat entry
+        const participant = await Participant.find({event_id: value.eventId});
         const message = await Message.findOneAndUpdate(
             { _id: value.messageId, eventId: value.eventId, editing_allowed: true }, 
             { $set: 
-                {'message':value.message} 
+                {'message':value.message,'tagged':participant.filter(i => value.message.includes('@' + i._id)).map(i => i._id)} 
             }, 
             { new: true }
         );
