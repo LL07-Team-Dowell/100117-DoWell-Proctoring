@@ -13,6 +13,10 @@ const messageSchema = new Schema({
         type: String,
         required: true,
     },
+    useremail: {
+        type: String,
+        required: true,
+    },
     message: {
         type: String,
         required: true,
@@ -41,13 +45,13 @@ const validateMessage = (messageObject, isUpdating=false) => {
         schema = Joi.object({
             messageId: Joi.string().hex().required(),
             eventId: Joi.string().hex().required(),
-            username: Joi.string().required(),
             message: Joi.string().required(),
         });
         
     } else {schema = Joi.object({
         eventId: Joi.string().hex().required(),
         username: Joi.string().required(),
+        useremail: Joi.string().email({ minDomainSegments: 2 }).required(),
         message: Joi.string().required(),
         tagged:Joi.array().required(),
     });}

@@ -3,6 +3,7 @@ const { Types} = require("mongoose"); // Adjust import statement
 const { ObjectId } = Types; // Import ObjectId explicitly
 const { generateDefaultResponseObject } = require("../utils/defaultResponseObject");
 const { Event } = require('../models/eventModel');
+const { Participant } = require("../models/participantModel");
 
 exports.addmessage = async (data) => {
     try {
@@ -31,6 +32,7 @@ exports.addmessage = async (data) => {
         // Create a new event chat entry
         const message = new Message({
             eventId: value.eventId,
+            useremail: value.useremail,
             username: value.username,
             message: value.message,
             tagged: value.tagged
@@ -57,16 +59,65 @@ exports.addmessage = async (data) => {
         };
     }
 };
-exports.updatemessage = async (req, res) => {
-    const { type } = req.params;
-    const { value, error } = validateMessage(req.body, true);
+exports.addmessageapi = async (req, res) => {
+    try {
+        // Validate request body
+        const body ={...req.body};
+        body.tagged=[];
+        const { value, error } = validateMessage(body);
+        //const { error, value } = validateEventsChatStore(data);
+        if (error) {
+            return res.status(404).json(generateDefaultResponseObject({
+                success: false,
+                message: error.details[0].message,
+                data: null,
+                error: null
+            }));
+        }
 
-    if (error) return res.status(400).json(generateDefaultResponseObject({
-        success: false,
-        message: error.details[0].message,
-    }));
-    console.log({...value});
-    
+        // Check if the event referenced by event_id exists
+        const foundEvent = await Event.findById(value.eventId);
+        if (!foundEvent) {
+            // If event not found, return 404
+            return res.status(400).json(generateDefaultResponseObject({
+                success: false,
+                message: 'Event could not be found',
+            }));
+        }
+
+        // Create a new event chat entry
+        const participant = await Participant.find({event_id: value.eventId});
+        
+        const message = new Message({
+            eventId: value.eventId,
+            useremail: value.useremail,
+            username: value.username,
+            message: value.message,
+            tagged: participant.filter(i => value.message.includes('@' + i._id)).map(i => i._id),
+        });
+        // Save the event chat entry to the database
+        await message.save();
+
+        // Return the created event chat entry
+        return res.status(200).json(generateDefaultResponseObject({
+            success: true,
+            message: "Event message created successfully",
+            data: message,
+            error: null
+        }));
+    } catch (err) {
+        // Handle errors
+        console.error("Error creating event chat:", err);
+        return res.status(400).json(generateDefaultResponseObject({
+            success: false,
+            message: "Internal Server Error",
+            data: null,
+            error: err.message
+        }));
+    }
+};
+exports.updatemessage = async (req, res) => {
+    const value ={...req.body};
 
     try {
         const message = await Message.findOneAndUpdate(
@@ -111,7 +162,8 @@ exports.getByParams = async (req, res) => {
 
     // Construct the query object dynamically based on the parameters received
     if (req.body.eventId) query.eventId = req.body.eventId;
-    if (req.body.username) query.name = req.body.name;
+    if (req.body.username) query.useremail = req.body.username;
+    if (req.body.useremail) query.useremail = req.body.useremail;
     if (req.body.messageId) query._id = req.body.messageId;
     if (req.body.message) query.message = req.body.message;
     
@@ -133,7 +185,7 @@ exports.getByParams = async (req, res) => {
     } catch (error) {
         return res.status(200).json(generateDefaultResponseObject({
             success: false,
-            message: 'Failed to retrieve participants',
+            message: 'Failed to retrieve Messages',
             error: error,
         }, res.status(400)));
     }
@@ -152,44 +204,48 @@ exports.harddelete = async (req, res) => {
     }
 
     // Construct the query object dynamically based on the parameters received
-    if (req.body.event_id) query.event_id = req.body.event_id;
-    if (req.body.name) query.name = req.body.name;
-    if (req.body._id) query._id = req.body._id;
-    if (req.body.email) query.email = req.body.email;
-    if (req.body.user_lat) query.user_lat = req.body.user_lat;
-    if (req.body.user_lon) query.user_lon = req.body.user_lon;
-    if (req.body.hours_spent_in_event) query.hours_spent_in_event = req.body.hours_spent_in_event;
-    // Assuming createdAt is a direct property of the participant document
+    if (req.body.eventId) query.eventId = req.body.eventId;
+    if (req.body.username) query.useremail = req.body.username;
+    if (req.body.useremail) query.useremail = req.body.useremail;
+    if (req.body.messageId) query._id = req.body.messageId;
+    if (req.body.message) query.message = req.body.message;
+    
     if (req.body.createdAt) query.createdAt = req.body.createdAt;
+    if (req.body.deleted) query.deleted = req.body.deleted;
     
     try {
-        const participants = await Participant.find(query);
-        if (participants.length==0){
+        if (req.body.tagged && Array.isArray(req.body.tagged)) {
+            // Convert each string to a valid ObjectId
+            const taggedIds = req.body.tagged.map(id => new ObjectId(id));
+            query.tagged = taggedIds;
+        }
+        const messages = await Message.find(query);
+        if (messages.length==0){
             return res.status(200).json(generateDefaultResponseObject({
                 success: false,
-                message: 'No participants found matching query criteria'
+                message: 'No Messages found matching query criteria'
             }, res.status(404)));
         }
-        for (let i = 0; i < participants.length; i++) {
-            const id = participants[i]._id;
-            const deletedparticipant = await Participant.findByIdAndDelete(id);
+        for (let i = 0; i < messages.length; i++) {
+            const id = messages[i]._id;
+            const deletedmessage = await Message.findByIdAndDelete(id);
             
-            if (!deletedparticipant) {
+            if (!deletedmessage) {
                 return res.status(200).json(generateDefaultResponseObject({
                     success: false,
-                    message: 'Failed to retrieve participants',
-                    error: `participant with id: ${id} not deleted`
+                    message: 'Failed to retrieve Messages',
+                    error: `Message with id: ${id} not deleted`
                 }, res.status(404)));
             }
         }
         
         return res.status(200).json(generateDefaultResponseObject({
             success: true,
-            message: 'Successfully deleted participants(s).'}, res.status(200)));
+            message: 'Successfully deleted Message(s).'}, res.status(200)));
     } catch (error) {
         return res.status(200).json(generateDefaultResponseObject({
             success: false,
-            message: 'Failed to retrieve participants',
+            message: 'Failed to retrieve Messages',
             error: error,
         }, res.status(400)));
     }
@@ -203,48 +259,51 @@ exports.softdelete = async (req, res) => {
     }
     if (req.body.end_date) {
         query.createdAt = {
-            ...query.createdAt,
             $lte: req.body.end_date
         };
     }
 
     // Construct the query object dynamically based on the parameters received
-    if (req.body.event_id) query.event_id = req.body.event_id;
-    if (req.body.name) query.name = req.body.name;
-    if (req.body._id) query._id = req.body._id;
-    if (req.body.email) query.email = req.body.email;
-    if (req.body.user_lat) query.user_lat = req.body.user_lat;
-    if (req.body.user_lon) query.user_lon = req.body.user_lon;
-    if (req.body.hours_spent_in_event) query.hours_spent_in_event = req.body.hours_spent_in_event;
+    if (req.body.eventId) query.eventId = req.body.eventId;
+    if (req.body.username) query.useremail = req.body.username;
+    if (req.body.useremail) query.useremail = req.body.useremail;
+    if (req.body.messageId) query._id = req.body.messageId;
+    if (req.body.message) query.message = req.body.message;
     if (req.body.createdAt) query.createdAt = req.body.createdAt;
-
+    if (req.body.deleted) query.deleted = req.body.deleted;
+    
     try {
-        const participants = await Participant.find(query);
-        if (participants.length == 0) {
+        if (req.body.tagged && Array.isArray(req.body.tagged)) {
+            // Convert each string to a valid ObjectId
+            const taggedIds = req.body.tagged.map(id => new ObjectId(id));
+            query.tagged = taggedIds;
+        }
+        const messages = await Message.find(query);
+        if (messages.length == 0) {
             return res.status(404).json({
                 success: false,
-                message: 'No participants found matching query criteria'
+                message: 'No Messages found matching query criteria'
             });
         }
-        for (let i = 0; i < participants.length; i++) {
-            const id = participants[i]._id;
+        for (let i = 0; i < messages.length; i++) {
+            const id = messages[i]._id;
             // Soft delete by updating the deleted field to true
-            const deletedparticipant = await Participant.findByIdAndUpdate(id, { deleted: true });
-            if (!deletedparticipant) {
+            const deletedmessage = await Message.findByIdAndUpdate(id, { deleted: true });
+            if (!deletedmessage) {
                 return res.status(404).json({
                     success: false,
-                    message: `Participant with id: ${id} not found`
+                    message: `Message with id: ${id} not found`
                 });
             }
         }
         return res.status(200).json({
             success: true,
-            message: 'Successfully deleted participant(s)'
+            message: 'Successfully deleted Message(s)'
         });
     } catch (error) {
         return res.status(400).json({
             success: false,
-            message: 'Failed to delete participant(s)',
+            message: 'Failed to delete Message(s)',
             error: error.message
         });
     }
