@@ -56,5 +56,5 @@ export default function useSocketIo(
             updateParticipants(userPeerId, null, true);
         })
 
-    }, [socketInstance, canStartUsing])
+    }, [canStartUsing])
 }
