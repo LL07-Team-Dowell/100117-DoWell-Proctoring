@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
         
         ///send message to the room in real-time
         //socket.broadcast.to(eventId).emit('new-message', data.eventId, data.email,data.username,data.isProctor,data.message);
-        socket.broadcast.to(data.eventId).emit('new-message', data.eventId, data.username, data.email, data.isProctor, data.message, new Date()); 
+        io.to(data.eventId).emit('new-message', data.eventId, data.username, data.email, data.isProctor, data.message, new Date()); 
 
         // save in the background
         try {
