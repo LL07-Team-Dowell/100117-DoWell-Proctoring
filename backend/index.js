@@ -54,17 +54,24 @@ io.on("connection", (socket) => {
     socket.on('incoming-message', async (data) => {
         console.log(`User ${socket.id}-(${data}) connected`)
         
-        const participant = await Participant.find({event_id: data.eventId});
-        const chat = await addmessage({
-            eventId: data.eventId,
-            useremail:data.email,
-            username: data.username,
-            message: data.message,
-            tagged:participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
-        });
-        ///send message to the room
+        ///send message to the room in real-time
         //socket.broadcast.to(eventId).emit('new-message', data.eventId, data.email,data.username,data.isProctor,data.message);
-        io.to(data.eventId).emit('new-message', chat.data.eventId.toString(),chat.data.username, chat.data.useremail,data.isProctor,chat.data._id.toString(),chat.data.message, chat.data.createdAt.toISOString());    
+        socket.broadcast.to(data.eventId).emit('new-message', data.eventId, data.username, data.email, data.isProctor, data.message, new Date()); 
+
+        // save in the background
+        try {
+            const participant = await Participant.find({event_id: data.eventId});
+            const chat = await addmessage({
+                eventId: data.eventId,
+                useremail:data.email,
+                username: data.username,
+                message: data.message,
+                tagged:participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
+            });   
+            
+        } catch (error) {
+            
+        }
     })
 
     // Listen for typing activity 

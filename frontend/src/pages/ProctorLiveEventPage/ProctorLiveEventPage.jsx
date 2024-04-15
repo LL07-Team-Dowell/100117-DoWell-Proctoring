@@ -124,7 +124,7 @@ const ProctorLiveEventPage = () => {
                 <h3>{existingEventDetails?.name}</h3>
             </nav>
             <div ref={participantVideosRef} className={styles.participants__Wrap}>
-                {/* {
+                {
                     React.Children.toArray(
                         [...Array(20).fill(0).map(() => ({}))].map(() => {
                             return <video
@@ -138,9 +138,9 @@ const ProctorLiveEventPage = () => {
                             </video>
                         })
                     )
-                } */}
+                }
 
-                {
+                {/* {
                     React.Children.toArray(activeUsers.map(userStreamItem => {
                         return <video 
                             autoPlay 
@@ -148,10 +148,9 @@ const ProctorLiveEventPage = () => {
                             controls={false} 
                             controlsList="nofullscreen"
                         >
-                            {/* <source src={userStreamItem} type="video/mp4" /> */}
                         </video>
                     }))
-                }
+                } */}
             </div>
         </div>
     </>
