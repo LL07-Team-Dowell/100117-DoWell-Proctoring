@@ -3,6 +3,10 @@ const { Eyetracking, validateEyetracking } = require("../models/eyetrackingModel
 const { generateDefaultResponseObject } = require("../utils/defaultResponseObject");
 const { Event } = require("../models/eventModel");
 const mongoose = require("mongoose");
+const { Participant } = require("../models/participantModel");
+const { EyeTrackingPosition, validateEyeTrackingPosition } = require('../models/eyetrackingpositionModel');
+
+
 
 const get_all_eyetracking = async (req, res) => {
     try {
@@ -17,26 +21,40 @@ const get_all_eyetracking = async (req, res) => {
             success: false,
             message: '',
         }))
-    }
+    }getEyeTrackingData
 };
 
 
 const get_single_eyetracking = async (req, res) => {
     try {
-        const eyetrackingData = await Eyetracking.findById(req.params.id);
-        if (!eyetrackingData) {
-            return res.status(404).json({ error: "Eyetracking data not found" });
+        const { event_id, participant_id } = req.body;
+
+        // Fetch the eye tracking model based on event_id and participant_id
+        const eyeTrackingModel = await Eyetracking.findOne({ event_id, participant_id });
+        if (!eyeTrackingModel) {
+            return res.status(404).json({ error: "Eye tracking model not found" });
         }
+
+        // Fetch all positions associated with the eye tracking model
+        const eyeTrackingPositions = await EyeTrackingPosition.find({ eyeTrackingModelId: eyeTrackingModel._id });
+
+        const responseData = {
+            participant_id: participant_id,
+            event_id: event_id,
+            positions: eyeTrackingPositions
+        };
+
         res.status(200).json(generateDefaultResponseObject({
             success: true,
-            message: "Successfully fetched single eyetracking",
-            data: eyetrackingData
-        }));
+            message: "Successfully fetched eyetracking",
+            data: responseData
+            }));
     } catch (error) {
-        return res.status(500).json(generateDefaultResponseObject({
+        res.status(500).json(generateDefaultResponseObject({
             success: false,
-            message: '',
-        }))
+            message: 'Failed to fetched eyetracking',
+            error: error.message
+        }));
     }
 };
 
@@ -60,7 +78,17 @@ const create_new_eyetracking = async (req, res) => {
             }));
         }
 
-        // Create new eyetracking data only if event is found
+        // Check if participant exists
+        const participant = await Participant.findById(value.participant_id);
+        if (!participant) {
+            // If participant not found, return 404
+            return res.status(404).json(generateDefaultResponseObject({
+                success: false,
+                message: 'Participant could not be found',
+            }));
+        }
+
+        // Create new eyetracking data only if event and participant are found
         const eyetrackingData = new Eyetracking(value);
         await eyetrackingData.save();
 
@@ -77,6 +105,8 @@ const create_new_eyetracking = async (req, res) => {
         }));
     }
 };
+
+
 
 const update_eyetracking = async (req, res) => {
     const { error } = validateEyetracking(req.body);

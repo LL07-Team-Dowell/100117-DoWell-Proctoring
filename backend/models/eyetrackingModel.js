@@ -1,14 +1,12 @@
 const Joi = require("joi");
 const { Schema, model } = require("mongoose");
 const Event = require("./eventModel");
+const participant = require("./participantModel")
 
 const eyetrackingSchema = new Schema({
-    user_id: {
-        type: String,
-        required: true,
-    },
-    image: {
-        type: String,
+    participant_id: {
+        type: Schema.Types.ObjectId,
+        ref: 'participant',
         required: true,
     },
     event_id: {
@@ -20,13 +18,12 @@ const eyetrackingSchema = new Schema({
 
 const validateEyetracking = (eyetracking) => {
     const schema = Joi.object({
-        user_id: Joi.string().required(),
-        image: Joi.string().required(),
+        participant_id: Joi.string().required(),
         event_id: Joi.string().required(),
     });
     return schema.validate(eyetracking);
 };
 
-const Eyetracking = model("Eyetracking", eyetrackingSchema);
+const Eyetracking = model("Eyetrackingmodel", eyetrackingSchema);
 
 module.exports = { Eyetracking, validateEyetracking };
