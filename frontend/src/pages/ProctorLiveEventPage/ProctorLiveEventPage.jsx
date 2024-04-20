@@ -9,7 +9,9 @@ import dowellLogo from "../../assets/logo.png";
 import sampleVideo from "../../assets/test.mp4";
 import { getEventById } from "../../services/eventServices";
 import LoadingPage from "../LoadingPage/LoadingPage";
-
+import { BsFillChatTextFill } from "react-icons/bs";
+import { IoMdClose } from "react-icons/io";
+import { socketInstance } from "../../utils/utils";
 
 let activeUsers = [];
 let currentUserPeerId = null;
@@ -20,22 +22,26 @@ const ProctorLiveEventPage = () => {
     } = useUserContext();
 
     const { eventId } = useParams();
-    const [ eventLoading, setEventLoading ] = useState(true);
-    const [ existingEventDetails, setExistingEventDetails ] = useState(null);
-    const [ activeUserStream, setActiveUserStream ] = useState(null);
-    const [ cameraPermissionGranted, setCameraPermissionGranted ] = useState(false);
+    const [eventLoading, setEventLoading] = useState(true);
+    const [existingEventDetails, setExistingEventDetails] = useState(null);
+    const [activeUserStream, setActiveUserStream] = useState(null);
+    const [cameraPermissionGranted, setCameraPermissionGranted] = useState(false);
+    const [chatMessages, setChatMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState('');
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const chatContainerRef = useRef(null);
 
     const participantVideosRef = useRef();
-    
-    const handleUpdateUsers = (peerId, userStream, userIsLeaving=false) => {
+
+    const handleUpdateUsers = (peerId, userStream, userIsLeaving = false) => {
         console.log('-----adding new user stream----', userStream);
         const copyOfActiveUsers = activeUsers.slice();
-        
-        const foundId = userIsLeaving ? 
+
+        const foundId = userIsLeaving ?
             copyOfActiveUsers.find(item => item?.peerId === peerId)
-        :
-        copyOfActiveUsers.find(item => item?.id === userStream?.id);
-        
+            :
+            copyOfActiveUsers.find(item => item?.id === userStream?.id);
+
         if (userIsLeaving === true) {
             console.log('active users ->', copyOfActiveUsers);
             console.log('---removing user----', peerId);
@@ -52,7 +58,7 @@ const ProctorLiveEventPage = () => {
             stream: userStream,
             peerId
         });
-        
+
         activeUsers = copyOfActiveUsers;
     }
 
@@ -77,7 +83,7 @@ const ProctorLiveEventPage = () => {
             console.log(err?.response?.data);
             setEventLoading(false);
         })
-        
+
     }, [])
 
     useEffect(() => {
@@ -101,15 +107,78 @@ const ProctorLiveEventPage = () => {
 
     useEffect(() => {
         if (!participantVideosRef.current) return;
-        
+
         Array.from(participantVideosRef.current?.children).forEach((child, index) => {
             if (typeof activeUsers[index]?.stream === 'object') {
                 child.srcObject = activeUsers[index]?.stream;
                 child.muted = true;
             }
         });
-        
+
     }, [activeUsers])
+
+    useEffect(() => {
+        
+        if (!socketInstance) return;
+    
+        const handleNewMessage = (eventId, userName, userEmail, isProctor, message, messageCreatedDate) => {
+
+            const receivedMessage = {
+                eventId: eventId,
+                username: userName,
+                email: userEmail,
+                isProctor: isProctor,
+                message: message,
+                createddate: messageCreatedDate,
+            }
+
+            console.log('recieved message', receivedMessage);
+    
+            setChatMessages(prevMessages => [...prevMessages, receivedMessage]);
+    
+            if (chatContainerRef.current) {
+                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            }
+        };
+    
+        socketInstance.on('new-message', handleNewMessage);
+    
+        return () => {
+            socketInstance.off('new-message', handleNewMessage);
+        };
+    }, [socketInstance]);
+
+    const handleSendMessage = () => {
+        console.log('connesction',socketInstance);
+        if (newMessage.trim() === '') return;
+    
+        const data = {
+            eventId: eventId,
+            email: currentUser?.userinfo?.email,
+            username: `${currentUser?.userinfo?.first_name} ${currentUser?.userinfo?.last_name}`,
+            isProctor: true, 
+            message: newMessage.trim(),
+        };
+    
+        console.log('send message',data);
+    
+        setChatMessages(prevMessages => [...prevMessages, data]);
+        setNewMessage('');
+    
+        socketInstance.emit('incoming-message', data);
+    
+        setTimeout(() => {
+            if (chatContainerRef.current) {
+                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            }
+        }, 50);
+    };
+    
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            handleSendMessage();
+        }
+    };
 
     if (eventLoading) return <LoadingPage />
 
@@ -122,25 +191,31 @@ const ProctorLiveEventPage = () => {
                     alt="logo"
                 />
                 <h3>{existingEventDetails?.name}</h3>
+                <BsFillChatTextFill
+                    className={styles.chat__icon}
+                    color="#28A745"
+                    onClick={() => setIsChatOpen(!isChatOpen)}
+                />
             </nav>
-            <div ref={participantVideosRef} className={styles.participants__Wrap}>
-                {
-                    React.Children.toArray(
-                        [...Array(20).fill(0).map(() => ({}))].map(() => {
-                            return <video
-                                autoPlay 
-                                playsInline 
-                                controls={false} 
-                                controlsList="nofullscreen"
-                                muted
-                            >
-                                <source src={sampleVideo} type="video/mp4" />
-                            </video>
-                        })
-                    )
-                }
+            <div className={styles.live_event_wrap}>
+                <div ref={participantVideosRef} className={styles.participants__Wrap}>
+                    {
+                        React.Children.toArray(
+                            [...Array(20).fill(0).map(() => ({}))].map(() => {
+                                return <video
+                                    autoPlay
+                                    playsInline
+                                    controls={false}
+                                    controlsList="nofullscreen"
+                                    muted
+                                >
+                                    <source src={sampleVideo} type="video/mp4" />
+                                </video>
+                            })
+                        )
+                    }
 
-                {/* {
+                    {/* {
                     React.Children.toArray(activeUsers.map(userStreamItem => {
                         return <video 
                             autoPlay 
@@ -151,6 +226,43 @@ const ProctorLiveEventPage = () => {
                         </video>
                     }))
                 } */}
+                </div>
+                <div className={styles.proctor__chat} style={{ display: isChatOpen ? 'block' : 'none' }}>
+                    <div className={styles.chat__bar}>
+                        <h1 className={styles.chat__heading}>Chats</h1>
+                        <IoMdClose
+                            fontSize={'28px'}
+                            color=""
+                            onClick={() => setIsChatOpen(!isChatOpen)}
+                        />
+                    </div>
+                    <div ref={chatContainerRef} className={styles.chat__main}>
+                        {React.Children.toArray(chatMessages.map(message => (
+                            <div className={styles.chat_message}>
+                                <div className={styles.avatarContainer}>
+                                    <div className={styles.avatar}>
+                                        {message.username[0]}
+                                    </div>
+                                </div>
+                                <div key={message.eventId} className={styles.chat__message}>
+                                    <div className={styles.messageContent}>
+                                        <strong>{message.username}: </strong>
+                                        {message.message}
+                                    </div>
+                                </div>
+                            </div>
+                        )))}
+                    </div>
+                    <div className={styles.chat__input}>
+                        <input
+                            type="text"
+                            placeholder="Type your message..."
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                        />
+                    </div>
+                </div>
             </div>
         </div>
     </>

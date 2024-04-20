@@ -165,3 +165,133 @@
 .hidden__Frame {
     display: none;
 }
+
+.floating__icon {
+    width: 70px;
+    height: 70px;
+    background-color: rgba(54, 138, 43, 0.796);
+    position: fixed;
+    bottom: 20px; 
+    right: 20px; 
+    z-index: 9999; 
+    border-radius: 40%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer; 
+    transition: transform 0.3s ease-in-out; 
+}
+
+.floating__icon:hover {
+    transform: scale(1.1); 
+}
+
+.chatModal {
+    position: fixed;
+    bottom: 80px;
+    right: 80px;
+    z-index: 999;
+    width: 300px;
+    height: 400px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.closeBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.chat__main {
+    overflow-y: auto;
+    /* max-height: 60vh; */
+    height: calc(310px - 2.5rem);
+    margin-bottom: 1rem;
+    flex: 1;
+    margin-top: auto; 
+    padding: 10px;
+}
+
+.chat__message {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background-color: #e0e0e0;
+}
+
+.chat__message strong {
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+.avatarContainer {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 10px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #007bff; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff; 
+    margin: 5px;
+}
+
+.messageContent {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.chat_message{
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.chat__input {
+    display: flex;
+    gap: 0.5rem; 
+    align-items: center; 
+    padding-top: 1rem; 
+}
+
+.chat__input input {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.chat__inputWrapper {
+    margin-top: auto;
+}
+
+.chat__title{
+    font-size: 22px;
+}
+
+.chat__bar{
+    border-bottom: 1px solid #ccc;
+}
+
+.myMessage {
+    align-items: center;
+    justify-content: end;
+}
+
+.otherMessage {
+    align-items: start;
+}
