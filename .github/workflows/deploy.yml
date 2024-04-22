@@ -1,0 +1,33 @@
+name: DoWell Proctoring Workflow
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy and Rebuild Containers
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install SSH Keys for Secure Connection
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+
+      - name: Connect to Server, Pull Latest Code, and Rebuild Containers
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
+          set -e && \
+          cd ${{ secrets.WORK_DIR }} && \
+          git checkout ${{ secrets.MAIN_BRANCH }} && \
+          git pull && \
+          docker-compose -f docker-compose.prod.yml build && \
+          docker-compose -f docker-compose.prod.yml up -d && \
+          exit"
+
+      - name: Cleanup SSH Keys
+        run: rm -rf ~/.ssh
