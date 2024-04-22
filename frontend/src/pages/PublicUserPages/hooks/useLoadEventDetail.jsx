@@ -18,7 +18,11 @@ export default function useLoadEventDetail(
         const eventId = searchParams.get('event_id');
         if (foundEventDetail || !eventId) return updateEventDetailLoading(false);
 
-        const savedPreviousUserDetails = getSavedPublicUserFromLocalStorage();
+        const allSavedEventDetailsForUser = getSavedPublicUserFromLocalStorage();
+        const savedPreviousUserDetails = allSavedEventDetailsForUser && Array.isArray(allSavedEventDetailsForUser) ? 
+            allSavedEventDetailsForUser.find(event => event.event_id === eventId)
+        :
+        null;
 
         getEventById(eventId).then(async (res) => {
             const fetchedEvent = res?.data?.data;

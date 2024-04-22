@@ -1,12 +1,12 @@
 import { React, useEffect, useRef, useState } from "react";
-import { registerForEvent } from "../../../services/eventServices";
+import { registerForEvent } from "../../../services/participantServices";
 import { useSearchParams } from "react-router-dom";
 import styles from "./styles.module.css";
 import dowellLogo from "../../../assets/logo.png";
 import expiredIllus from "../../../assets/expired-illustration.svg";
 import DotLoader from "../../../components/DotLoader/DotLoader";
 import { toast } from 'sonner';
-import { validateEmail } from "../../../utils/utils";
+import { getSavedPublicUserFromLocalStorage, validateEmail } from "../../../utils/utils";
 import { PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE } from "../../../utils/constants";
 import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
 import EyeTracker from "../../../components/EyeTracker/EyeTracker";
@@ -18,6 +18,7 @@ import { handleRequestCameraPermission } from "../../../utils/helpers";
 import { PiWechatLogoDuotone } from "react-icons/pi";
 import { MdCancel } from "react-icons/md";
 import { socketInstance } from "../../../utils/utils";
+import useUpdateEventStartTime from "../hooks/useUpdateEventStartTime";
 
 const dummyLink = "https://ll04-finance-dowell.github.io/100058-DowellEditor-V2/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9kdWN0X25hbWUiOiJXb3JrZmxvdyBBSSIsImRldGFpbHMiOnsiZmllbGQiOiJkb2N1bWVudF9uYW1lIiwiY2x1c3RlciI6IkRvY3VtZW50cyIsImRhdGFiYXNlIjoiRG9jdW1lbnRhdGlvbiIsImNvbGxlY3Rpb24iOiJDbG9uZVJlcG9ydHMiLCJkb2N1bWVudCI6IkNsb25lUmVwb3J0cyIsInRlYW1fbWVtYmVyX0lEIjoiMTIxMjAwMSIsImZ1bmN0aW9uX0lEIjoiQUJDREUiLCJjb21tYW5kIjoidXBkYXRlIiwiZmxhZyI6InNpZ25pbmciLCJfaWQiOiI2NWZlZDhjNzM3YzZkNmNmMTQ2YTFkOTAiLCJhY3Rpb24iOiJkb2N1bWVudCIsImF1dGhvcml6ZWQiOiJzYWdhci1oci1oaXJpbmciLCJ1c2VyX2VtYWlsIjoiIiwidXNlcl90eXBlIjoicHVibGljIiwiZG9jdW1lbnRfbWFwIjpbeyJjb250ZW50IjoiczEiLCJyZXF1aXJlZCI6ZmFsc2UsInBhZ2UiOjF9LHsiY29udGVudCI6ImkyIiwicmVxdWlyZWQiOmZhbHNlLCJwYWdlIjoyfSx7ImNvbnRlbnQiOiJpMyIsInJlcXVpcmVkIjpmYWxzZSwicGFnZSI6Mn0seyJjb250ZW50IjoiaTQiLCJyZXF1aXJlZCI6ZmFsc2UsInBhZ2UiOjJ9LHsiY29udGVudCI6Imk1IiwicmVxdWlyZWQiOmZhbHNlLCJwYWdlIjoyfV0sImRvY3VtZW50X3JpZ2h0IjoiYWRkX2VkaXQiLCJkb2N1bWVudF9mbGFnIjoicHJvY2Vzc2luZyIsInJvbGUiOiJGcmVlbGFuY2VyIiwicHJldmlvdXNfdmlld2VycyI6bnVsbCwibmV4dF92aWV3ZXJzIjpbIkR1bW15SFIiXSwibWV0YWRhdGFfaWQiOiI2NWZlZDhjODQwMDE2MmQ3MDRkNjk1MmEiLCJwcm9jZXNzX2lkIjoiNjVmZWQ4YzJiODZlM2E0ZTYwMGJiNDc3IiwidXBkYXRlX2ZpZWxkIjp7ImRvY3VtZW50X25hbWUiOiJVbnRpdGxlZCBEb2N1bWVudF9zYWdhci1oci1oaXJpbmciLCJjb250ZW50IjoiIiwicGFnZSI6IiJ9fX0.lX91uUpJY6oubfhKqLfJsX1IHW87-YkDXpHWqfshFQU&link_id=2130413081054482926";
 
@@ -63,7 +64,7 @@ const EventRegistrationPage = () => {
             message: newMessage.trim(),
         };
 
-        console.log('send message', data);
+        console.log('send message from public end', data);
 
         setChatMessages(prevMessages => [...prevMessages, { ...data, user: 'me' }]);
         setNewMessage('');
@@ -82,8 +83,6 @@ const EventRegistrationPage = () => {
 
         const handleNewMessage = (eventId, userName, userEmail, isProctor, message, messageCreatedDate) => {
 
-            if (userName === userDetails?.name) return;
-
             const receivedMessage = {
                 eventId: eventId,
                 username: userName,
@@ -92,15 +91,14 @@ const EventRegistrationPage = () => {
                 message: message,
                 createddate: messageCreatedDate,
             }
-            console.log('recieved message', receivedMessage);
 
-            setChatMessages(prevMessages => [...prevMessages, { ...receivedMessage, user: 'other' }]);
+            console.log('recieved message on public end', receivedMessage);
 
-            setTimeout(() => {
-                if (chatContainerRef.current) {
-                    chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-                }
-            }, 50);
+            setChatMessages(prevMessages => [...prevMessages, receivedMessage]);
+    
+            if (chatContainerRef.current) {
+                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            }
         };
 
         socketInstance.on('new-message', handleNewMessage);
@@ -178,6 +176,14 @@ const EventRegistrationPage = () => {
         activeUserStream,
     );
 
+    useUpdateEventStartTime(
+        iframeLoading,
+        eventStarted,
+        foundEventDetail,
+        userDetails,
+        setUserDetails,
+    );
+
     const handleGoToNextPage = async () => {
         const nextPage = currentFormPage + 1;
 
@@ -206,18 +212,30 @@ const EventRegistrationPage = () => {
 
                 setEventRegistrationLoading(true);
 
+                const allSavedEventDetailsForUser = getSavedPublicUserFromLocalStorage();
+                
+                const updatedEventsForUser = allSavedEventDetailsForUser && Array.isArray(allSavedEventDetailsForUser) ? 
+                    allSavedEventDetailsForUser 
+                : 
+                [];
+
                 try {
                     const res = (await registerForEvent(copyOfUserDetails)).data;
                     console.log(res?.data);
 
-                    localStorage.setItem(PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, JSON.stringify({ ...res?.data }));
+                    updatedEventsForUser.push({ ...res?.data });
+                    localStorage.setItem(PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, JSON.stringify(updatedEventsForUser));
                     setUserDetails(res?.data);
 
                     setEventRegistrationLoading(false);
                     setEventStarted(true);
                 } catch (error) {
                     if (error?.response?.status === 409) {
-                        localStorage.setItem(PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, JSON.stringify(error?.response?.data?.data));
+                        const eventDetailForUserIsAlreadySaved = updatedEventsForUser.find(item => item.event_id === searchParams.get('event_id'));
+                        if (!eventDetailForUserIsAlreadySaved) {
+                            updatedEventsForUser.push(error?.response?.data?.data);
+                            localStorage.setItem(PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, JSON.stringify(updatedEventsForUser));
+                        }
                         setUserDetails(error?.response?.data?.data);
 
                         setEventRegistrationLoading(false);

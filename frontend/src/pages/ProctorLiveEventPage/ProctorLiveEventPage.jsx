@@ -132,8 +132,8 @@ const ProctorLiveEventPage = () => {
                 createddate: messageCreatedDate,
             }
 
-            console.log('recieved message', receivedMessage);
-    
+            console.log('recieved message on proctor end', receivedMessage);
+
             setChatMessages(prevMessages => [...prevMessages, receivedMessage]);
     
             if (chatContainerRef.current) {
@@ -160,7 +160,7 @@ const ProctorLiveEventPage = () => {
             message: newMessage.trim(),
         };
     
-        console.log('send message',data);
+        console.log('send message from proctor end',data);
     
         setChatMessages(prevMessages => [...prevMessages, data]);
         setNewMessage('');
@@ -193,7 +193,7 @@ const ProctorLiveEventPage = () => {
                 <h3>{existingEventDetails?.name}</h3>
                 <BsFillChatTextFill
                     className={styles.chat__icon}
-                    color="#28A745"
+                    color="#005734"
                     onClick={() => setIsChatOpen(!isChatOpen)}
                 />
             </nav>
