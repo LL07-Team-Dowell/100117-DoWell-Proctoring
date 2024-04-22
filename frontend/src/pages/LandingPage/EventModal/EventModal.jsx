@@ -79,8 +79,8 @@ const AddEventModal = ({ handleCloseModal }) => {
       return toast.info(
         "The 'Start Date' of the event should be before its 'Close Date'"
       );
-    if (new Date(newEvent.start_time).getTime() < new Date().getTime())
-      return toast.info("'Start Date' of the event cannot be in the past");
+    // if (new Date(newEvent.start_time).getTime() < new Date().getTime())
+    //   return toast.info("'Start Date' of the event cannot be in the past");
 
     // handleAddEvent(newEvent);
     console.log(newEvent);
@@ -147,9 +147,33 @@ const AddEventModal = ({ handleCloseModal }) => {
                 </button>
               </div>
             </label>
+            <div
+              style={{
+                display: "flex",
+                gap: "0.5rem",
+                alignItems: "center",
+                marginTop: "1rem",
+              }}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  height: "1px",
+                  backgroundColor: "#005734",
+                }}
+              ></div>
+              <p>or</p>
+              <div
+                style={{
+                  width: "100%",
+                  height: "1px",
+                  backgroundColor: "#005734",
+                }}
+              ></div>
+            </div>
             <label htmlFor="emails" className={styles.event__share__modal}>
               <div style={{ margin: "0.4rem 0" }}>
-                <span>Invite Emails</span>
+                <span>Invite via email</span>
               </div>
               <EmailInput />
             </label>
