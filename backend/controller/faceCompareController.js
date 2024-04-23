@@ -1,3 +1,5 @@
+// Initialize the required modules for file system operations
+const fs = require('fs');
 // Import utilities for constructing a standardized response object and face detection functions
 const { generateDefaultResponseObject } = require("../utils/defaultResponseObject");
 const { loadModels, compareFaces } = require('../utils/faceDetectorUtils');
@@ -21,6 +23,14 @@ class FaceCompareController {
       const faceapi = await loadModels();
       // Compare the two faces using the loaded models and the paths provided
       const [distance, result] = await compareFaces(faceapi, image1Path, image2Path);
+
+      // Delete the images after processing
+      fs.unlink(image1Path, err => {
+        if (err) console.error("Failed to delete image1:", err);
+      });
+      fs.unlink(image2Path, err => {
+        if (err) console.error("Failed to delete image2:", err);
+      });
 
       // Construct a response based on the comparison result
       if (result === true) {
@@ -46,6 +56,13 @@ class FaceCompareController {
         error: null
       }));
     } catch (error) {
+      // Delete the images after processing
+      fs.unlink(image1Path, err => {
+        if (err) console.error("Failed to delete image1:", err);
+      });
+      fs.unlink(image2Path, err => {
+        if (err) console.error("Failed to delete image2:", err);
+      });
       // Handle errors such as model loading failures or image processing issues
       return res.status(500).json(generateDefaultResponseObject({
         success: false,
