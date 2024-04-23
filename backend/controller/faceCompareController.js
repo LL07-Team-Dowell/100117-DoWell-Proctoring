@@ -40,7 +40,7 @@ class FaceCompareController {
           message: "Faces match",
           data: {
             match: result,
-            SimilarityScore: distance
+            EuclideanDistanceScore: distance
           },
           error: null
         }));
@@ -51,7 +51,7 @@ class FaceCompareController {
         message: "Faces do not match",
         data: {
             match: result,
-            SimilarityScore: distance
+            EuclideanDistanceScore: distance
           },
         error: null
       }));
