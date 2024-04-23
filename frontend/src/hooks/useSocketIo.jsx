@@ -36,7 +36,7 @@ export default function useSocketIo(
             })
         })
 
-        socketInstance.on('user-connected', (userPeerId, emailConnected, nameOfUserConnected) => {
+        const handleNewUserConnect = (userPeerId, emailConnected, nameOfUserConnected) => {
             console.log('new user connecting->>>>>', userPeerId, emailConnected, nameOfUserConnected);
             
             const peerCall = peer.call(userPeerId, currentUserStream);
@@ -49,11 +49,20 @@ export default function useSocketIo(
             peerCall.on('close', () => {
                 console.log('enddnd');
             })
-        });
+        };
 
-        socketInstance.on('user-disconnected', (userPeerId, emailConnected, nameOfUserDisconnected) => {
+        socketInstance.on('user-connected', handleNewUserConnect);
+
+        const handleUserDisconnect = (userPeerId, emailConnected, nameOfUserDisconnected) => {
             console.log('user disconnecting->>>>>', userPeerId, emailConnected, nameOfUserDisconnected);
             updateParticipants(userPeerId, null, true);
+        };
+
+        socketInstance.on('user-disconnected', handleUserDisconnect);
+
+        return (() => {
+            socketInstance.off('user-connected', handleNewUserConnect);
+            socketInstance.off('user-disconnected', handleUserDisconnect);
         })
 
     }, [canStartUsing])

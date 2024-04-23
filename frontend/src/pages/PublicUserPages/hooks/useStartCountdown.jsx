@@ -23,7 +23,7 @@ export default function useStartCountDown(
             // Get today's date and time
             const now = new Date().getTime();
                 
-            // Find the distance between now and the count down date
+            // Find the difference between now and the count down date
             // const countdownDate = addHoursToDate(new Date(userDetails?.time_started), currentEventDetail?.duration_in_hours);
             const countdownDate = addHoursToDate(dummyDate, currentEventDetail?.duration_in_hours);
 

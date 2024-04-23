@@ -21,14 +21,14 @@
   background-color: #f0f0f0;
   border-radius: 2rem;
   font-size: 0.8rem;
-  font-weight: 600;
   height: fit-content;
   cursor: pointer;
 }
 
 .email.valid {
-  border: 1px solid #3bb143;
-  background-color: #3bb143;
+  border: 1px solid #005734;
+  background-color: #005734;
+  color: #fff;
 }
 
 .email.invalid {

@@ -4,7 +4,7 @@ import "./validateEmail.css";
 import { MdCancel } from "react-icons/md";
 import { toast } from "sonner";
 
-const EmailInput = ({ handlecloseModal }) => {
+const EmailInput = () => {
   const [emails, setEmails] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [notValid, setNotValid] = useState(false);
@@ -38,7 +38,6 @@ const EmailInput = ({ handlecloseModal }) => {
   const handleSendInvite = () => {
     if (notValid) return toast.error("Correct the invalid email address");
     toast.success("Invitation sent successfully");
-    handlecloseModal();
     console.log(emails);
   };
 

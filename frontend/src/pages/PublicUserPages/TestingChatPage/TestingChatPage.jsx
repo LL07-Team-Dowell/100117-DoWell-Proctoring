@@ -19,6 +19,7 @@ export default function TestingChatPage() {
 
     const handleSend = () => {
         if (value.length < 1) return toast.info('Please enter a message');
+        
         const data={
             'eventId':eventId,
             'email':testEmail,
@@ -26,16 +27,29 @@ export default function TestingChatPage() {
             'isProctor':false,
             'message':value
         }
+
+        const currentMessages = messages.slice();
+
         emmitter('incoming-message', data);
 
         setValue('');
+
+        currentMessages.push({
+            ...data,
+            name: data.username,
+            createddate: new Date(),
+        });
+
+        console.log('updated messages ->>', currentMessages);
+
+        setMessages(currentMessages);
     }
 
     socketInstance.on('new-message', (eventId, userName,userEmail, isProctor, message, messagecreateddate) => {
         const currentMessages = messages.slice();
         console.log('prev messages ->>', currentMessages);
 
-        currentMessages.unshift({
+        currentMessages.push({
             eventId: eventId,
             name: userName,
             email: userEmail,
