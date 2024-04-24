@@ -1,9 +1,9 @@
-const { kafka } = require("../config");
+const { kafka } = require("../config/kafka.config");
 const { addMessage } = require('./controller/messageController');
 
 let producer = null;
 
-async function createProducer() {
+async function initProducer() {
     if (producer) return producer;
 
     const _producer = kafka.producer();
@@ -20,11 +20,11 @@ async function createProducer() {
 
 async function Producer(topic,data) {
     try {
-        const producer = await createProducer();
-        const messageValue = JSON.stringify(data);
+        const producer = await initProducer();
+        const dataValue = JSON.stringify(data);
         await producer.send({
             topic: topic,
-            messages: [{ value: messageValue }],
+            messages: [{ value: dataValue }],
         });
         console.log(`${topic} produced successfully.`);
         return true;
