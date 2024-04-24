@@ -35,8 +35,9 @@ Follow these steps to set up the DoWell Proctoring application on your local mac
     ```env
     PORT=8005
     IP = <YOUR_PRIVATE_IP>:9092
+    IPDEV = <YOUR_PRIVATE_IP>:9092    # for development server
     MONGO_DB_URI=mongodb://mongo:27017/<YOUR_DATABASE_NAME>
-    FRONTEND_URLS=["http://localhost:4173", "http://localhost:5173", "http://192.64.86.227:4173"]
+    FRONTEND_URLS=["http://localhost:4173", "http://localhost:5173", "http://<YOUR_PRIVATE_IP>:4173"]
     ```
 
 5. **Run Docker Compose**
