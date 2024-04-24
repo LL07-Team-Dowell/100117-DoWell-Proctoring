@@ -29,7 +29,6 @@ services:
       - /usr/src/app/node_modules
     depends_on:
       - kafka
-      - peerjs
     networks:
       - webnet  # Ensures it can communicate with other services in the same network
     healthcheck:
