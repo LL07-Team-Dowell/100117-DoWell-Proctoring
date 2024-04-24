@@ -1,6 +1,7 @@
 const morgan = require("morgan");
 const express = require('express');
 const cors = require('cors');
+const { Kafka } = require("kafkajs");
 
 require('dotenv').config();
 
@@ -21,11 +22,13 @@ module.exports = (app, allowedOrigins=[]) => {
     require('../routes/index')(app);
 };
 
-const config = {
+module.exports.config = {
     PORT: process.env.PORT || 9000,
     IP: process.env.IP,
     MONGO_DB_URI: process.env.MONGO_DB_URI
 };
-console.log(config.PORT);
 
-module.exports = config;
+module.exports.kafka = new Kafka({
+    clientId: "proctoring",
+    brokers: [process.env.IP]
+}); 

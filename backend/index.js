@@ -35,6 +35,8 @@ const io = new Server(httpServer, {
   methods: ["GET", "POST"]
 })
 
+const topic= 'messages';
+
 // listening when a client connects to our socket instance
 io.on("connection", (socket) => {
   console.log("connected with: ", socket.id);
