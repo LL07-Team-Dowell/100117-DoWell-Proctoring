@@ -3,8 +3,9 @@ import { useState } from "react";
 import "./validateEmail.css";
 import { MdCancel } from "react-icons/md";
 import { toast } from "sonner";
+import { sendEmail } from "../../utils/email";
 
-const EmailInput = () => {
+const EmailInput = ({ newEvent }) => {
   const [emails, setEmails] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [notValid, setNotValid] = useState(false);
@@ -36,9 +37,22 @@ const EmailInput = () => {
   };
 
   const handleSendInvite = () => {
-    if (notValid) return toast.error("Correct the invalid email address");
-    toast.success("Invitation sent successfully");
-    console.log(emails);
+    // if (notValid) return toast.error("Correct the invalid email address");
+    // const emailAddresses = emails.map((emailObj) => emailObj.email);
+
+    // const message = "This is the message content of the email.";
+    // const email = emailAddresses.join(",");
+
+    // sendEmail(message, email, newEvent)
+    //   .then((response) => {
+    //     console.log("Email sent successfully:", response);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error sending email:", error);
+    //   });
+    // toast.success("Invitation sent successfully");
+    // console.log("Email addresses:", emailAddresses);
+    toast.info("Still in development");
   };
 
   return (
