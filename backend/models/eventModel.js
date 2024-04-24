@@ -32,7 +32,13 @@ const eventSchema = new Schema({
     },
     max_cap: {
         type: SchemaTypes.Number,
-    }
+    },
+    registration_end_date: {
+        type: SchemaTypes.Date,
+        default: function() {
+            return new Date(this.start_time.getTime() - 24 * 60 * 60 * 1000);
+        }
+    },
 });
 
 
@@ -48,7 +54,8 @@ const validateEvent = (eventData, isExistingData = false) => {
             user_id: Joi.string(),
             participants: Joi.array().items(Joi.string()),
             max_cap: Joi.number(),
-            link: Joi.string().uri()
+            link: Joi.string().uri(),
+            registration_end_date: Joi.date()
         });
 
         return eventValidationSchema.validate(eventData);
@@ -61,7 +68,8 @@ const validateEvent = (eventData, isExistingData = false) => {
             user_id: Joi.string().required(),
             participants: Joi.array().items(Joi.string()),
             max_cap: Joi.number().allow(''),
-            link: Joi.string().uri().required()
+            link: Joi.string().uri().required(),
+            registration_end_date: Joi.date()
         });
 
         return eventValidationSchema.validate(eventData);

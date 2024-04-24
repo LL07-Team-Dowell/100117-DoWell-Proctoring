@@ -34,6 +34,8 @@ describe('Event API Tests', function () {
         expect(response.status).to.equal(201);
         expect(response.body).to.be.an('object');
         expect(response.body.data).to.have.property('_id');
+        expect(response.body.data).to.have.property('registration_end_date');
+        // console.log("auto generated registration end date >> ", response.body.data.registration_end_date);
         eventId = response.body.data._id;
     });
 
@@ -55,10 +57,15 @@ describe('Event API Tests', function () {
     // Test for updating an event
     it('should update an event', async function () {
         const res = await request.patch(`/api/v1/events/${eventId}`)
-            .send({ max_cap: 100 });
+            .send({ 
+                max_cap: 100,
+                registration_end_date: "2024-04-01T03:00:00.000Z"
+             });
         expect(res.status).to.equal(200);
         expect(res.body).to.be.an('object');
         expect(res.body.data).to.have.property('max_cap', 100);
+        expect(res.body.data).to.have.property('registration_end_date', "2024-04-01T03:00:00.000Z");
+        // console.log("updated registration date >> ", res.body.data.registration_end_date)
     });
 
     // Test for deleting an event

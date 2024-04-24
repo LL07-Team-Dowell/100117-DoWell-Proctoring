@@ -6,7 +6,7 @@ const router = Router();
 // Route to create a new event chat store entry
 router.post("/add", messageController.addmessageapi);
 router.patch("/update", messageController.updatemessage);
-router.get("/get", messageController.getByParams);
+router.post("/get", messageController.getByParams);
 router.delete("/harddelete", messageController.harddelete);
 router.patch("/softdelete", messageController.softdelete);
 
