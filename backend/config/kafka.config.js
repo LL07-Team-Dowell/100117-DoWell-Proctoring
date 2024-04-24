@@ -4,8 +4,8 @@ require('dotenv').config();
 
 module.exports.config = {
     PORT: process.env.PORT || 8005,
-    IP: process.env.IP,
-    MONGO_DB_URI: process.env.MONGO_DB_URI
+    IP: process.env.IP || process.env.IPDEV,
+    MONGO_DB_URI: process.env.MONGO_DB_URI || process.env.MONGO_DB_URI_DEV
 };
 
 module.exports.kafka = new Kafka({
