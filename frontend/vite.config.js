@@ -6,6 +6,7 @@ const productionOrigin = "http://0.0.0.0:4173";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: 'https://www.uxlive.me/dowellproctoring/',
   plugins: [react()],
   server: {
     port: 4173,
