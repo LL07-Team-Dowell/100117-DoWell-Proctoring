@@ -7,6 +7,7 @@ const eyetrackingdataRoutes = require("./eyetrackingdataRoutes")
 const participantRoutes = require("./participantRoutes")
 const messageRoutes = require("./messageRoutes")
 const eyetrackingpositionRoutes = require("./eyetrackingpositionRoutes")
+const faceCompareRoutes = require("./faceCompareRoutes");
 
 
 module.exports = (app) => {
@@ -18,7 +19,8 @@ module.exports = (app) => {
     app.use("/api/v1/eyetrackingdata", eyetrackingdataRoutes);
     app.use("/api/v1/eyetrackingposition", eyetrackingpositionRoutes);
     app.use("/api/v1/participants", participantRoutes);
-    app.use("/api/v1/message", messageRoutes)
+    app.use("/api/v1/message", messageRoutes);
+    app.use("/api/v1/facecompare", faceCompareRoutes);
     
     
     // handle unknown routes
