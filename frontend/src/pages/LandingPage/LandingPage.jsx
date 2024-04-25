@@ -4,8 +4,8 @@ import { useUserContext } from "../../contexts";
 import { IoAddCircleOutline } from "react-icons/io5";
 import styles from "./styles.module.css";
 import AddEventModal from "./EventModal/EventModal";
-import RecordView from "../../utils/recordScreen";
-import EmailInput from "../../utils/validatingEmail";
+import RecordView from "../../components/RecordScreen/recordScreen";
+import EmailInput from "../../components/ValidatingEmail/validatingEmail";
 // import RecordView from "../../utils/recordScreen";
 
 const LandingPage = () => {

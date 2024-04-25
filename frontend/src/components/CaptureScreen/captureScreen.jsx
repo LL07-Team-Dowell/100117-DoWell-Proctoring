@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef } from "react";
 import html2canvas from "html2canvas";
-import { captureScreenshot } from "../services/screenShotServices";
+import { captureScreenshot } from "../../services/screenShotServices";
 
 const ScreenCapture = ({ children, captureScreen, eventId, participantId }) => {
   const captureRef = useRef(null);

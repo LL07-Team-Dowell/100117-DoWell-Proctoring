@@ -9,7 +9,7 @@ import styles from "./styles.module.css";
 import { toast } from "sonner";
 import { addNewEvent } from "../../../services/eventServices";
 import { useUserContext } from "../../../contexts";
-import EmailInput from "../../../utils/validatingEmail";
+import EmailInput from "../../../components/ValidatingEmail/validatingEmail";
 import { TbCopy } from "react-icons/tb";
 import { PiArrowElbowRightThin } from "react-icons/pi";
 
@@ -25,6 +25,7 @@ const AddEventModal = ({ handleCloseModal }) => {
   const [loading, setLoading] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopiedId] = useState("");
+  const [eventId, setEventId] = useState("");
 
   const { currentUser } = useUserContext();
 
@@ -88,6 +89,8 @@ const AddEventModal = ({ handleCloseModal }) => {
 
     try {
       const res = (await addNewEvent(newEvent)).data;
+      const id = res?.data?._id;
+      setEventId(id);
       console.log(res);
 
       setLoading(false);
@@ -125,7 +128,7 @@ const AddEventModal = ({ handleCloseModal }) => {
                   type="text"
                   name={"link"}
                   placeholder="Event link"
-                  value={event.link}
+                  value={`${window.location.origin}/view=public&event_id=${eventId}`}
                   style={{ width: "100%" }}
                 />
                 <button
@@ -175,7 +178,7 @@ const AddEventModal = ({ handleCloseModal }) => {
               <div style={{ margin: "0.4rem 0" }}>
                 <span>Invite via email</span>
               </div>
-              <EmailInput />
+              <EmailInput newEvent={event.name} />
             </label>
           </div>
         ) : (
