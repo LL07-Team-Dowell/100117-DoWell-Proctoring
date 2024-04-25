@@ -1,6 +1,21 @@
 version: '3.8'
 
 services:
+  zookeeper:
+    image: 'zookeeper'
+    ports:
+      - '2181:2181'
+  kafka:
+    image: 'confluentinc/cp-kafka'
+    ports:
+      - '9092:9092'
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: ${ZOOKEEPER_HOST}:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_HOST}:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+  
   backend:
     build:
       context: ./backend 
@@ -14,8 +29,10 @@ services:
     env_file:
       - ./backend/.env  
     volumes:
+      - ./backend:/usr/src/app
       - /usr/src/app/node_modules
     depends_on:
+      - kafka
       - peerjs
 
   frontend:
@@ -26,6 +43,7 @@ services:
       - "5173:5173" 
     container_name: proctoring_frontend
     volumes:
+      - ./frontend:/usr/src/app
       - /usr/src/app/node_modules
     networks:
       - webnet

@@ -1,28 +1,26 @@
 const { Kafka } = require("kafkajs");
-const { config, kafka } = require("../config");
+const { config, kafka } = require("../config/kafka.config");
 
-async function createTopicByAdmin() {
+async function createKafkaTopic(topic) {
   const admin = kafka.admin();
   console.log("Admin connecting...");
   await admin.connect();
-  console.log("Admin Connection Success...");
+  console.log("Admin Connected Successfully...");
 
-  console.log("Creating Topic [MESSAGE]");
+  console.log(`Creating Topic [${topic}]`);
   await admin.createTopics({
     topics: [
       {
-        topic: "MESSAGE",
+        topic: topic,
         numPartitions: 2,
       },
     ],
   });
-  console.log("Topic Created Success [MESSAGE]");
+  console.log(`Topic [${topic}] Created Successfully `);
 
   console.log("Disconnecting Admin..");
   await admin.disconnect();
+  console.log("Admin Disconnected Successfully...");
 }
 
-// Uncomment the following line to execute the function
-// createTopicByAdmin();
-
-module.exports = createTopicByAdmin;
+module.exports = createKafkaTopic;
