@@ -59,7 +59,7 @@ io.on("connection", (socket) => {
 
   //listening for messages
   socket.on('incoming-message', async (data) => {
-    console.log(`User ${socket.id}-(${data}) connected`)
+    console.log(`New message from user with socket id: ${socket.id} ->>> (${data})`);
         
     ///send message to the room in real-time
     socket.broadcast.to(data.eventId).emit('new-message', data.eventId, data.username, data.email, data.isProctor, data.message, new Date());

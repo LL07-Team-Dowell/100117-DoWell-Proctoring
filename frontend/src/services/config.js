@@ -17,8 +17,8 @@ export const peerServerPath = '/myapp';
 // different API base URLs
 const loginBaseUrl = 'https://100014.pythonanywhere.com/api/';
 const clientAdminBaseUrl = 'https://100093.pythonanywhere.com/api/';
-const localApiBaseUrl = 'http://localhost:5000/api/v1/';
-const prodApiBaseUrl = 'http://192.64.86.227:5000/api/v1/';
+// export const currentBaseApiOrigin = 'http://localhost:5000'; // local
+export const currentBaseApiOrigin = 'http://192.64.86.227:5000'; // prod
 
 // creating separate axios instances for each API interaction
 const loginAxiosInstance = axios.create({
@@ -32,8 +32,7 @@ const clientAdminAxiosInstance = axios.create({
 })
 
 const defaultAxiosInstance = axios.create({
-    // baseURL: localApiBaseUrl, // local usage
-    baseURL: prodApiBaseUrl,
+    baseURL: `${currentBaseApiOrigin}/api/v1/`,
     withCredentials: true,
 })
 
