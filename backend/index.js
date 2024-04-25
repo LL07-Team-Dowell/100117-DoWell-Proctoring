@@ -9,6 +9,8 @@ const { connectToDb } = require('./config/db');
 const { loadModels } = require('./utils/faceDetectorUtils');
 const { addmessage } = require('./controller/messageController');
 const { Participant } = require("./models/participantModel");
+//const createKafkaTopic = require('./utils/admin.kafka');
+//const {Producer, Consumer} = require('./utils/kafka');
 
 // creating a new express application
 const app = express();
@@ -35,6 +37,10 @@ const io = new Server(httpServer, {
   methods: ["GET", "POST"]
 })
 
+const topic= 'MESSAGE';
+//createKafkaTopic(topic);
+//Consumer(topic);
+
 // listening when a client connects to our socket instance
 io.on("connection", (socket) => {
   console.log("connected with: ", socket.id);
@@ -53,7 +59,7 @@ io.on("connection", (socket) => {
 
   //listening for messages
   socket.on('incoming-message', async (data) => {
-    console.log(`User ${socket.id}-(${data}) connected`)
+    console.log(`New message from user with socket id: ${socket.id} ->>> (${data})`);
         
     ///send message to the room in real-time
     socket.broadcast.to(data.eventId).emit('new-message', data.eventId, data.username, data.email, data.isProctor, data.message, new Date());
@@ -62,13 +68,15 @@ io.on("connection", (socket) => {
     // save in the background
     try {
       const participant = await Participant.find({event_id: data.eventId});
-      const chat = await addmessage({
+      const message = {
         eventId: data.eventId,
         useremail:data.email,
         username: data.username,
         message: data.message,
         tagged:participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
-      });   
+      }
+      const chat = await addmessage(message);   
+      //await Producer(message);
             
     } catch (error) {
             

@@ -6,7 +6,7 @@ module.exports = (app, allowedOrigins=[]) => {
     // using morgan to log request details
     app.use(morgan('combined'));
 
-    // configuring to parse any incooming json requests
+    // configuring to parse any incoming json requests
     app.use(express.json());
 
     // configuring cors
@@ -17,4 +17,4 @@ module.exports = (app, allowedOrigins=[]) => {
 
     // adding all the routes of the application
     require('../routes/index')(app);
-}
+};

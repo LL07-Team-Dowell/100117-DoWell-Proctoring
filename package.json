@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "supertest": "^6.3.4"
+  },
+  "dependencies": {
+    "kafkajs": "^2.2.4"
   }
 }
