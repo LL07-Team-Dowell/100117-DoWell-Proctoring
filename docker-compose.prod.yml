@@ -5,10 +5,12 @@ services:
     image: 'zookeeper'
     ports:
       - '2181:2181'
+    container_name: dowell-proctoring-zookeeper
   kafka:
     image: 'confluentinc/cp-kafka'
     ports:
       - '9092:9092'
+    container_name: dowell-proctoring-kafka
     environment:
       KAFKA_ZOOKEEPER_CONNECT: ${ZOOKEEPER_HOST}:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_HOST}:9092

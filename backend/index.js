@@ -9,8 +9,8 @@ const { connectToDb } = require('./config/db');
 const { loadModels } = require('./utils/faceDetectorUtils');
 const { addmessage } = require('./controller/messageController');
 const { Participant } = require("./models/participantModel");
-const createKafkaTopic = require('./utils/admin.kafka');
-const {Producer, Consumer} = require('./utils/kafka');
+//const createKafkaTopic = require('./utils/admin.kafka');
+//const {Producer, Consumer} = require('./utils/kafka');
 
 // creating a new express application
 const app = express();
@@ -40,7 +40,6 @@ const io = new Server(httpServer, {
 const topic= 'MESSAGE';
 //createKafkaTopic(topic);
 //Consumer(topic);
-
 
 // listening when a client connects to our socket instance
 io.on("connection", (socket) => {

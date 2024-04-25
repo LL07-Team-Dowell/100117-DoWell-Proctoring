@@ -1,5 +1,5 @@
 const { kafka } = require("../config/kafka.config");
-const { addMessage } = require('./controller/messageController');
+const { addMessage } = require('../controller/messageController');
 
 let producer = null;
 
