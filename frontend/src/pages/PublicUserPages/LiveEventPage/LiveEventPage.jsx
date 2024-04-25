@@ -576,7 +576,7 @@ const EventRegistrationPage = () => {
             </div> */}
         </div>
       </ScreenCapture>
-    )
+    );
 
   return (
     <>
