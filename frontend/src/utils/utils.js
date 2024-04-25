@@ -1,11 +1,8 @@
+import { currentBaseApiOrigin } from "../services/config";
 import { PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, USER_DETAIL_KEY_IN_SESSION } from "./constants"
 import { io } from "socket.io-client";
 
-const localApiBase = 'http://localhost:5000';
-const prodApiBase = 'http://192.64.86.227:5000';
-
-// export const socketInstance = io(localApiBase); // local
-export const socketInstance = io(prodApiBase);
+export const socketInstance = io(currentBaseApiOrigin);
 
 export const getSavedUserFromSessionStorage = () => {
     try {

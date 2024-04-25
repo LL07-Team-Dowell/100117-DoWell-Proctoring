@@ -12,7 +12,7 @@ export const handleRequestCameraPermission = async (
             return userStream;
         } catch (error) {
             return {
-                error: 'Please reload and approve media permission request'
+                error: 'Please check your camera is enabled and reload to approve media permission request'
             }
         }
     }
