@@ -34,7 +34,8 @@ const io = new Server(httpServer, {
   cors: {
     origin: Array.isArray(allowedOrigins) ? allowedOrigins : [],
   },
-  methods: ["GET", "POST"]
+  methods: ["GET", "POST"],
+  path: '/proctoring-socket/'
 })
 
 const topic= 'MESSAGE';

@@ -8,7 +8,7 @@ import { loggedInUserRoutes } from "./routes/loggedInUserRoutes";
 
 function App() {
   const { currentUser, isPublicUser, userDetailLoading } = useUserContext();
-  const publicBasePath = '/dowellproctoring/';
+  const publicBasePath = '/dowellproctoring';
 
   useDowellLogin();
 
