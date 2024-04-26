@@ -2,7 +2,9 @@ import { currentBaseApiOrigin } from "../services/config";
 import { PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, USER_DETAIL_KEY_IN_SESSION } from "./constants"
 import { io } from "socket.io-client";
 
-export const socketInstance = io(currentBaseApiOrigin);
+export const socketInstance = io(`${currentBaseApiOrigin}`, {
+    path: 'dowellproctoring/api'
+});
 
 export const getSavedUserFromSessionStorage = () => {
     try {
