@@ -133,7 +133,9 @@ const AddEventModal = ({ handleCloseModal }) => {
                 />
                 <button
                   onClick={async () => {
-                    await navigator.clipboard.writeText(event.link);
+                    await navigator.clipboard.writeText(
+                      `${window.location.origin}/view=public&event_id=${eventId}`
+                    );
 
                     setCopiedId("write-text");
                   }}
