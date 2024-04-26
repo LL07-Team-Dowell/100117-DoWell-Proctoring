@@ -18,7 +18,7 @@ export const peerServerPath = '/myapp';
 const loginBaseUrl = 'https://100014.pythonanywhere.com/api/';
 const clientAdminBaseUrl = 'https://100093.pythonanywhere.com/api/';
 // export const currentBaseApiOrigin = 'http://localhost:5000'; // local
-export const currentBaseApiOrigin = 'http://192.64.86.227:5000'; // prod
+export const currentBaseApiOrigin = 'https://www.uxlive.me/dowellproctoring'; // prod
 
 // creating separate axios instances for each API interaction
 const loginAxiosInstance = axios.create({
