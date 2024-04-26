@@ -3,7 +3,7 @@ import { PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, USER_DETAIL_KEY_IN_SESSION } f
 import { io } from "socket.io-client";
 
 export const socketInstance = io(`${currentBaseApiOrigin}`, {
-    path: 'dowellproctoring/api'
+    path: '/dowellproctoring-backend/proctoring-socket/',
 });
 
 export const getSavedUserFromSessionStorage = () => {

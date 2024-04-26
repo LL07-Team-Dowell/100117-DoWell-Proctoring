@@ -32,7 +32,8 @@ const clientAdminAxiosInstance = axios.create({
 })
 
 const defaultAxiosInstance = axios.create({
-    baseURL: `${currentBaseApiOrigin}/dowellproctoring/api/v1/`,
+    // baseURL: `${currentBaseApiOrigin}/api/v1`, // local
+    baseURL: `${currentBaseApiOrigin}/dowellproctoring-backend/api/v1/`,
     withCredentials: true,
 })
 
