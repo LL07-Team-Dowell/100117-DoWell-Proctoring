@@ -13,7 +13,7 @@ import { BsFillChatTextFill } from "react-icons/bs";
 import { IoMdClose } from "react-icons/io";
 import { socketInstance } from "../../utils/utils";
 
-let activeUsers = [];
+// let activeUsers = [];
 let currentUserPeerId = null;
 
 const ProctorLiveEventPage = () => {
@@ -29,6 +29,7 @@ const ProctorLiveEventPage = () => {
     const [chatMessages, setChatMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [isChatOpen, setIsChatOpen] = useState(false);
+    const [activeUsers, setActiveUsers] = useState([]);
     const chatContainerRef = useRef(null);
 
     const participantVideosRef = useRef();
@@ -58,8 +59,7 @@ const ProctorLiveEventPage = () => {
             stream: userStream,
             peerId
         });
-
-        activeUsers = copyOfActiveUsers;
+        setActiveUsers(copyOfActiveUsers);
     }
 
     useSocketIo(
@@ -199,7 +199,7 @@ const ProctorLiveEventPage = () => {
             </nav>
             <div className={styles.live_event_wrap}>
                 <div ref={participantVideosRef} className={styles.participants__Wrap}>
-                    {
+                    {/* {
                         React.Children.toArray(
                             [...Array(20).fill(0).map(() => ({}))].map(() => {
                                 return <video
@@ -213,19 +213,20 @@ const ProctorLiveEventPage = () => {
                                 </video>
                             })
                         )
-                    }
+                    } */}
 
-                    {/* {
-                    React.Children.toArray(activeUsers.map(userStreamItem => {
-                        return <video 
-                            autoPlay 
-                            playsInline 
-                            controls={false} 
-                            controlsList="nofullscreen"
-                        >
-                        </video>
-                    }))
-                } */}
+                    {
+                        React.Children.toArray(activeUsers.map(userStreamItem => {
+                            return <video 
+                                autoPlay 
+                                playsInline 
+                                controls={false} 
+                                controlsList="nofullscreen"
+                                muted
+                            >
+                            </video>
+                        }))
+                    }
                 </div>
                 <div className={styles.proctor__chat} style={{ display: isChatOpen ? 'block' : 'none' }}>
                     <div className={styles.chat__bar}>
