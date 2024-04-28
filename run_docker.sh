@@ -8,9 +8,13 @@ fi
 
 # Check the provided argument
 if [ "$1" == "dev" ]; then
+    # biuld docker-compose for development
+    docker-compose -f docker-compose.dev.yml build
     # Run docker-compose for development environment
     docker-compose -f docker-compose.dev.yml up
 elif [ "$1" == "prod" ]; then
+    # biuld docker-compose for prodcution
+    docker-compose -f docker-compose.prod.yml build
     # Run docker-compose for production environment
     docker-compose -f docker-compose.prod.yml up
 else
