@@ -8,6 +8,7 @@ const { Server } = require("socket.io");
 const { connectToDb } = require('./config/db');
 const { loadModels } = require('./utils/faceDetectorUtils');
 const { Participant } = require("./models/participantModel");
+const { addmessage } = require('./controller/messageController');
 const createKafkaTopic = require('./utils/admin.kafka');
 const {Producer, Consumer} = require('./utils/kafka');
 
@@ -38,8 +39,8 @@ const io = new Server(httpServer, {
 })
 
 const topic= 'MESSAGE';
-createKafkaTopic(topic); 
-Consumer(topic);
+//createKafkaTopic(topic); 
+//Consumer(topic);
 
 // listening when a client connects to our socket instance
 io.on("connection", (socket) => {
@@ -75,7 +76,8 @@ io.on("connection", (socket) => {
         message: data.message,
         tagged:participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
       };
-      await Producer(message);
+      addmessage(message);
+      //await Producer(message);
             
     } catch (error) {
             
