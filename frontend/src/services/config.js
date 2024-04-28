@@ -8,9 +8,9 @@ import axios from 'axios';
 // export const peerServerPath = '/myapp';
 
 // production usage
-export const peerServerHost = '192.64.86.227';
+export const peerServerHost = 'uxlive.me';
 export const peerServerPort = 9000;
-export const peerServerPath = '/myapp';
+export const peerServerPath = '/dowellproctoring/peer/myapp';
 
 
 
@@ -18,7 +18,7 @@ export const peerServerPath = '/myapp';
 const loginBaseUrl = 'https://100014.pythonanywhere.com/api/';
 const clientAdminBaseUrl = 'https://100093.pythonanywhere.com/api/';
 // export const currentBaseApiOrigin = 'http://localhost:5000'; // local
-export const currentBaseApiOrigin = 'http://192.64.86.227:5000'; // prod
+export const currentBaseApiOrigin = 'https://www.uxlive.me'; // prod
 
 // creating separate axios instances for each API interaction
 const loginAxiosInstance = axios.create({
@@ -32,7 +32,8 @@ const clientAdminAxiosInstance = axios.create({
 })
 
 const defaultAxiosInstance = axios.create({
-    baseURL: `${currentBaseApiOrigin}/api/v1/`,
+    // baseURL: `${currentBaseApiOrigin}/api/v1`, // local
+    baseURL: `${currentBaseApiOrigin}/dowellproctoring-backend/api/v1/`,
     withCredentials: true,
 })
 

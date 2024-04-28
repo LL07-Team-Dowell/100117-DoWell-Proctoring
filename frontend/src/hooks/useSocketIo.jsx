@@ -17,8 +17,9 @@ export default function useSocketIo(
 
         const peer = new Peer(undefined, {
             host: peerServerHost,
-            port: peerServerPort,
+            // port: peerServerPort,
             path: peerServerPath,
+            secure: true,
         });
 
         peer.on('open', (id) => {
