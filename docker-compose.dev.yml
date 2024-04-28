@@ -6,7 +6,6 @@ services:
     ports:
       - '2181:2181'
     container_name: dowell-proctoring-zookeeper
-    restart: always
   kafka:
     image: 'confluentinc/cp-kafka'
     ports:
@@ -18,7 +17,6 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
-    restart: always
 
   backend:
     build: 
