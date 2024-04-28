@@ -44,7 +44,17 @@ Follow these steps to set up the DoWell Proctoring application on your local mac
 
     Execute the following command in the terminal to start the application using Docker Compose:
     ```bash
-    docker compose up 
+    docker-compose -f docker-compose.dev.yml up 
+    docker-compose -f docker-compose.prod.yml down
+    ```
+
+    or
+
+    ```
+    chmod +x run_docker.sh
+    ./run_docker.sh dev
+    ./run_docker.sh prod
+
     ```
 
 ---
@@ -53,7 +63,8 @@ Follow these steps to set up the DoWell Proctoring application on your local mac
 
 - **Stop the Containers**
     ```bash
-    docker compose down
+    docker-compose -f docker-compose.dev.yml down
+    docker-compose -f docker-compose.prod.yml down
     ```
 
 - **Check Container Logs**
