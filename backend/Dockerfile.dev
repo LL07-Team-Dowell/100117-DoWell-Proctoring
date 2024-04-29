@@ -1,6 +1,18 @@
 FROM node:20.11.1 AS build
 
-# Create a directory where our app will be placed
+    # Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libjpeg-turbo-progs \
+    libgif-dev \
+    librsvg2-dev \
+    libpixman-1-dev \
+    freetype2-demos \
+    freetype2-doc
+ # Create a directory where our app will be placed
 RUN mkdir -p /usr/src/app/node_modules && chown -R node:node /usr/src/app
 
 # Set the working directory in the container
@@ -9,8 +21,12 @@ WORKDIR /usr/src/app
 # Copy the package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
+# Update npm to the latest version
+RUN npm install -g npm@latest
+
+# Install project dependencies
 RUN npm install
+
 
 # Copy the rest of the application code
 COPY . .

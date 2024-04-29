@@ -1,5 +1,5 @@
 const { kafka } = require("../config/kafka.config");
-const { addMessage } = require('../controller/messageController');
+const { addmessage } = require('../controller/messageController');
 
 let producer = null;
 
@@ -47,7 +47,7 @@ async function Consumer(topic) {
                 if (!message.value) return;
                 console.log(`New message received..`);
                 try {
-                    addMessage(JSON.parse(message.value.toString()));
+                    addmessage(JSON.parse(message.value.toString()));
                 } catch (err) {
                     console.error(`Error processing ${topic}: `, err);
                     pause();

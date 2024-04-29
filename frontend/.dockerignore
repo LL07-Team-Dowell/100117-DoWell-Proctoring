@@ -53,6 +53,7 @@ docker-compose.test.yml
 
 # Ignore node_modules
 node_modules
+/node_modules
 # Ignore build files
 build
 # Ignore coverage files
