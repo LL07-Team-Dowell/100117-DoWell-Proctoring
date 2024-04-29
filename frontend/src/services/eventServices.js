@@ -1,5 +1,6 @@
 import { defaultAxiosInstance } from "./config";
 import { eventRoutePrefix } from "./routeUtils";
+import { messageRoutePrefix } from "./routeUtils";
 
 export const getEventById = async (eventId) => {
     return await defaultAxiosInstance.get(`${eventRoutePrefix}/${eventId}`);
@@ -7,4 +8,8 @@ export const getEventById = async (eventId) => {
 
 export const addNewEvent = async (data) => {
     return await defaultAxiosInstance.post(`${eventRoutePrefix}/new`, data);
+}
+
+export const getMessages = async (data) => {
+    return await defaultAxiosInstance.post(`${messageRoutePrefix}/get`, data);
 }

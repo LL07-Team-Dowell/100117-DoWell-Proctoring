@@ -12,6 +12,8 @@ import LoadingPage from "../LoadingPage/LoadingPage";
 import { BsFillChatTextFill } from "react-icons/bs";
 import { IoMdClose } from "react-icons/io";
 import { socketInstance } from "../../utils/utils";
+import { getMessages } from "../../services/eventServices";
+import DotLoader from "../../components/DotLoader/DotLoader";
 
 // let activeUsers = [];
 let currentUserPeerId = null;
@@ -31,6 +33,8 @@ const ProctorLiveEventPage = () => {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [activeUsers, setActiveUsers] = useState([]);
     const chatContainerRef = useRef(null);
+    const [isChatLoading, setIsChatLoading] = useState(false);
+    const [chatLoadedOnce,setChatLoadedOnce] = useState(false);
 
     const participantVideosRef = useRef();
 
@@ -173,6 +177,27 @@ const ProctorLiveEventPage = () => {
             }
         }, 50);
     };
+
+    const fetchChatMessages = async () => {
+        if(chatLoadedOnce) return
+        setIsChatLoading(true);
+        try {
+            const response = await getMessages({ "eventId": eventId });
+            console.log('chat responseeeeee', response?.data?.data);
+            setChatMessages(response?.data?.data);
+            setChatLoadedOnce(true);
+        } catch (error) {
+            console.error("Error fetching chat messages:", error);
+        } finally {
+            setIsChatLoading(false);
+        }
+
+        setTimeout(() => {
+            if (chatContainerRef.current) {
+                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            }
+        }, 50);
+    };
     
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
@@ -194,7 +219,10 @@ const ProctorLiveEventPage = () => {
                 <BsFillChatTextFill
                     className={styles.chat__icon}
                     color="#005734"
-                    onClick={() => setIsChatOpen(!isChatOpen)}
+                    onClick={() => {
+                        setIsChatOpen(!isChatOpen);
+                        fetchChatMessages();
+                    }}
                 />
             </nav>
             <div className={styles.live_event_wrap}>
@@ -237,7 +265,9 @@ const ProctorLiveEventPage = () => {
                             onClick={() => setIsChatOpen(!isChatOpen)}
                         />
                     </div>
-                    <div ref={chatContainerRef} className={styles.chat__main}>
+                    {
+                        isChatLoading ? <div className={styles.chat__main} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><DotLoader /></div> :
+                        <div ref={chatContainerRef} className={styles.chat__main}>
                         {React.Children.toArray(chatMessages.map(message => (
                             <div className={styles.chat_message}>
                                 <div className={styles.avatarContainer}>
@@ -254,6 +284,7 @@ const ProctorLiveEventPage = () => {
                             </div>
                         )))}
                     </div>
+                    }
                     <div className={styles.chat__input}>
                         <input
                             type="text"
@@ -261,6 +292,7 @@ const ProctorLiveEventPage = () => {
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             onKeyPress={handleKeyPress}
+                            disabled={isChatLoading}
                         />
                     </div>
                 </div>
