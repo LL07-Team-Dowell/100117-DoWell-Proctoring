@@ -1,6 +1,6 @@
 const { kafka } = require("../config/kafka.config");
 const { addmessage } = require('../controller/messageController');
-
+require('dotenv').config();
 let producer = null;
 
 async function initProducer() {
@@ -17,29 +17,27 @@ async function initProducer() {
         throw error;
     }
 }
-
-async function Producer(topic,data) {
+async function Producer(data) {
     try {
         const producer = await initProducer();
         const dataValue = JSON.stringify(data);
         await producer.send({
-            topic: topic,
+            topic: `${process.env.KAFKA_TOPIC}`,
             messages: [{ value: dataValue }],
         });
-        console.log(`${topic} produced successfully.`);
+        console.log(`${process.env.KAFKA_TOPIC} produced successfully.`);
         return true;
     } catch (error) {
-        console.error(`Error producing the topic ${topic}: `, error);
+        console.error(`Error producing the topic ${process.env.KAFKA_TOPIC}: `, error);
         return false;
     }
 }
-
 async function Consumer(topic) {
     try {
         console.log("Consumer is running..");
         const consumer = kafka.consumer({ groupId: "default" });
         await consumer.connect();
-        await consumer.subscribe({ topic: topic, fromBeginning: true });
+        await consumer.subscribe({ topic: `${process.env.KAFKA_TOPIC}`, fromBeginning: true });
 
         await consumer.run({
             autoCommit: true,
@@ -49,10 +47,10 @@ async function Consumer(topic) {
                 try {
                     addmessage(JSON.parse(message.value.toString()));
                 } catch (err) {
-                    console.error(`Error processing ${topic}: `, err);
+                    console.error(`Error processing ${process.env.KAFKA_TOPIC}: `, err);
                     pause();
                     setTimeout(() => {
-                        consumer.resume([{ topic: topic }]);
+                        consumer.resume([{ topic: process.env.KAFKA_TOPIC }]);
                     }, 60 * 1000);
                 }
             },
@@ -61,5 +59,4 @@ async function Consumer(topic) {
         console.error(`Error starting ${topic} consumer:`, error);
     }
 }
-
 module.exports = { Producer, Consumer };
