@@ -19,6 +19,7 @@ import { MdCancel } from "react-icons/md";
 import { socketInstance } from "../../../utils/utils";
 import useUpdateEventStartTime from "../hooks/useUpdateEventStartTime";
 import ScreenCapture from "../../../components/CaptureScreen/captureScreen";
+import { getMessages } from "../../../services/eventServices";
 
 const dummyLink = "https://ll04-finance-dowell.github.io/100058-DowellEditor-V2/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9kdWN0X25hbWUiOiJXb3JrZmxvdyBBSSIsImRldGFpbHMiOnsiZmllbGQiOiJkb2N1bWVudF9uYW1lIiwiY2x1c3RlciI6IkRvY3VtZW50cyIsImRhdGFiYXNlIjoiRG9jdW1lbnRhdGlvbiIsImNvbGxlY3Rpb24iOiJDbG9uZVJlcG9ydHMiLCJkb2N1bWVudCI6IkNsb25lUmVwb3J0cyIsInRlYW1fbWVtYmVyX0lEIjoiMTIxMjAwMSIsImZ1bmN0aW9uX0lEIjoiQUJDREUiLCJjb21tYW5kIjoidXBkYXRlIiwiZmxhZyI6InNpZ25pbmciLCJfaWQiOiI2NWZlZDhjNzM3YzZkNmNmMTQ2YTFkOTAiLCJhY3Rpb24iOiJkb2N1bWVudCIsImF1dGhvcml6ZWQiOiJzYWdhci1oci1oaXJpbmciLCJ1c2VyX2VtYWlsIjoiIiwidXNlcl90eXBlIjoicHVibGljIiwiZG9jdW1lbnRfbWFwIjpbeyJjb250ZW50IjoiczEiLCJyZXF1aXJlZCI6ZmFsc2UsInBhZ2UiOjF9LHsiY29udGVudCI6ImkyIiwicmVxdWlyZWQiOmZhbHNlLCJwYWdlIjoyfSx7ImNvbnRlbnQiOiJpMyIsInJlcXVpcmVkIjpmYWxzZSwicGFnZSI6Mn0seyJjb250ZW50IjoiaTQiLCJyZXF1aXJlZCI6ZmFsc2UsInBhZ2UiOjJ9LHsiY29udGVudCI6Imk1IiwicmVxdWlyZWQiOmZhbHNlLCJwYWdlIjoyfV0sImRvY3VtZW50X3JpZ2h0IjoiYWRkX2VkaXQiLCJkb2N1bWVudF9mbGFnIjoicHJvY2Vzc2luZyIsInJvbGUiOiJGcmVlbGFuY2VyIiwicHJldmlvdXNfdmlld2VycyI6bnVsbCwibmV4dF92aWV3ZXJzIjpbIkR1bW15SFIiXSwibWV0YWRhdGFfaWQiOiI2NWZlZDhjODQwMDE2MmQ3MDRkNjk1MmEiLCJwcm9jZXNzX2lkIjoiNjVmZWQ4YzJiODZlM2E0ZTYwMGJiNDc3IiwidXBkYXRlX2ZpZWxkIjp7ImRvY3VtZW50X25hbWUiOiJVbnRpdGxlZCBEb2N1bWVudF9zYWdhci1oci1oaXJpbmciLCJjb250ZW50IjoiIiwicGFnZSI6IiJ9fX0.lX91uUpJY6oubfhKqLfJsX1IHW87-YkDXpHWqfshFQU&link_id=2130413081054482926";
 
@@ -52,6 +53,8 @@ const EventRegistrationPage = () => {
     const [chatMessages, setChatMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const chatContainerRef = useRef(null);
+    const [isChatLoading, setIsChatLoading] = useState(false);
+    const [chatLoadedOnce,setChatLoadedOnce] = useState(false);
 
     const handleSendMessage = () => {
         if (newMessage.trim() === '') return;
@@ -95,7 +98,7 @@ const EventRegistrationPage = () => {
             console.log('recieved message on public end', receivedMessage);
 
             setChatMessages(prevMessages => [...prevMessages, receivedMessage]);
-    
+
             if (chatContainerRef.current) {
                 chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
             }
@@ -108,6 +111,26 @@ const EventRegistrationPage = () => {
         };
     }, [socketInstance]);
 
+    const fetchChatMessages = async () => {
+        if(chatLoadedOnce) return
+        setIsChatLoading(true);
+        try {
+            const response = await getMessages({ "eventId": foundEventDetail?._id });
+            console.log('chat responseeeeee', response?.data?.data);
+            setChatMessages(response?.data?.data);
+            setChatLoadedOnce(true);
+        } catch (error) {
+            console.error("Error fetching chat messages:", error);
+        } finally {
+            setIsChatLoading(false);
+        }
+
+        setTimeout(() => {
+            if (chatContainerRef.current) {
+                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            }
+        }, 50);
+    };
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
@@ -117,6 +140,7 @@ const EventRegistrationPage = () => {
 
     const toggleChat = () => {
         setIsChatOpen(prev => !prev);
+        fetchChatMessages();
     };
 
     const videoRef = useRef();
@@ -213,11 +237,11 @@ const EventRegistrationPage = () => {
                 setEventRegistrationLoading(true);
 
                 const allSavedEventDetailsForUser = getSavedPublicUserFromLocalStorage();
-                
-                const updatedEventsForUser = allSavedEventDetailsForUser && Array.isArray(allSavedEventDetailsForUser) ? 
-                    allSavedEventDetailsForUser 
-                : 
-                [];
+
+                const updatedEventsForUser = allSavedEventDetailsForUser && Array.isArray(allSavedEventDetailsForUser) ?
+                    allSavedEventDetailsForUser
+                    :
+                    [];
 
                 try {
                     const res = (await registerForEvent(copyOfUserDetails)).data;
@@ -308,31 +332,29 @@ const EventRegistrationPage = () => {
                     <p className={styles.chat__title}>Chat</p>
                     <MdCancel className={styles.closeBtn} onClick={toggleChat} fontSize={'1.2rem'} color="red" />
                 </div>
-                <div ref={chatContainerRef} className={styles.chat__main}>
-                    {chatMessages.map((message, index) => (
-                        <div
-                            className={`${styles.chat_message} ${message.user === 'me' ? styles.myMessage : styles.otherMessage}`}
-                            key={index}  // Use index as key
-                        >
-                            <div className={styles.avatarContainer} style={{ display: message.user === 'me' ? 'none' : 'block' }}>
-                                <div className={styles.avatar}>
-                                    {message.username[0]}
+                {
+                    isChatLoading ? <div className={styles.chat__main} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><DotLoader /></div> :
+                        <div ref={chatContainerRef} className={styles.chat__main}>
+                            {chatMessages.map((message, index) => (
+                                <div
+                                    className={styles.chat_message}
+                                    key={index}  // Use index as key
+                                >
+                                    <div className={styles.avatarContainer}>
+                                        <div className={styles.avatar}>
+                                            {message.username[0].toUpperCase()}
+                                        </div>
+                                    </div>
+                                    <div className={styles.chat__message}>
+                                        <div className={styles.messageContent}>
+                                            <strong>{message.username}: </strong>
+                                            {message.message}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className={styles.chat__message}>
-                                <div className={styles.messageContent}>
-                                    <strong>{message.username}: </strong>
-                                    {message.message}
-                                </div>
-                            </div>
-                            <div className={styles.avatarContainer} style={{ display: message.user === 'me' ? 'block' : 'none' }}>
-                                <div className={styles.avatar}>
-                                    {message.username[0]}
-                                </div>
-                            </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
+                }
 
                 <div className={styles.chat__inputWrapper}>
                     <div className={styles.chat__input}>
@@ -342,6 +364,7 @@ const EventRegistrationPage = () => {
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             onKeyPress={handleKeyPress}
+                            disabled={isChatLoading}
                         />
                     </div>
                 </div>
