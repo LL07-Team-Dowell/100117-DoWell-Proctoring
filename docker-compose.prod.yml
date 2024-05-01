@@ -17,6 +17,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
+
   dowell-proctoring-backend:
     build: 
       context: ./backend
@@ -52,7 +53,6 @@ services:
       - webnet
     volumes:
       - /usr/src/app/node_modules
-    
 
   dowell-proctoring-peerjs:
     build:
