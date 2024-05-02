@@ -59,6 +59,8 @@ const EventRegistrationPage = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const chatContainerRef = useRef(null);
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [chatLoadedOnce, setChatLoadedOnce] = useState(false);
 
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
@@ -126,6 +128,28 @@ const EventRegistrationPage = () => {
     };
   }, [socketInstance]);
 
+  const fetchChatMessages = async () => {
+    if (chatLoadedOnce) return;
+    setIsChatLoading(true);
+    try {
+      const response = await getMessages({ eventId: foundEventDetail?._id });
+      console.log("chat responseeeeee", response?.data?.data);
+      setChatMessages(response?.data?.data);
+      setChatLoadedOnce(true);
+    } catch (error) {
+      console.error("Error fetching chat messages:", error);
+    } finally {
+      setIsChatLoading(false);
+    }
+
+    setTimeout(() => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop =
+          chatContainerRef.current.scrollHeight;
+      }
+    }, 50);
+  };
+
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       handleSendMessage();
@@ -134,6 +158,7 @@ const EventRegistrationPage = () => {
 
   const toggleChat = () => {
     setIsChatOpen((prev) => !prev);
+    fetchChatMessages();
   };
 
   const videoRef = useRef();
@@ -145,29 +170,7 @@ const EventRegistrationPage = () => {
         [name]: val,
       };
     });
-<<<<<<< HEAD
   };
-=======
-    const [activeUserStream, setActiveUserStream] = useState(null);
-    const [cameraPermissionGranted, setCameraPermissionGranted] = useState(false);
-    const [locationAccessGranted, setLocationAccessGranted] = useState(false);
-    const [eventRegistrationLoading, setEventRegistrationLoading] = useState(false);
-    const [eventStarted, setEventStarted] = useState(false);
-    const [countDownTimer, setCountDownTimer] = useState({
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-    });
-    const [initialCountDownBegun, setInitialCountDownBegun] = useState(false);
-    const [iframeLoading, setIframeLoading] = useState(true);
-    const [isChatOpen, setIsChatOpen] = useState(false);
-    const [chatMessages, setChatMessages] = useState([]);
-    const [newMessage, setNewMessage] = useState('');
-    const chatContainerRef = useRef(null);
-    const [isChatLoading, setIsChatLoading] = useState(false);
-    const [chatLoadedOnce,setChatLoadedOnce] = useState(false);
->>>>>>> 7986282d22fc15cc5f88be09d2da8667cfca3549
 
   useLoadEventDetail(
     foundEventDetail,
@@ -183,240 +186,17 @@ const EventRegistrationPage = () => {
         setCameraPermissionGranted(true);
         setActiveUserStream(res);
 
-<<<<<<< HEAD
         if (videoRef.current) videoRef.current.srcObject = res;
       }
       handleRequestLocationAccess();
-=======
-        const data = {
-            eventId: foundEventDetail?._id,
-            email: userDetails?.email,
-            username: userDetails?.name,
-            isProctor: false,
-            message: newMessage.trim(),
-        };
-
-        console.log('send message from public end', data);
-
-        setChatMessages(prevMessages => [...prevMessages, { ...data, user: 'me' }]);
-        setNewMessage('');
-
-        socketInstance.emit('incoming-message', data);
-
-        setTimeout(() => {
-            if (chatContainerRef.current) {
-                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-            }
-        }, 50);
-    };
-
-    useEffect(() => {
-        if (!socketInstance) return;
-
-        const handleNewMessage = (eventId, userName, userEmail, isProctor, message, messageCreatedDate) => {
-
-            const receivedMessage = {
-                eventId: eventId,
-                username: userName,
-                email: userEmail,
-                isProctor: isProctor,
-                message: message,
-                createddate: messageCreatedDate,
-            }
-
-            console.log('recieved message on public end', receivedMessage);
-
-            setChatMessages(prevMessages => [...prevMessages, receivedMessage]);
-
-            if (chatContainerRef.current) {
-                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-            }
-        };
-
-        socketInstance.on('new-message', handleNewMessage);
-
-        return () => {
-            socketInstance.off('new-message', handleNewMessage);
-        };
-    }, [socketInstance]);
-
-    const fetchChatMessages = async () => {
-        if(chatLoadedOnce) return
-        setIsChatLoading(true);
-        try {
-            const response = await getMessages({ "eventId": foundEventDetail?._id });
-            console.log('chat responseeeeee', response?.data?.data);
-            setChatMessages(response?.data?.data);
-            setChatLoadedOnce(true);
-        } catch (error) {
-            console.error("Error fetching chat messages:", error);
-        } finally {
-            setIsChatLoading(false);
-        }
-
-        setTimeout(() => {
-            if (chatContainerRef.current) {
-                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-            }
-        }, 50);
-    };
-
-    const handleKeyPress = (event) => {
-        if (event.key === 'Enter') {
-            handleSendMessage();
-        }
-    };
-
-    const toggleChat = () => {
-        setIsChatOpen(prev => !prev);
-        fetchChatMessages();
-    };
-
-    const videoRef = useRef();
-
-    const handleUpdateUserDetail = (name, val) => {
-        setUserDetails((prevVal) => {
-            return {
-                ...prevVal,
-                [name]: val,
-            }
-        })
->>>>>>> 7986282d22fc15cc5f88be09d2da8667cfca3549
     }
   );
 
-<<<<<<< HEAD
   useEffect(() => {
     if (activeUserStream !== null) {
       console.log("streamm ->>>", activeUserStream);
       setCameraPermissionGranted(true);
       if (videoRef.current) videoRef.current.srcObject = activeUserStream;
-=======
-    useLoadEventDetail(
-        foundEventDetail,
-        setFoundEventDetail,
-        setCurrentFormPage,
-        setEventDetailLoading,
-        setEventStarted,
-        setUserDetails,
-        async () => {
-            const res = await handleRequestCameraPermission();
-            if (res.error) toast.info(res.error);
-            if (!res.error) {
-                setCameraPermissionGranted(true);
-                setActiveUserStream(res);
-
-                if (videoRef.current) videoRef.current.srcObject = res;
-            }
-            handleRequestLocationAccess();
-        },
-    )
-
-    useEffect(() => {
-        if (activeUserStream !== null) {
-            console.log('streamm ->>>', activeUserStream);
-            setCameraPermissionGranted(true);
-            if (videoRef.current) videoRef.current.srcObject = activeUserStream;
-        }
-    }, [currentFormPage])
-
-    useStartCountDown(
-        eventStarted,
-        userDetails,
-        foundEventDetail,
-        iframeLoading,
-        initialCountDownBegun,
-        setInitialCountDownBegun,
-        setCountDownTimer
-    );
-
-    useSocketIo(
-        !iframeLoading,
-        foundEventDetail?._id,
-        userDetails.email,
-        userDetails.name,
-        activeUserStream,
-    );
-
-    useUpdateEventStartTime(
-        iframeLoading,
-        eventStarted,
-        foundEventDetail,
-        userDetails,
-        setUserDetails,
-    );
-
-    const handleGoToNextPage = async () => {
-        const nextPage = currentFormPage + 1;
-
-        switch (nextPage) {
-            case 1:
-                setCurrentFormPage(nextPage);
-                return;
-            case 2:
-                if (userDetails.name.length < 1) return toast.info('Please enter your name');
-                if (userDetails.email.length < 1) return toast.info('Please enter your email');
-                if (!validateEmail(userDetails.email)) return toast.info('Please enter a valid email');
-
-                setCurrentFormPage(nextPage);
-                return;
-            case 3:
-                if (!cameraPermissionGranted) return toast.info('Please grant access to your audio and video before proceeding');
-
-                setCurrentFormPage(nextPage);
-                return;
-            case 4: {
-                if (eventRegistrationLoading) return;
-                if (!locationAccessGranted) return toast.info('Please grant access to your location before proceeding');
-
-                const copyOfUserDetails = { ...userDetails };
-                copyOfUserDetails.event_id = searchParams.get('event_id');
-
-                setEventRegistrationLoading(true);
-
-                const allSavedEventDetailsForUser = getSavedPublicUserFromLocalStorage();
-
-                const updatedEventsForUser = allSavedEventDetailsForUser && Array.isArray(allSavedEventDetailsForUser) ?
-                    allSavedEventDetailsForUser
-                    :
-                    [];
-
-                try {
-                    const res = (await registerForEvent(copyOfUserDetails)).data;
-                    console.log(res?.data);
-
-                    updatedEventsForUser.push({ ...res?.data });
-                    localStorage.setItem(PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, JSON.stringify(updatedEventsForUser));
-                    setUserDetails(res?.data);
-
-                    setEventRegistrationLoading(false);
-                    setEventStarted(true);
-                } catch (error) {
-                    if (error?.response?.status === 409) {
-                        const eventDetailForUserIsAlreadySaved = updatedEventsForUser.find(item => item.event_id === searchParams.get('event_id'));
-                        if (!eventDetailForUserIsAlreadySaved) {
-                            updatedEventsForUser.push(error?.response?.data?.data);
-                            localStorage.setItem(PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, JSON.stringify(updatedEventsForUser));
-                        }
-                        setUserDetails(error?.response?.data?.data);
-
-                        setEventRegistrationLoading(false);
-                        setEventStarted(true);
-
-                        return;
-                    }
-
-                    toast.error(error?.response?.data?.message);
-                    setEventRegistrationLoading(false);
-                }
-
-                return;
-            }
-            default:
-                console.log("no case defined");
-                return;
-        }
->>>>>>> 7986282d22fc15cc5f88be09d2da8667cfca3549
     }
   }, [currentFormPage]);
 
@@ -595,7 +375,6 @@ const EventRegistrationPage = () => {
             >
               <DotLoader />
             </div>
-<<<<<<< HEAD
           )}
           <iframe
             // src={foundEventDetail?.link}
@@ -624,82 +403,39 @@ const EventRegistrationPage = () => {
                 color="red"
               />
             </div>
-            <div ref={chatContainerRef} className={styles.chat__main}>
-              {chatMessages.map((message, index) => (
-                <div
-                  className={`${styles.chat_message} ${
-                    message.user === "me"
-                      ? styles.myMessage
-                      : styles.otherMessage
-                  }`}
-                  key={index} // Use index as key
-                >
+            {isChatLoading ? (
+              <div
+                className={styles.chat__main}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <DotLoader />
+              </div>
+            ) : (
+              <div ref={chatContainerRef} className={styles.chat__main}>
+                {chatMessages.map((message, index) => (
                   <div
-                    className={styles.avatarContainer}
-                    style={{
-                      display: message.user === "me" ? "none" : "block",
-                    }}
+                    className={styles.chat_message}
+                    key={index} // Use index as key
                   >
-                    <div className={styles.avatar}>{message.username[0]}</div>
-                  </div>
-                  <div className={styles.chat__message}>
-                    <div className={styles.messageContent}>
-                      <strong>{message.username}: </strong>
-                      {message.message}
-=======
-            <div className={styles.chatModal} style={{ display: isChatOpen ? 'block' : 'none' }}>
-                <div className={styles.chat__bar}>
-                    <p className={styles.chat__title}>Chat</p>
-                    <MdCancel className={styles.closeBtn} onClick={toggleChat} fontSize={'1.2rem'} color="red" />
-                </div>
-                {
-                    isChatLoading ? <div className={styles.chat__main} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><DotLoader /></div> :
-                        <div ref={chatContainerRef} className={styles.chat__main}>
-                            {chatMessages.map((message, index) => (
-                                <div
-                                    className={styles.chat_message}
-                                    key={index}  // Use index as key
-                                >
-                                    <div className={styles.avatarContainer}>
-                                        <div className={styles.avatar}>
-                                            {message.username[0].toUpperCase()}
-                                        </div>
-                                    </div>
-                                    <div className={styles.chat__message}>
-                                        <div className={styles.messageContent}>
-                                            <strong>{message.username}: </strong>
-                                            {message.message}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                }
-
-                <div className={styles.chat__inputWrapper}>
-                    <div className={styles.chat__input}>
-                        <input
-                            type="text"
-                            placeholder="Type your message..."
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            onKeyPress={handleKeyPress}
-                            disabled={isChatLoading}
-                        />
->>>>>>> 7986282d22fc15cc5f88be09d2da8667cfca3549
+                    <div className={styles.avatarContainer}>
+                      <div className={styles.avatar}>
+                        {message.username[0].toUpperCase()}
+                      </div>
+                    </div>
+                    <div className={styles.chat__message}>
+                      <div className={styles.messageContent}>
+                        <strong>{message.username}: </strong>
+                        {message.message}
+                      </div>
                     </div>
                   </div>
-                  <div
-                    className={styles.avatarContainer}
-                    style={{
-                      display: message.user === "me" ? "block" : "none",
-                    }}
-                  >
-                    <div className={styles.avatar}>{message.username[0]}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             <div className={styles.chat__inputWrapper}>
               <div className={styles.chat__input}>
@@ -709,6 +445,7 @@ const EventRegistrationPage = () => {
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
+                  disabled={isChatLoading}
                 />
               </div>
             </div>

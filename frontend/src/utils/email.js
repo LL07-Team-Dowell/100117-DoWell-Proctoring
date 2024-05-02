@@ -28,10 +28,10 @@ const sendEmail = async (message, email, newEvent) => {
     const emailContent = emailTemplate.replace("{message}", message);
 
     const response = await axios.post(
-      "https://100085.pythonanywhere.com/api/uxlivinglab/email/",
+      "https://100085.pythonanywhere.com/api/dowell_bulk_email/",
       {
         toname: "Participant",
-        toemail: email,
+        to_email_list: [email],
         fromname: "Manish",
         fromemail: "manish@dowellresearch.in",
         subject: `Dowell Proctoring: Invitation to join ${newEvent}`,
