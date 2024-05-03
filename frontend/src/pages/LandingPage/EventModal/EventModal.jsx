@@ -22,6 +22,7 @@ const AddEventModal = ({ handleCloseModal }) => {
     max_cap: "",
     link: "",
   });
+  console.log(event);
   const [loading, setLoading] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopiedId] = useState("");
@@ -85,6 +86,7 @@ const AddEventModal = ({ handleCloseModal }) => {
       return toast.info("'Start Date' of the event cannot be in the past");
 
     // handleAddEvent(newEvent);
+
     console.log(newEvent);
     setLoading(true);
 
@@ -181,7 +183,11 @@ const AddEventModal = ({ handleCloseModal }) => {
               <div style={{ margin: "0.4rem 0" }}>
                 <span>Invite via email</span>
               </div>
-              <EmailInput newEvent={event.name} />
+              <EmailInput
+                newEvent={event.name}
+                eventLink={`${window.location.origin}/dowellproctoring/?view=public&event_id=${eventId}`}
+                closeModal={handleCloseModal}
+              />
             </label>
           </div>
         ) : (
