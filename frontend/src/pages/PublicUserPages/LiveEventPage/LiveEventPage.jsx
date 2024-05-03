@@ -24,150 +24,6 @@ import { getMessages } from "../../../services/eventServices";
 const dummyLink = "https://ll04-finance-dowell.github.io/100058-DowellEditor-V2/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9kdWN0X25hbWUiOiJXb3JrZmxvdyBBSSIsImRldGFpbHMiOnsiZmllbGQiOiJkb2N1bWVudF9uYW1lIiwiY2x1c3RlciI6IkRvY3VtZW50cyIsImRhdGFiYXNlIjoiRG9jdW1lbnRhdGlvbiIsImNvbGxlY3Rpb24iOiJDbG9uZVJlcG9ydHMiLCJkb2N1bWVudCI6IkNsb25lUmVwb3J0cyIsInRlYW1fbWVtYmVyX0lEIjoiMTIxMjAwMSIsImZ1bmN0aW9uX0lEIjoiQUJDREUiLCJjb21tYW5kIjoidXBkYXRlIiwiZmxhZyI6InNpZ25pbmciLCJfaWQiOiI2NWZlZDhjNzM3YzZkNmNmMTQ2YTFkOTAiLCJhY3Rpb24iOiJkb2N1bWVudCIsImF1dGhvcml6ZWQiOiJzYWdhci1oci1oaXJpbmciLCJ1c2VyX2VtYWlsIjoiIiwidXNlcl90eXBlIjoicHVibGljIiwiZG9jdW1lbnRfbWFwIjpbeyJjb250ZW50IjoiczEiLCJyZXF1aXJlZCI6ZmFsc2UsInBhZ2UiOjF9LHsiY29udGVudCI6ImkyIiwicmVxdWlyZWQiOmZhbHNlLCJwYWdlIjoyfSx7ImNvbnRlbnQiOiJpMyIsInJlcXVpcmVkIjpmYWxzZSwicGFnZSI6Mn0seyJjb250ZW50IjoiaTQiLCJyZXF1aXJlZCI6ZmFsc2UsInBhZ2UiOjJ9LHsiY29udGVudCI6Imk1IiwicmVxdWlyZWQiOmZhbHNlLCJwYWdlIjoyfV0sImRvY3VtZW50X3JpZ2h0IjoiYWRkX2VkaXQiLCJkb2N1bWVudF9mbGFnIjoicHJvY2Vzc2luZyIsInJvbGUiOiJGcmVlbGFuY2VyIiwicHJldmlvdXNfdmlld2VycyI6bnVsbCwibmV4dF92aWV3ZXJzIjpbIkR1bW15SFIiXSwibWV0YWRhdGFfaWQiOiI2NWZlZDhjODQwMDE2MmQ3MDRkNjk1MmEiLCJwcm9jZXNzX2lkIjoiNjVmZWQ4YzJiODZlM2E0ZTYwMGJiNDc3IiwidXBkYXRlX2ZpZWxkIjp7ImRvY3VtZW50X25hbWUiOiJVbnRpdGxlZCBEb2N1bWVudF9zYWdhci1oci1oaXJpbmciLCJjb250ZW50IjoiIiwicGFnZSI6IiJ9fX0.lX91uUpJY6oubfhKqLfJsX1IHW87-YkDXpHWqfshFQU&link_id=2130413081054482926";
 
 const EventRegistrationPage = () => {
-<<<<<<< HEAD
-  const [eventDetailLoading, setEventDetailLoading] = useState(true);
-  const [foundEventDetail, setFoundEventDetail] = useState(null);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [currentFormPage, setCurrentFormPage] = useState(0);
-  const [userDetails, setUserDetails] = useState({
-    name: "",
-    email: "",
-    user_image: "",
-    event_id: "",
-    user_lat: "",
-    user_lon: "",
-  });
-  const [activeUserStream, setActiveUserStream] = useState(null);
-  const [cameraPermissionGranted, setCameraPermissionGranted] = useState(false);
-  const [locationAccessGranted, setLocationAccessGranted] = useState(false);
-  const [eventRegistrationLoading, setEventRegistrationLoading] =
-    useState(false);
-  const [eventStarted, setEventStarted] = useState(false);
-  const [countDownTimer, setCountDownTimer] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-  const [initialCountDownBegun, setInitialCountDownBegun] = useState(false);
-  const [iframeLoading, setIframeLoading] = useState(true);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
-  const chatContainerRef = useRef(null);
-  const [isChatLoading, setIsChatLoading] = useState(false);
-  const [chatLoadedOnce, setChatLoadedOnce] = useState(false);
-
-  const handleSendMessage = () => {
-    if (newMessage.trim() === "") return;
-
-    const data = {
-      eventId: foundEventDetail?._id,
-      email: userDetails?.email,
-      username: userDetails?.name,
-      isProctor: false,
-      message: newMessage.trim(),
-    };
-
-    console.log("send message from public end", data);
-
-    setChatMessages((prevMessages) => [
-      ...prevMessages,
-      { ...data, user: "me" },
-    ]);
-    setNewMessage("");
-
-    socketInstance.emit("incoming-message", data);
-
-    setTimeout(() => {
-      if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTop =
-          chatContainerRef.current.scrollHeight;
-      }
-    }, 50);
-  };
-
-  useEffect(() => {
-    if (!socketInstance) return;
-
-    const handleNewMessage = (
-      eventId,
-      userName,
-      userEmail,
-      isProctor,
-      message,
-      messageCreatedDate
-    ) => {
-      const receivedMessage = {
-        eventId: eventId,
-        username: userName,
-        email: userEmail,
-        isProctor: isProctor,
-        message: message,
-        createddate: messageCreatedDate,
-      };
-
-      console.log("recieved message on public end", receivedMessage);
-
-      setChatMessages((prevMessages) => [...prevMessages, receivedMessage]);
-
-      if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTop =
-          chatContainerRef.current.scrollHeight;
-      }
-    };
-
-    socketInstance.on("new-message", handleNewMessage);
-
-    return () => {
-      socketInstance.off("new-message", handleNewMessage);
-    };
-  }, [socketInstance]);
-
-  const fetchChatMessages = async () => {
-    if (chatLoadedOnce) return;
-    setIsChatLoading(true);
-    try {
-      const response = await getMessages({ eventId: foundEventDetail?._id });
-      console.log("chat responseeeeee", response?.data?.data);
-      setChatMessages(response?.data?.data);
-      setChatLoadedOnce(true);
-    } catch (error) {
-      console.error("Error fetching chat messages:", error);
-    } finally {
-      setIsChatLoading(false);
-    }
-
-    setTimeout(() => {
-      if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTop =
-          chatContainerRef.current.scrollHeight;
-      }
-    }, 50);
-  };
-
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter") {
-      handleSendMessage();
-    }
-  };
-
-  const toggleChat = () => {
-    setIsChatOpen((prev) => !prev);
-    fetchChatMessages();
-  };
-
-  const videoRef = useRef();
-
-  const handleUpdateUserDetail = (name, val) => {
-    setUserDetails((prevVal) => {
-      return {
-        ...prevVal,
-        [name]: val,
-      };
-    });
-  };
-=======
     const [eventDetailLoading, setEventDetailLoading] = useState(true);
     const [foundEventDetail, setFoundEventDetail] = useState(null);
     const [searchParams, setSearchParams] = useSearchParams();
@@ -199,16 +55,10 @@ const EventRegistrationPage = () => {
     const chatContainerRef = useRef(null);
     const [isChatLoading, setIsChatLoading] = useState(false);
     const [chatLoadedOnce,setChatLoadedOnce] = useState(false);
->>>>>>> 22963cb150b8ca37bf7fb5170386ce56c3a574d3
 
     const handleSendMessage = () => {
         if (newMessage.trim() === '') return;
 
-<<<<<<< HEAD
-        if (videoRef.current) videoRef.current.srcObject = res;
-      }
-      handleRequestLocationAccess();
-=======
         const data = {
             eventId: foundEventDetail?._id,
             email: userDetails?.email,
@@ -302,16 +152,8 @@ const EventRegistrationPage = () => {
                 [name]: val,
             }
         })
->>>>>>> 22963cb150b8ca37bf7fb5170386ce56c3a574d3
     }
 
-<<<<<<< HEAD
-  useEffect(() => {
-    if (activeUserStream !== null) {
-      console.log("streamm ->>>", activeUserStream);
-      setCameraPermissionGranted(true);
-      if (videoRef.current) videoRef.current.srcObject = activeUserStream;
-=======
     useLoadEventDetail(
         foundEventDetail,
         setFoundEventDetail,
@@ -436,7 +278,6 @@ const EventRegistrationPage = () => {
                 console.log("no case defined");
                 return;
         }
->>>>>>> 22963cb150b8ca37bf7fb5170386ce56c3a574d3
     }
 
     const handleRequestLocationAccess = () => {
@@ -461,85 +302,6 @@ const EventRegistrationPage = () => {
                 <h3>{foundEventDetail?.name}</h3>
                 <p><span>{`${countDownTimer?.days < 10 ? '0' : ''}${countDownTimer?.days}`}days {`${countDownTimer?.hours < 10 ? '0' : ''}${countDownTimer?.hours}`}hours {`${countDownTimer?.minutes < 10 ? '0' : ''}${countDownTimer?.minutes}`}minutes {`${countDownTimer?.seconds < 10 ? '0' : ''}${countDownTimer?.seconds}`}seconds</span> left</p>
             </div>
-<<<<<<< HEAD
-          )}
-          <iframe
-            // src={foundEventDetail?.link}
-            src={dummyLink}
-            title="Event Link"
-            className={
-              iframeLoading ? styles.hidden__Frame : styles.event__Iframe
-            }
-            onLoad={() => {
-              setIframeLoading(false);
-            }}
-          ></iframe>
-          <div className={styles.floating__icon} onClick={toggleChat}>
-            <PiWechatLogoDuotone fontSize={"3rem"} color="#fff" />
-          </div>
-          <div
-            className={styles.chatModal}
-            style={{ display: isChatOpen ? "block" : "none" }}
-          >
-            <div className={styles.chat__bar}>
-              <p className={styles.chat__title}>Chat</p>
-              <MdCancel
-                className={styles.closeBtn}
-                onClick={toggleChat}
-                fontSize={"1.2rem"}
-                color="red"
-              />
-            </div>
-            {isChatLoading ? (
-              <div
-                className={styles.chat__main}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <DotLoader />
-              </div>
-            ) : (
-              <div ref={chatContainerRef} className={styles.chat__main}>
-                {chatMessages.map((message, index) => (
-                  <div
-                    className={styles.chat_message}
-                    key={index} // Use index as key
-                  >
-                    <div className={styles.avatarContainer}>
-                      <div className={styles.avatar}>
-                        {message.username[0].toUpperCase()}
-                      </div>
-                    </div>
-                    <div className={styles.chat__message}>
-                      <div className={styles.messageContent}>
-                        <strong>{message.username}: </strong>
-                        {message.message}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className={styles.chat__inputWrapper}>
-              <div className={styles.chat__input}>
-                <input
-                  type="text"
-                  placeholder="Type your message..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  disabled={isChatLoading}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* <div className={styles.track__Container}>
-=======
             {
                 iframeLoading && <div
                     className={styles.event__Iframe}
@@ -609,7 +371,6 @@ const EventRegistrationPage = () => {
             </div>
 
             {/* <div className={styles.track__Container}>
->>>>>>> 22963cb150b8ca37bf7fb5170386ce56c3a574d3
                 <EyeTracker />
             </div> */}
 

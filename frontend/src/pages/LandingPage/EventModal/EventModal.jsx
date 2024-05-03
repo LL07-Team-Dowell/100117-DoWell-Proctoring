@@ -185,7 +185,7 @@ const AddEventModal = ({ handleCloseModal }) => {
               </div>
               <EmailInput
                 newEvent={event.name}
-                eventLink={event.link}
+                eventLink={`${window.location.origin}/dowellproctoring/?view=public&event_id=${eventId}`}
                 closeModal={handleCloseModal}
               />
             </label>
