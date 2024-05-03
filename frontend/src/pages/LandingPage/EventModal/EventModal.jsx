@@ -80,6 +80,7 @@ const AddEventModal = ({ handleCloseModal }) => {
       return toast.info(
         "The 'Start Date' of the event should be before its 'Close Date'"
       );
+
     if (new Date(newEvent.start_time).getTime() < new Date().getTime())
       return toast.info("'Start Date' of the event cannot be in the past");
 
@@ -128,12 +129,14 @@ const AddEventModal = ({ handleCloseModal }) => {
                   type="text"
                   name={"link"}
                   placeholder="Event link"
-                  value={`${window.location.origin}/view=public&event_id=${eventId}`}
+                  value={`${window.location.origin}/dowellproctoring/?view=public&event_id=${eventId}`}
                   style={{ width: "100%" }}
                 />
                 <button
                   onClick={async () => {
-                    await navigator.clipboard.writeText(event.link);
+                    await navigator.clipboard.writeText(
+                      `${window.location.origin}/dowellproctoring/?view=public&event_id=${eventId}`
+                    );
 
                     setCopiedId("write-text");
                   }}
