@@ -6,6 +6,17 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
+# installing npm and node js
+sudo apt install nodejs npm
+
+cd backend
+npm install 
+cd ..
+
+cd frontend
+npm install 
+cd ..
+
 # Check the provided argument
 if [ "$1" == "dev" ]; then
     # biuld docker-compose for development
