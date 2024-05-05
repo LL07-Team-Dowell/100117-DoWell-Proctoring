@@ -16,15 +16,15 @@ const {Producer, Consumer} = require('./utils/kafka');
 const app = express();
 
 
-createKafkaTopic(`${process.env.KAFKA_TOPIC}`); 
-Consumer(`${process.env.KAFKA_TOPIC}`);
+createKafkaTopic(process.env.KAFKA_TOPIC); 
+Consumer(process.env.KAFKA_TOPIC);
 
 
 const data = {
   name:'manish',
 
 }
-console.log(Producer(`${process.env.KAFKA_TOPIC}`,data));
+console.log(Producer(process.env.KAFKA_TOPIC,data));
 
 // loading and parsing all the permitted frontend urls for cors
 let allowedOrigins = [];
@@ -86,7 +86,7 @@ io.on("connection", (socket) => {
         tagged:participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
       };
       //addmessage(message);
-      Producer(`${process.env.KAFKA_TOPIC}`,message);
+      Producer(process.env.KAFKA_TOPIC,message);
       
       
             
