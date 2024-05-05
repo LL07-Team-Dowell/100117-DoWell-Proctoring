@@ -86,9 +86,7 @@ io.on("connection", (socket) => {
         tagged:participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
       };
       //addmessage(message);
-      Producer(process.env.KAFKA_TOPIC,message);
-      
-      
+      Producer(process.env.KAFKA_TOPIC,message);  
             
     } catch (error) {
             
