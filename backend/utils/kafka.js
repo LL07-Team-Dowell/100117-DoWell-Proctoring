@@ -1,6 +1,6 @@
 const { kafka } = require("../config/kafka.config");
 const { addmessage } = require('../controller/messageController');
-require('dotenv').config();
+
 let producer = null;
 
 async function initProducer() {
@@ -17,18 +17,18 @@ async function initProducer() {
         throw error;
     }
 }
-async function Producer(data) {
+async function Producer(topic,data) {
     try {
         const producer = await initProducer();
         const dataValue = JSON.stringify(data);
         await producer.send({
-            topic: `${process.env.KAFKA_TOPIC}`,
+            topic: topic,
             messages: [{ value: dataValue }],
         });
-        console.log(`${process.env.KAFKA_TOPIC} produced successfully.`);
+        console.log(`${dataValue} produced successfully.`);
         return true;
     } catch (error) {
-        console.error(`Error producing the topic ${process.env.KAFKA_TOPIC}: `, error);
+        console.error(`Error producing the messagevalue ${dataValue}: `, error);
         return false;
     }
 }
@@ -37,7 +37,8 @@ async function Consumer(topic) {
         console.log("Consumer is running..");
         const consumer = kafka.consumer({ groupId: "default" });
         await consumer.connect();
-        await consumer.subscribe({ topic: `${process.env.KAFKA_TOPIC}`, fromBeginning: true });
+        console.log(consumer);
+        await consumer.subscribe({ topic: topic, fromBeginning: true });
 
         await consumer.run({
             autoCommit: true,
@@ -46,15 +47,17 @@ async function Consumer(topic) {
                 console.log(`New message received..`);
                 try {
                     addmessage(JSON.parse(message.value.toString()));
+                    console.log(`Consumer caught ${message.value} successfully.`);
                 } catch (err) {
-                    console.error(`Error processing ${process.env.KAFKA_TOPIC}: `, err);
+                    console.error(`Error processing ${topic}: `, err);
                     pause();
                     setTimeout(() => {
-                        consumer.resume([{ topic: process.env.KAFKA_TOPIC }]);
+                        consumer.resume([{ topic: topic }]);
                     }, 60 * 1000);
                 }
             },
         });
+        
     } catch (error) {
         console.error(`Error starting ${topic} consumer:`, error);
     }

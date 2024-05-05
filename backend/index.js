@@ -15,6 +15,17 @@ const {Producer, Consumer} = require('./utils/kafka');
 // creating a new express application
 const app = express();
 
+
+createKafkaTopic(`${process.env.KAFKA_TOPIC}`); 
+Consumer(`${process.env.KAFKA_TOPIC}`);
+
+
+const data = {
+  name:'manish',
+
+}
+console.log(Producer(`${process.env.KAFKA_TOPIC}`,data));
+
 // loading and parsing all the permitted frontend urls for cors
 let allowedOrigins = [];
 try {
@@ -39,12 +50,10 @@ const io = new Server(httpServer, {
 })
 
 
-createKafkaTopic(`${process.env.KAFKA_TOPIC}`); 
-Consumer(`${process.env.KAFKA_TOPIC}`);
-
 // listening when a client connects to our socket instance
 io.on("connection", (socket) => {
   console.log("connected with: ", socket.id);
+  
 
   // join event
   socket.on("join-event", (eventId, userPeerId, userEmail, nameOfUser) => {
@@ -77,7 +86,9 @@ io.on("connection", (socket) => {
         tagged:participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
       };
       //addmessage(message);
-      await Producer(message);
+      Producer(`${process.env.KAFKA_TOPIC}`,message);
+      
+      
             
     } catch (error) {
             
