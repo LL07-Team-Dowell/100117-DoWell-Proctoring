@@ -7,7 +7,7 @@ module.exports = (app, allowedOrigins=[]) => {
     app.use(morgan('combined'));
 
     // configuring to parse any incoming json requests
-    app.use(express.json());
+    app.use(express.json({ limit: '10mb' }));
 
     // configuring cors
     app.use(cors({
