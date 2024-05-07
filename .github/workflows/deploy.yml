@@ -25,7 +25,7 @@ jobs:
           cd ${{ secrets.WORK_DIR }} && \
           git checkout ${{ secrets.MAIN_BRANCH }} && \
           git add . && \
-          git commit -m "Committing changes from GitHub Actions" && \
+          git commit -m "Committing" && \
           git pull && \
           chmod +x run_docker.sh && \
           ./run_docker.sh prod \
