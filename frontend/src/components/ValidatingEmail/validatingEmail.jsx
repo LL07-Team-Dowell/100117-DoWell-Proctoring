@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import "./validateEmail.css";
@@ -5,7 +6,7 @@ import { MdCancel } from "react-icons/md";
 import { toast } from "sonner";
 import { sendEmail } from "../../utils/email";
 
-const EmailInput = ({ newEvent }) => {
+const EmailInput = ({ newEvent, eventLink, closeModal }) => {
   const [emails, setEmails] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [notValid, setNotValid] = useState(false);
@@ -20,9 +21,16 @@ const EmailInput = ({ newEvent }) => {
   const addEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isValidEmail = re.test(String(email).toLowerCase());
+
+    //Extract the name from the email
+    const name = email
+      .split("@")[0]
+      .replace(/[.]/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+
     setEmails((prevEmails) => [
       ...prevEmails,
-      { email, isValid: isValidEmail },
+      { email, name, isValid: isValidEmail },
     ]);
     setInputValue("");
     if (!isValidEmail) {
@@ -37,22 +45,25 @@ const EmailInput = ({ newEvent }) => {
   };
 
   const handleSendInvite = () => {
-    // if (notValid) return toast.error("Correct the invalid email address");
-    // const emailAddresses = emails.map((emailObj) => emailObj.email);
+    if (notValid) return toast.error("Correct the invalid email address");
+    const emailAddresses = emails.map((emailObj) => ({
+      email: emailObj.email,
+      name: emailObj.name,
+    }));
 
-    // const message = "This is the message content of the email.";
-    // const email = emailAddresses.join(",");
+    const message = `Join ${newEvent} on ${eventLink}`;
+    const email = emailAddresses;
 
-    // sendEmail(message, email, newEvent)
-    //   .then((response) => {
-    //     console.log("Email sent successfully:", response);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error sending email:", error);
-    //   });
-    // toast.success("Invitation sent successfully");
-    // console.log("Email addresses:", emailAddresses);
-    toast.info("Still in development");
+    sendEmail(message, email, newEvent)
+      .then((response) => {
+        console.log("Email sent successfully:", response);
+        closeModal();
+      })
+      .catch((error) => {
+        console.error("Error sending email:", error);
+      });
+    toast.success("Invitation sent successfully");
+    console.log("Email addresses:", email);
   };
 
   return (
@@ -88,7 +99,9 @@ const EmailInput = ({ newEvent }) => {
           placeholder="Enter email address"
         />
       </div>
-      <button onClick={handleSendInvite}>Send Invite</button>
+      <button onClick={handleSendInvite} style={{ height: "3.5rem" }}>
+        Send Invite
+      </button>
     </div>
   );
 };

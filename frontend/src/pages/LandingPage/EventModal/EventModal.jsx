@@ -22,6 +22,7 @@ const AddEventModal = ({ handleCloseModal }) => {
     max_cap: "",
     link: "",
   });
+  console.log(event);
   const [loading, setLoading] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopiedId] = useState("");
@@ -80,10 +81,12 @@ const AddEventModal = ({ handleCloseModal }) => {
       return toast.info(
         "The 'Start Date' of the event should be before its 'Close Date'"
       );
+
     if (new Date(newEvent.start_time).getTime() < new Date().getTime())
       return toast.info("'Start Date' of the event cannot be in the past");
 
     // handleAddEvent(newEvent);
+
     console.log(newEvent);
     setLoading(true);
 
@@ -128,12 +131,14 @@ const AddEventModal = ({ handleCloseModal }) => {
                   type="text"
                   name={"link"}
                   placeholder="Event link"
-                  value={`${window.location.origin}/view=public&event_id=${eventId}`}
+                  value={`${window.location.origin}/dowellproctoring/?view=public&event_id=${eventId}`}
                   style={{ width: "100%" }}
                 />
                 <button
                   onClick={async () => {
-                    await navigator.clipboard.writeText(event.link);
+                    await navigator.clipboard.writeText(
+                      `${window.location.origin}/dowellproctoring/?view=public&event_id=${eventId}`
+                    );
 
                     setCopiedId("write-text");
                   }}
@@ -178,7 +183,11 @@ const AddEventModal = ({ handleCloseModal }) => {
               <div style={{ margin: "0.4rem 0" }}>
                 <span>Invite via email</span>
               </div>
-              <EmailInput newEvent={event.name} />
+              <EmailInput
+                newEvent={event.name}
+                eventLink={`${window.location.origin}/dowellproctoring/?view=public&event_id=${eventId}`}
+                closeModal={handleCloseModal}
+              />
             </label>
           </div>
         ) : (

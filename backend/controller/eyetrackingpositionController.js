@@ -4,6 +4,7 @@ const { EyeTrackingPosition, validateEyeTrackingPosition } = require('../models/
 const { generateDefaultResponseObject } = require("../utils/defaultResponseObject");
 const { Participant } = require("../models/participantModel");
 const { Eyetracking } = require('../models/eyetrackingModel');
+const {Producer, Consumer} = require('../utils/kafka');
 
 const create_new_eyetracking_position = async (req, res) => {
     try {
@@ -34,6 +35,14 @@ const create_new_eyetracking_position = async (req, res) => {
 
         // Save the eye tracking position to the database
         await eyeTrackingPosition.save();
+
+        const dataToSave = {
+            eyeTrackingModelId: eyeTrackingPosition.eyeTrackingModelId,
+            XPos: eyeTrackingPosition.XPos,
+            YPos: eyeTrackingPosition.YPos,
+            timestamp: Date().toString()
+        };
+        await Producer(dataToSave);
 
         return res.status(201).json(generateDefaultResponseObject({
             success: true,

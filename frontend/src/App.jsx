@@ -8,7 +8,7 @@ import { loggedInUserRoutes } from "./routes/loggedInUserRoutes";
 
 function App() {
   const { currentUser, isPublicUser, userDetailLoading } = useUserContext();
-  const publicBasePath = '/dowellproctoring';
+  const publicBasePath = "/dowellproctoring";
 
   useDowellLogin();
 
@@ -24,7 +24,12 @@ function App() {
       <Routes>
         {React.Children.toArray(
           publicUserRoutes.map((item) => {
-            return <Route path={publicBasePath + item.route} element={<item.component />} />;
+            return (
+              <Route
+                path={publicBasePath + item.route}
+                element={<item.component />}
+              />
+            );
           })
         )}
       </Routes>
@@ -41,7 +46,12 @@ function App() {
     <Routes>
       {React.Children.toArray(
         loggedInUserRoutes.map((item) => {
-          return <Route path={publicBasePath + item.route} element={<item.component />} />;
+          return (
+            <Route
+              path={publicBasePath + item.route}
+              element={<item.component />}
+            />
+          );
         })
       )}
     </Routes>
