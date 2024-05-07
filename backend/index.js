@@ -42,11 +42,16 @@ const httpServer = createServer(app);
 
 // configuring a new socket io instance
 const io = new Server(httpServer, {
+  //cors: {
+  //   origin: Array.isArray(allowedOrigins) ? allowedOrigins : [],
+  //},
+  //methods: ["GET", "POST"],
+  //path: '/proctoring-socket/'
   cors: {
-    origin: Array.isArray(allowedOrigins) ? allowedOrigins : [],
-  },
-  methods: ["GET", "POST"],
-  path: '/proctoring-socket/'
+    origin: "*",//Array.isArray(allowedOrigins) ? allowedOrigins : [],
+    methods: ["GET", "POST"],
+    path: '/proctoring-socket/'
+  }
 })
 
 
