@@ -8,12 +8,23 @@ const { Server } = require("socket.io");
 const { connectToDb } = require('./config/db');
 const { loadModels } = require('./utils/faceDetectorUtils');
 const { Participant } = require("./models/participantModel");
-const { addmessage } = require('./controller/messageController');
+const { addmessage } = require('./controller/messageController'); 
 const createKafkaTopic = require('./utils/admin.kafka');
 const {Producer, Consumer} = require('./utils/kafka');
 
 // creating a new express application
 const app = express();
+
+
+createKafkaTopic(process.env.KAFKA_TOPIC); 
+Consumer(process.env.KAFKA_TOPIC);
+
+
+const data = {
+  name:'manish',
+
+}
+console.log(Producer(process.env.KAFKA_TOPIC,data));
 
 // loading and parsing all the permitted frontend urls for cors
 let allowedOrigins = [];
@@ -31,20 +42,23 @@ const httpServer = createServer(app);
 
 // configuring a new socket io instance
 const io = new Server(httpServer, {
+  //cors: {
+  //   origin: Array.isArray(allowedOrigins) ? allowedOrigins : [],
+  //},
+  //methods: ["GET", "POST"],
+  //path: '/proctoring-socket/'
   cors: {
-    origin: Array.isArray(allowedOrigins) ? allowedOrigins : [],
-  },
-  methods: ["GET", "POST"],
-  path: '/proctoring-socket/'
+    origin: "*",//Array.isArray(allowedOrigins) ? allowedOrigins : [],
+    methods: ["GET", "POST"],
+    path: '/proctoring-socket/'
+  }
 })
 
-const topic= 'MESSAGE';
-//createKafkaTopic(topic); 
-//Consumer(topic);
 
 // listening when a client connects to our socket instance
 io.on("connection", (socket) => {
   console.log("connected with: ", socket.id);
+  
 
   // join event
   socket.on("join-event", (eventId, userPeerId, userEmail, nameOfUser) => {
@@ -76,8 +90,8 @@ io.on("connection", (socket) => {
         message: data.message,
         tagged:participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
       };
-      addmessage(message);
-      //await Producer(message);
+      //addmessage(message);
+      Producer(process.env.KAFKA_TOPIC,message);  
             
     } catch (error) {
             
