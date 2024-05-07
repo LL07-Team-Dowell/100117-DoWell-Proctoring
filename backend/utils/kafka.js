@@ -17,7 +17,6 @@ async function initProducer() {
         throw error;
     }
 }
-
 async function Producer(topic,data) {
     try {
         const producer = await initProducer();
@@ -26,19 +25,19 @@ async function Producer(topic,data) {
             topic: topic,
             messages: [{ value: dataValue }],
         });
-        console.log(`${topic} produced successfully.`);
+        console.log(`${dataValue} produced successfully.`);
         return true;
     } catch (error) {
-        console.error(`Error producing the topic ${topic}: `, error);
+        console.error(`Error producing the messagevalue ${dataValue}: `, error);
         return false;
     }
 }
-
 async function Consumer(topic) {
     try {
         console.log("Consumer is running..");
         const consumer = kafka.consumer({ groupId: "default" });
         await consumer.connect();
+        console.log(consumer);
         await consumer.subscribe({ topic: topic, fromBeginning: true });
 
         await consumer.run({
@@ -48,6 +47,7 @@ async function Consumer(topic) {
                 console.log(`New message received..`);
                 try {
                     addmessage(JSON.parse(message.value.toString()));
+                    console.log(`Consumer caught ${message.value} successfully.`);
                 } catch (err) {
                     console.error(`Error processing ${topic}: `, err);
                     pause();
@@ -57,9 +57,9 @@ async function Consumer(topic) {
                 }
             },
         });
+        
     } catch (error) {
         console.error(`Error starting ${topic} consumer:`, error);
     }
 }
-
 module.exports = { Producer, Consumer };
