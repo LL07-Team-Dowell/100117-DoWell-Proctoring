@@ -164,7 +164,7 @@ elif [ "$1" == "prod" ]; then
     # biuld docker-compose for prodcution
     docker-compose -f docker-compose.prod.yml build
     # Run docker-compose for production environment
-    docker-compose -f docker-compose.prod.yml up
+    docker-compose -f docker-compose.prod.yml up -d
 else
     echo "Invalid environment specified. Please use 'dev' or 'prod'."
     exit 1
