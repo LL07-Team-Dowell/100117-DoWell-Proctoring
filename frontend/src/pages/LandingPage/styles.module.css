@@ -34,3 +34,38 @@
   align-items: center;
   gap: 0.2rem;
 }
+
+.main__content {
+  margin-top: 1.5rem;
+}
+
+.event__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event__header button {
+  padding: 0.5em 1.5em;
+  /* background-color: #005734; */
+  background-color: #fff;
+  color: #005734;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 1rem;
+}
+
+.arrow {
+  font-size: 1rem;
+}
+
+.main__content__wrapper {
+  padding: 0 1em;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5rem;
+}

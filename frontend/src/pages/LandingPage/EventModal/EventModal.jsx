@@ -82,8 +82,8 @@ const AddEventModal = ({ handleCloseModal }) => {
         "The 'Start Date' of the event should be before its 'Close Date'"
       );
 
-    // if (new Date(newEvent.start_time).getTime() < new Date().getTime())
-    //   return toast.info("'Start Date' of the event cannot be in the past");
+    if (new Date(newEvent.start_time).getTime() < new Date().getTime())
+      return toast.info("'Start Date' of the event cannot be in the past");
 
     // handleAddEvent(newEvent);
 

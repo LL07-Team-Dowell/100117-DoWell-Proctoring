@@ -1,4 +1,5 @@
 import AppLayout from "../layouts/AppLayout/AppLayout";
+import EventsPage from "../pages/EventsPage/EventsPage";
 import LandingPage from "../pages/LandingPage/LandingPage";
 import ProctorLiveEventPage from "../pages/ProctorLiveEventPage/ProctorLiveEventPage";
 
@@ -9,6 +10,16 @@ export const loggedInUserRoutes = [
       return (
         <AppLayout>
           <LandingPage />
+        </AppLayout>
+      );
+    },
+  },
+  {
+    route: "/events",
+    component: () => {
+      return (
+        <AppLayout>
+          <EventsPage />
         </AppLayout>
       );
     },
