@@ -1,24 +1,28 @@
 import axios from 'axios';
 
 
-// CONFIG FOR PEERJS
-// local usage
-// export const peerServerHost = 'localhost';
-// export const peerServerPort = 9000;
-// export const peerServerPath = '/myapp';
-
-// production usage
-export const peerServerHost = 'uxlive.me';
-export const peerServerPort = 9000;
-export const peerServerPath = '/dowellproctoring/peer/myapp';
-
 
 
 // different API base URLs
 const loginBaseUrl = 'https://100014.pythonanywhere.com/api/';
 const clientAdminBaseUrl = 'https://100093.pythonanywhere.com/api/';
-// export const currentBaseApiOrigin = 'http://localhost:5000'; // local
-export const currentBaseApiOrigin = 'https://www.uxlive.me'; // prod
+
+// Default values for production environment
+let peerServerHost = 'uxlive.me';
+let peerServerPort = 9000;
+let peerServerPath = '/dowellproctoring/peer/myapp';
+let currentBaseApiOrigin = 'https://www.uxlive.me'; //prod
+
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    // CONFIG FOR PEERJS
+    // Local usage
+    peerServerHost = 'localhost';
+    peerServerPort = 9000;
+    peerServerPath = '/myapp';
+
+    // Running locally
+    currentBaseApiOrigin = 'http://localhost:5000'; //local
+}
 
 // creating separate axios instances for each API interaction
 const loginAxiosInstance = axios.create({
@@ -37,8 +41,14 @@ const defaultAxiosInstance = axios.create({
     withCredentials: true,
 })
 
+
 export {
     loginAxiosInstance,
     clientAdminAxiosInstance,
     defaultAxiosInstance,
+    currentBaseApiOrigin,
+    peerServerHost,
+    peerServerPort,
+    peerServerPath,
+    
 }

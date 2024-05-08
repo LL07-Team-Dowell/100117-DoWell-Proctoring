@@ -28,7 +28,7 @@ async function Producer(topic,data) {
         console.log(`${dataValue} produced successfully.`);
         return true;
     } catch (error) {
-        console.error(`Error producing the messagevalue ${dataValue}: `, error);
+        console.error(`Error producing the messagevalue ${data}: `, error);
         return false;
     }
 }
