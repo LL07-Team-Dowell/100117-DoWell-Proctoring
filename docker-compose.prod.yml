@@ -8,6 +8,7 @@ services:
     container_name: dowell-proctoring-zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+
   kafka:
     image: 'bitnami/kafka:latest'
     ports:
@@ -30,15 +31,15 @@ services:
     container_name: dowell-proctoring-backend
     restart: always
     ports:
-      - "5000:5000"  # Expose the backend on port 5000 on the host
+      - "5000:5000"
     env_file:
-      - ./backend/.env  # Environment variables for the backend
+      - ./backend/.env
     volumes:
       - /usr/src/app/node_modules
     depends_on:
       - kafka
     networks:
-      - webnet  # Ensures it can communicate with other services in the same network
+      - webnet
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 1m
@@ -60,12 +61,14 @@ services:
       - /usr/src/app/node_modules
 
   dowell-proctoring-peerjs:
-    build:
-      context: .
-      dockerfile: Dockerfile.peerjs
+    image: peerjs/peerjs-server
     container_name: dowell-proctoring-peerjs
     ports:
       - "9000:9000"
+    environment:
+      - PEERJS_PORT=9000
+      - PEERJS_KEY=peerjs
+      - PEERJS_PATH=/myapp
     networks:
       - webnet
 
