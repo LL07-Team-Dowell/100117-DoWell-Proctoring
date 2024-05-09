@@ -47,10 +47,6 @@ const LandingPage = () => {
             <span>Add</span>
           </button>
         </section>
-
-        {showAddEventModal && (
-          <AddEventModal handleCloseModal={() => setShowAddEventModal(false)} />
-        )}
         <div className={styles.main__content}>
           <div className={styles.event__header}>
             <h3>My Events</h3>
@@ -67,6 +63,9 @@ const LandingPage = () => {
             />
           </section>
         </div>
+        {showAddEventModal && (
+          <AddEventModal handleCloseModal={() => setShowAddEventModal(false)} />
+        )}
       </main>
     </>
   );
