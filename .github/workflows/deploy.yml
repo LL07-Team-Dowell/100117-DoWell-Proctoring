@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Cleanup SSH Directory
+        run: rm -rf ~/.ssh
+
       - name: Install SSH Keys for Secure Connection
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_rsa
