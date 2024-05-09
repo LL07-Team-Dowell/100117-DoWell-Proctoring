@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import React from "react";
 import { publicUserRoutes } from "./routes/publicUserRoutes";
 import { loggedInUserRoutes } from "./routes/loggedInUserRoutes";
+import EventsContextProvider from "./contexts/EventsContext";
 
 function App() {
   const { currentUser, isPublicUser, userDetailLoading } = useUserContext();
@@ -49,7 +50,11 @@ function App() {
           return (
             <Route
               path={publicBasePath + item.route}
-              element={<item.component />}
+              element={
+                <EventsContextProvider>
+                  <item.component />
+                </EventsContextProvider>
+              }
             />
           );
         })
