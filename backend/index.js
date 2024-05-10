@@ -9,22 +9,22 @@ const { connectToDb } = require('./config/db');
 const { loadModels } = require('./utils/faceDetectorUtils');
 const { Participant } = require("./models/participantModel");
 const { addmessage } = require('./controller/messageController'); 
-const createKafkaTopic = require('./utils/admin.kafka');
-const {Producer, Consumer} = require('./utils/kafka');
+// const createKafkaTopic = require('./utils/admin.kafka');
+// const {Producer, Consumer} = require('./utils/kafka');
 
 // creating a new express application
 const app = express();
 
 
-createKafkaTopic(process.env.KAFKA_TOPIC); 
-Consumer(process.env.KAFKA_TOPIC);
+// createKafkaTopic(process.env.KAFKA_TOPIC); 
+// Consumer(process.env.KAFKA_TOPIC);
 
 
-const data = {
-  name:'manish',
+// const data = {
+//   name:'manish',
 
-}
-console.log(Producer(process.env.KAFKA_TOPIC,data));
+// }
+// console.log(Producer(process.env.KAFKA_TOPIC,data));
 
 // loading and parsing all the permitted frontend urls for cors
 let allowedOrigins = [];
@@ -90,8 +90,8 @@ io.on("connection", (socket) => {
         message: data.message,
         tagged:participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
       };
-      //addmessage(message);
-      Producer(process.env.KAFKA_TOPIC,message);  
+      addmessage(message);
+      // Producer(process.env.KAFKA_TOPIC,message);  
             
     } catch (error) {
             
