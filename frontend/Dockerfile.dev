@@ -1,4 +1,4 @@
-FROM node:20.11.1 AS build
+FROM node:20-alpine AS build
 
 # Create a directory where our app will be placed
 RUN mkdir -p /usr/src/app/node_modules && chown -R node:node /usr/src/app
