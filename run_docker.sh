@@ -8,12 +8,8 @@ fi
 
 # Check if the system is running Linux
 if [ "$(uname)" == "Linux" ]; then
-    echo "System OS: Linux Detected"
+    echo -e "\e[32m✓\e[0m System OS: Linux Detected"
     
-    # installing npm and node js
-    echo "installing nodejs and npm"
-    sudo apt install nodejs npm
-
     # getting the ip address
     # Get the IP address of the Linux system
     ip_address=$(hostname -I | awk '{print $1}')
@@ -39,30 +35,36 @@ if [ "$(uname)" == "Linux" ]; then
     else
         echo "KAFKA_HOST=$ip_address" >> .env
     fi
+
     if grep -q "^KAFKA_TOPIC=" .env; then
         sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
     else
         echo "KAFKA_TOPIC=MESSAGES" >> .env
     fi
-
     cd ..
+    echo -e "\e[32m✓\e[0m Created env file for backend"
     # Store the IP address in a .env file
-    echo "KAFKA_HOST=$ip_address" > .env
+    if grep -q "^KAFKA_HOST=" .env; then
+        sed -i "s/^KAFKA_HOST=.*/KAFKA_HOST=$ip_address/" .env
+    else
+        echo "KAFKA_HOST=$ip_address" >> .env
+    fi
+
+    if grep -q "^KAFKA_TOPIC=" .env; then
+        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
+    else
+        echo "KAFKA_TOPIC=MESSAGES" >> .env
+    fi
+    echo -e "\e[32m✓\e[0m Created env kafka"
 
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
-    echo "System OS: Windows Detected"
-    echo "Ensure nodejs and npm are installed manually for your OS"
-    
+    echo -e "\e[32m✓\e[0m System OS: Windows Detected"
+
     # Get the IP address for Windows
     ip_address=$(ipconfig | grep IPv4 | grep -v "127.0.0.1" | awk '{print $NF}')
     num_addresses=$(echo "$ip_address" | wc -l)
-
-    if [ "$num_addresses" -eq 1 ]; then
-        ip_address=$(echo "$ip_address")
-    else
-        ip_address=$(echo "$ip_address" | sed -n '2p')
-    fi
+    
 
     cd backend
 
@@ -91,14 +93,24 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
     else
         echo "KAFKA_TOPIC=MESSAGES" >> .env
     fi
-
     cd ..
+    echo -e "\e[32m✓\e[0m Created env file for backend"
     # Store the IP address in a .env file
-    echo "KAFKA_HOST=$ip_address" > .env
+    if grep -q "^KAFKA_HOST=" .env; then
+        sed -i "s/^KAFKA_HOST=.*/KAFKA_HOST=$ip_address/" .env
+    else
+        echo "KAFKA_HOST=$ip_address" >> .env
+    fi
 
+    if grep -q "^KAFKA_TOPIC=" .env; then
+        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
+    else
+        echo "KAFKA_TOPIC=MESSAGES" >> .env
+    fi
+    echo -e "\e[32m✓\e[0m Created env kafka"
 
 elif [ "$(uname)" == "Darwin" ]; then
-    echo "System OS: macOS Detected"
+    echo -e "\e[32m✓\e[0m System OS: macOS Detected"
 
     brew install node
 
@@ -109,24 +121,12 @@ elif [ "$(uname)" == "Darwin" ]; then
     cd backend
 
     # Check if the variables exist in the .env file
-    if grep -q "^IP=" .env; then
-        sed -i "s/^IP=.*/IP=$ip_address:9092/" .env
-    else
-        echo "" >> .env
-        echo "IP=$ip_address:9092" >> .env
-    fi
-
-    if grep -q "^IPDEV=" .env; then
-        sed -i "s/^IPDEV=.*/IPDEV=$ip_address:9092/" .env
-    else
-        echo "IPDEV=$ip_address:9092" >> .env
-    fi
-
     if grep -q "^KAFKA_HOST=" .env; then
         sed -i "s/^KAFKA_HOST=.*/KAFKA_HOST=$ip_address/" .env
     else
         echo "KAFKA_HOST=$ip_address" >> .env
     fi
+
     if grep -q "^KAFKA_TOPIC=" .env; then
         sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
     else
@@ -134,24 +134,27 @@ elif [ "$(uname)" == "Darwin" ]; then
     fi
 
     cd ..
+    echo -e "\e[32m✓\e[0m Created env file for backend"
     # Store the IP address in a .env file
-    echo "KAFKA_HOST=$ip_address" > .env
+    if grep -q "^KAFKA_HOST=" .env; then
+        sed -i "s/^KAFKA_HOST=.*/KAFKA_HOST=$ip_address/" .env
+    else
+        echo "KAFKA_HOST=$ip_address" >> .env
+    fi
+
+    if grep -q "^KAFKA_TOPIC=" .env; then
+        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
+    else
+        echo "KAFKA_TOPIC=MESSAGES" >> .env
+    fi
+    echo -e "\e[32m✓\e[0m Created env kafka"
 
 else
-    echo "Unsupported operating system"
-    echo "Ensure nodejs and npm are installed manually for your OS"
+    echo -e "\e[31mUnsupported operating system\e[0m"
+    echo -e "\e[33mEnsure nodejs and npm are installed manually for your OS\e[0m"
+    echo -e "\e[33mEnsure .env files are added manually for your OS\e[0m"
+
 fi
-
-
-cd backend
-npm install 
-
-cd ..
-
-cd frontend
-npm install 
-cd ..
-
 
 #==========================================================================================================
 # Check the provided argument
