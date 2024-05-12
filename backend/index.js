@@ -96,7 +96,7 @@ function startServer() {
     console.log(`Server running on port ${PORT}`);
     await adminInit(TOPIC);
     await consumerRun("realtime-messages", [TOPIC]);
-    await callProducer();
+    //await callProducer();
   });
 }
 
