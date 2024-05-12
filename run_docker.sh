@@ -44,7 +44,17 @@ if [ "$(uname)" == "Linux" ]; then
     cd ..
     echo -e "\e[32m✓\e[0m Created env file for backend"
     # Store the IP address in a .env file
-    echo "KAFKA_HOST=$ip_address" > .env
+    if grep -q "^KAFKA_HOST=" .env; then
+        sed -i "s/^KAFKA_HOST=.*/KAFKA_HOST=$ip_address/" .env
+    else
+        echo "KAFKA_HOST=$ip_address" >> .env
+    fi
+
+    if grep -q "^KAFKA_TOPIC=" .env; then
+        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
+    else
+        echo "KAFKA_TOPIC=MESSAGES" >> .env
+    fi
     echo -e "\e[32m✓\e[0m Created env kafka"
 
 
@@ -86,7 +96,17 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
     cd ..
     echo -e "\e[32m✓\e[0m Created env file for backend"
     # Store the IP address in a .env file
-    echo "KAFKA_HOST=$ip_address" > .env
+    if grep -q "^KAFKA_HOST=" .env; then
+        sed -i "s/^KAFKA_HOST=.*/KAFKA_HOST=$ip_address/" .env
+    else
+        echo "KAFKA_HOST=$ip_address" >> .env
+    fi
+
+    if grep -q "^KAFKA_TOPIC=" .env; then
+        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
+    else
+        echo "KAFKA_TOPIC=MESSAGES" >> .env
+    fi
     echo -e "\e[32m✓\e[0m Created env kafka"
 
 elif [ "$(uname)" == "Darwin" ]; then
@@ -116,7 +136,17 @@ elif [ "$(uname)" == "Darwin" ]; then
     cd ..
     echo -e "\e[32m✓\e[0m Created env file for backend"
     # Store the IP address in a .env file
-    echo "KAFKA_HOST=$ip_address" > .env
+    if grep -q "^KAFKA_HOST=" .env; then
+        sed -i "s/^KAFKA_HOST=.*/KAFKA_HOST=$ip_address/" .env
+    else
+        echo "KAFKA_HOST=$ip_address" >> .env
+    fi
+
+    if grep -q "^KAFKA_TOPIC=" .env; then
+        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
+    else
+        echo "KAFKA_TOPIC=MESSAGES" >> .env
+    fi
     echo -e "\e[32m✓\e[0m Created env kafka"
 
 else

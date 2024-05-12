@@ -21,4 +21,4 @@ const adminInit = async (topic) => {
   await admin.disconnect();
   console.log("Admin Disconnected Successfully...");
 }
-module.exports = createKafkaTopic;
+module.exports = adminInit;
