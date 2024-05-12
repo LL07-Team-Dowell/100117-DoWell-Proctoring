@@ -1,13 +1,16 @@
 FROM node:20-alpine AS build
 
 # Create a directory where our app will be placed
-RUN mkdir -p /usr/src/app/node_modules && chown -R node:node /usr/src/app
+RUN mkdir -p /usr/src/frontend/node_modules && chown -R node:node /usr/src/frontend
 
 # Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /usr/src/frontend
 
 # Copy the package.json and package-lock.json
 COPY package*.json ./
+
+#Clear npm cache
+RUN npm cache clean --force
 
 # Install dependencies
 RUN npm install
