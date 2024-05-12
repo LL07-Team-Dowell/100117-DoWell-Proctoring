@@ -12,6 +12,7 @@ import Card from "../../components/Card/Card";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { formatDate } from "../../helpers/formatDate";
 import EventCard from "../EventsPage/EventCard/EventCard";
+import { useEventsContext } from "../../contexts/index";
 
 const LandingPage = () => {
   const [greeting, setGreeting] = useState("");
@@ -19,6 +20,9 @@ const LandingPage = () => {
   const [showAddEventModal, setShowAddEventModal] = useState(false);
   console.log(currentUser);
   const navigate = useNavigate();
+  const { allEvents } = useEventsContext();
+
+  const visibleEvents = allEvents?.slice(0, 3);
 
   const handleShowAddEventModal = () => {
     setShowAddEventModal(true);
@@ -55,12 +59,15 @@ const LandingPage = () => {
             </button>
           </div>
           <section className={styles.main__content__wrapper}>
-            <EventCard
-              eventName={"Event Name"}
-              startTime={"10:00 AM"}
-              endTime={"11:00 AM"}
-              participants={10}
-            />
+            {visibleEvents?.map((event) => (
+              <EventCard
+                key={event._id}
+                eventName={event.name}
+                startTime={formatDate(event.start_time)}
+                endTime={formatDate(event.close_date)}
+                participants={event.participants}
+              />
+            ))}
           </section>
         </div>
         {showAddEventModal && (
