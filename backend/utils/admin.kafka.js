@@ -1,8 +1,7 @@
-const { Kafka } = require("kafkajs");
-const { config, kafka } = require("../config/kafka.config");
+const { kafkaClient } = require("../config/kafka.config");
 
-async function createKafkaTopic(topic) {
-  const admin = kafka.admin();
+const adminInit = async (topic) => {
+  const admin = kafkaClient.admin();
   console.log("Admin connecting...");
   await admin.connect();
   console.log("Admin Connected Successfully...");
@@ -22,5 +21,4 @@ async function createKafkaTopic(topic) {
   await admin.disconnect();
   console.log("Admin Disconnected Successfully...");
 }
-
-module.exports = createKafkaTopic;
+module.exports = adminInit;
