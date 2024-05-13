@@ -11,11 +11,11 @@ services:
     ports:
       - 2181:2181
     restart: always
-    healthcheck:
-      test: ["CMD", "zookeeper-shell", "localhost:2181", "ruok"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    # healthcheck:
+    #   test: ["CMD", "zookeeper-shell", "localhost:2181", "ruok"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
     networks:
       - webnet
 
@@ -30,13 +30,14 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
-      zookeeper:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
-      interval: 30s
-      timeout: 10s
-      retries: 10
+      - zookeeper
+        # condition: service_healthy
+    # healthcheck:
+    #   test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 10
+    restart: always
     networks:
       - webnet
 
@@ -47,9 +48,10 @@ services:
       - "5000:5000"
     env_file:
       - ./backend/.env
-    depends_on:
-      kafka:
-        condition: service_healthy
+    # depends_on:
+    #   kafka:
+    #     condition: service_healthy
+    restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 1m
@@ -64,6 +66,7 @@ services:
     build: ./frontend
     ports:
       - "4173:4173"
+    restart: always
     networks:
       - webnet
 
@@ -76,6 +79,7 @@ services:
       PEERJS_PORT: 9000
       PEERJS_KEY: peerjs
       PEERJS_PATH: /myapp
+    restart: always
     networks:
       - webnet
 
