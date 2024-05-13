@@ -5,6 +5,7 @@ services:
   # Zookeeper configuration for managing Kafka state
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    container_name: dowell-proctoring-zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -22,6 +23,7 @@ services:
   # Kafka configuration for message queuing and streaming
   kafka:
     image: confluentinc/cp-kafka:latest
+    container_name: dowell-proctoring-kafka
     ports:
       - 9092:9092
     environment:
@@ -44,6 +46,7 @@ services:
   # Backend API service configuration
   dowell-proctoring-backend:
     build: ./backend
+    container_name: dowell-proctoring-backend
     ports:
       - "5000:5000"
     env_file:
@@ -64,6 +67,7 @@ services:
   # Frontend service configuration serving static files
   dowell-proctoring-frontend:
     build: ./frontend
+    container_name: dowell-proctoring-frontend
     ports:
       - "4173:4173"
     restart: always
@@ -73,6 +77,7 @@ services:
   # PeerJS server configuration for peer-to-peer communication
   dowell-proctoring-peerjs:
     image: peerjs/peerjs-server
+    container_name: dowell-proctoring-peerjs
     ports:
       - "9000:9000"
     environment:
