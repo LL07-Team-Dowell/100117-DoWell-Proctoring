@@ -104,7 +104,6 @@ async function initializeApp() {
   try {
     // Connect to database
     await connectToDb();
-    console.log("Database connected successfully.");
 
     // Load face detection models
     await loadModels();
