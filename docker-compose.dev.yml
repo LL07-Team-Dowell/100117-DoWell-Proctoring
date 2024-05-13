@@ -63,11 +63,4 @@ services:
       - PEERJS_PORT=9000
       - PEERJS_KEY=peerjs
       - PEERJS_PATH=/myapp
-    networks:
-      - webnet
 
-networks:
-    webnet: {}
-
-volumes:
-  backend: {}
