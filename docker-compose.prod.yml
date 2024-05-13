@@ -48,7 +48,6 @@ services:
     build: 
       context: ./backend
       dockerfile: Dockerfile.prod
-    dockerfile: ./backend/Dockerfile.prod
     container_name: dowell-proctoring-backend
     ports:
       - "5000:5000"
