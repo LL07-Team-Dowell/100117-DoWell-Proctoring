@@ -75,8 +75,8 @@ io.on("connection", (socket) => {
         message: data.message,
         tagged:participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
       };
-      addmessage(message);
-      //await producerRun(message);  
+      //addmessage(message);
+      await producerRun(message);  
             
     } catch (error) {
             
