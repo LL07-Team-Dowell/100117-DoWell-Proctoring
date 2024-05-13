@@ -1,5 +1,8 @@
-version: "2"
+version: "3.8"
+
+# Define services
 services:
+  # Zookeeper configuration for managing Kafka state
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -7,84 +10,76 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - 2181:2181
-    container_name: dowell-proctoring-zookeeper
     restart: always
-    # healthcheck:
-    #   test: ["CMD", "zookeeper-shell", "localhost:2181", "ruok"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
+    healthcheck:
+      test: ["CMD", "zookeeper-shell", "localhost:2181", "ruok"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - webnet
 
+  # Kafka configuration for message queuing and streaming
   kafka:
     image: confluentinc/cp-kafka:latest
     ports:
       - 9092:9092
-    container_name: dowell-proctoring-kafka
-    restart: always
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_HOST}:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
-      - zookeeper
-    #  zookeeper:
-    #    condition: service_healthy
-    # healthcheck:
-    #   test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 10
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+    networks:
+      - webnet
 
-
+  # Backend API service configuration
   dowell-proctoring-backend:
-    build: 
-      context: ./backend
-      dockerfile: Dockerfile.prod
-    container_name: dowell-proctoring-backend
-    restart: always
+    build: ./backend
     ports:
       - "5000:5000"
-    expose:
-      - "5000"
     env_file:
       - ./backend/.env
-    volumes:
-      - /usr/src/backend/node_modules
     depends_on:
-      - kafka
-    #  kafka:
-    #    condition: service_healthy
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-    #   interval: 1m
-    #   timeout: 10s
-    #   retries: 3
-    #   start_period: 30s
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - webnet
 
+  # Frontend service configuration serving static files
   dowell-proctoring-frontend:
-    build: 
-      context: ./frontend
-      dockerfile: Dockerfile.prod
-    container_name: dowell-proctoring-frontend
-    restart: always
+    build: ./frontend
     ports:
       - "4173:4173"
-    expose:
-      - "4173"
-    volumes:
-      - /usr/src/frontend/node_modules
+    networks:
+      - webnet
 
+  # PeerJS server configuration for peer-to-peer communication
   dowell-proctoring-peerjs:
     image: peerjs/peerjs-server
-    container_name: dowell-proctoring-peerjs
     ports:
       - "9000:9000"
-    expose:
-      - "9000"
     environment:
-      - PEERJS_PORT=9000
-      - PEERJS_KEY=peerjs
-      - PEERJS_PATH=/myapp
-      
+      PEERJS_PORT: 9000
+      PEERJS_KEY: peerjs
+      PEERJS_PATH: /myapp
+    networks:
+      - webnet
+
+# Define networks to be used by services
+networks:
+  webnet:
+    driver: bridge
