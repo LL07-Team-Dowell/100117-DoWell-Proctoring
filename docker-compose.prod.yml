@@ -45,7 +45,9 @@ services:
 
   # Backend API service configuration
   dowell-proctoring-backend:
-    build: ./backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.prod
     container_name: dowell-proctoring-backend
     ports:
       - "5000:5000"
@@ -55,18 +57,20 @@ services:
     #   kafka:
     #     condition: service_healthy
     restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 1m
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+    #   interval: 1m
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 30s
     networks:
       - webnet
 
   # Frontend service configuration serving static files
   dowell-proctoring-frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.prod
     container_name: dowell-proctoring-frontend
     ports:
       - "4173:4173"
@@ -91,4 +95,4 @@ services:
 # Define networks to be used by services
 networks:
   webnet:
-    driver: bridge
+    external: true
