@@ -96,4 +96,5 @@ services:
 # Define networks to be used by services
 networks:
   webnet:
+    # driver: bridge
     external: true
