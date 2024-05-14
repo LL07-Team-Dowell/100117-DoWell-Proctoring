@@ -8,7 +8,7 @@ export const EventsContext = createContext({});
 export default function EventsContextProvider({ children }) {
   const [allEvents, setAllEvents] = useState([]);
   const [eventsLoading, setEventsLoading] = useState(false);
-  const { eventsLoaded, setEventsLoaded } = useState(false);
+  const [eventsLoaded, setEventsLoaded] = useState(false);
 
   useEffect(() => {
     if (eventsLoaded) return;
