@@ -7,11 +7,17 @@ import styles from "./styles.module.css";
 import AddEventModal from "./EventModal/EventModal";
 import RecordView from "../../components/RecordScreen/recordScreen";
 import EmailInput from "../../components/ValidatingEmail/validatingEmail";
-import Card from "../../components/Card/Card";
 // import RecordView from "../../utils/recordScreen";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { formatDate } from "../../helpers/formatDate";
 import EventCard from "../EventsPage/EventCard/EventCard";
+import { useEventsContext } from "../../contexts/index";
+import { allEventsData } from "../../services/eventsDataServices";
+import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+
+const localizer = momentLocalizer(moment);
 
 const LandingPage = () => {
   const [greeting, setGreeting] = useState("");
@@ -19,6 +25,9 @@ const LandingPage = () => {
   const [showAddEventModal, setShowAddEventModal] = useState(false);
   console.log(currentUser);
   const navigate = useNavigate();
+  const { allEvents } = useEventsContext();
+
+  // const visibleEvents = allEventsData?.slice(0, 3);
 
   const handleShowAddEventModal = () => {
     setShowAddEventModal(true);
@@ -47,10 +56,6 @@ const LandingPage = () => {
             <span>Add</span>
           </button>
         </section>
-
-        {showAddEventModal && (
-          <AddEventModal handleCloseModal={() => setShowAddEventModal(false)} />
-        )}
         <div className={styles.main__content}>
           <div className={styles.event__header}>
             <h3>My Events</h3>
@@ -59,14 +64,39 @@ const LandingPage = () => {
             </button>
           </div>
           <section className={styles.main__content__wrapper}>
-            <EventCard
-              eventName={"Event Name"}
-              startTime={"10:00 AM"}
-              endTime={"11:00 AM"}
-              participants={10}
+            {allEvents?.slice(0, 3)?.map((event) => (
+              <EventCard
+                key={event._id}
+                eventName={event.name}
+                startTime={formatDate(event.start_time)}
+                endTime={formatDate(event.close_date)}
+                participants={event.participants}
+              />
+            ))}
+          </section>
+          <section className={styles.calendar__wrapper}>
+            <BigCalendar
+              localizer={localizer}
+              events={allEvents}
+              startAccessor="start"
+              endAccessor="end"
+              titleAccessor="title"
+              defaultDate={moment().toDate()}
+              eventPropGetter={() => {
+                return {
+                  style: {
+                    backgroundColor: "#005734",
+                    color: "#fff",
+                    borderRadius: "7px",
+                  },
+                };
+              }}
             />
           </section>
         </div>
+        {showAddEventModal && (
+          <AddEventModal handleCloseModal={() => setShowAddEventModal(false)} />
+        )}
       </main>
     </>
   );

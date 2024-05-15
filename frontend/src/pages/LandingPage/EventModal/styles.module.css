@@ -87,7 +87,11 @@
 .event_body .event_desc {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
+}
+
+.event_desc .event__input {
+  width: 85%;
 }
 
 .event__actions {

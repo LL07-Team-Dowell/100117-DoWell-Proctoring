@@ -21,6 +21,7 @@ const AddEventModal = ({ handleCloseModal }) => {
     duration_in_hours: "",
     max_cap: "",
     link: "",
+    registration_end_date: "",
   });
   console.log(event);
   const [loading, setLoading] = useState(false);
@@ -54,6 +55,7 @@ const AddEventModal = ({ handleCloseModal }) => {
       "close_date",
       "duration_in_hours",
       "link",
+      "registration_end_date",
     ];
 
     const newEvent = {
@@ -64,6 +66,7 @@ const AddEventModal = ({ handleCloseModal }) => {
       max_cap: event.max_cap,
       link: event.link,
       user_id: currentUser?.userinfo?.userID,
+      registration_end_date: event.registration_end_date,
     };
 
     const missingRequiredKey = Object.keys(newEvent || {}).find(
@@ -219,6 +222,7 @@ const AddEventModal = ({ handleCloseModal }) => {
                     name={"start_time"}
                     placeholder="Start date"
                     value={event.start_time}
+                    className={styles.event__input}
                     onChange={(e) =>
                       handleChange(e.target.value, e.target.name)
                     }
@@ -234,6 +238,23 @@ const AddEventModal = ({ handleCloseModal }) => {
                     name={"close_date"}
                     placeholder="Close date"
                     value={event.close_date}
+                    className={styles.event__input}
+                    onChange={(e) =>
+                      handleChange(e.target.value, e.target.name)
+                    }
+                  />
+                </label>
+                <label htmlFor="registration_end_date">
+                  <div>
+                    <span>Registration End Date</span>{" "}
+                    <span className={styles.required__indicator}>*</span>
+                  </div>
+                  <input
+                    type="datetime-local"
+                    name={"registration_end_date"}
+                    placeholder="Registration End Date"
+                    value={event.registration_end_date}
+                    className={styles.event__input}
                     onChange={(e) =>
                       handleChange(e.target.value, e.target.name)
                     }
@@ -257,7 +278,9 @@ const AddEventModal = ({ handleCloseModal }) => {
                   />
                 </label>
                 <label htmlFor="max_cap">
-                  <span>Maximum Participants</span>
+                  <div>
+                    <span>Maximum Participants</span>
+                  </div>
                   <input
                     type="text"
                     name={"max_cap"}
