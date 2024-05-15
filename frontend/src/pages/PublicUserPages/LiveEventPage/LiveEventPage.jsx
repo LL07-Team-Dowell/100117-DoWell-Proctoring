@@ -212,6 +212,22 @@ const EventRegistrationPage = () => {
         setUserDetails,
     );
 
+    function dataURLtoFile(dataURL, filename) {
+        const arr = dataURL.split(',');
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
+    }
+
+    function bytesToMB(bytes) {
+        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }    
+
     const handleGoToNextPage = async () => {
         const nextPage = currentFormPage + 1;
 
@@ -223,6 +239,7 @@ const EventRegistrationPage = () => {
                 if (userDetails.name.length < 1) return toast.info('Please enter your name');
                 if (userDetails.email.length < 1) return toast.info('Please enter your email');
                 if (!validateEmail(userDetails.email)) return toast.info('Please enter a valid email');
+
                 setIsNextLoading(true);
                 try {
                     await getPartcipantData(userDetails.email, searchParams.get('event_id')).then(res => {
@@ -245,21 +262,28 @@ const EventRegistrationPage = () => {
                     html2canvas(videoRef.current)
                         .then(async (canvas) => {
                             const dataURL = canvas.toDataURL('image/png');
-                            setCapturedImage(dataURL);
-                            await faceCompare({
-                                "image1": retrievedParticipantDetails?.user_image,
-                                "image2": dataURL,
-                            }).then(res => {
-                                setCurrentFormPage(nextPage);
-                            }).catch(err => {
-                                toast.error('Error occured while proceeding further, Please try again later');
-                            })
+                            const imageFile1 = dataURLtoFile(dataURL, 'image.png');
+                            const imageFile2 = dataURLtoFile(retrievedParticipantDetails?.user_image, 'image.png');
+                            const payLoadData = new FormData();
+                            payLoadData.append('image1', imageFile1);
+                            payLoadData.append('image2', imageFile2);
+
+                            setIsNextLoading(true);
+                            await faceCompare(payLoadData)
+                                .then(res => {
+                                    setCurrentFormPage(nextPage);
+                                })
+                                .catch(err => {
+                                    toast.error(err?.message);
+                                }).finally(() => {
+                                    setIsNextLoading(false);
+                                });
                         })
                         .catch(error => {
-                            toast.error('Unable to capture image, please try again later');
+                            toast.error('Unable to capture image. Please try again later.');
                         })
                 } catch (e) {
-                    toast.error('maslaaaa');
+                    toast.error('Error');
                     console.log('err', e);
                 }
                 // setCurrentFormPage(nextPage);
