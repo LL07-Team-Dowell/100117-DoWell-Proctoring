@@ -64,10 +64,11 @@
 }
 
 .main__content__wrapper {
-  padding: 0 1em;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  padding: 0 1em 2em;
+  display: flex;
   gap: 1.5rem;
+  overflow-x: scroll;
+  overflow-y: hidden;
 }
 
 .calendar__wrapper {
