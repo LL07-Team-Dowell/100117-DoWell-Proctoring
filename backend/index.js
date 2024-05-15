@@ -12,6 +12,8 @@ const { addmessage } = require('./controller/messageController');
 const adminInit = require('./utils/admin.kafka');
 const {callProducer,producerRun, consumerRun} = require('./utils/kafka');
 const TOPIC = process.env.KAFKA_TOPIC;
+
+
 // creating a new express application
 const app = express();
 
@@ -33,7 +35,7 @@ const httpServer = createServer(app);
 // configuring a new socket io instance
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",//Array.isArray(allowedOrigins) ? allowedOrigins : [],
+    origin: Array.isArray(allowedOrigins) ? allowedOrigins : [],
     methods: ["GET", "POST"],
     path: '/proctoring-socket/' // comment out when testing locally, it's only to be uncommented for production usage
   }

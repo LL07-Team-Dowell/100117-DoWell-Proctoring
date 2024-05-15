@@ -17,10 +17,9 @@ export default function useSocketIo(
 
         const peer = new Peer(undefined, {
             host: peerServerHost,
-            // port: peerServerPort,
+            port: peerServerPort,
             path: peerServerPath,
-            secure: true,
-            key: 'peerjs'
+            // secure: true, // COMMENT THIS WHILE TESTING LOCALLY
         });
 
         peer.on('open', (id) => {
