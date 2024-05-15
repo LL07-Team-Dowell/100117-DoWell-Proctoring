@@ -1,5 +1,5 @@
 import { React, useEffect, useRef, useState } from "react";
-import { registerForEvent } from "../../../services/participantServices";
+import { registerForEvent, getPartcipantData, faceCompare } from "../../../services/participantServices";
 import { useSearchParams } from "react-router-dom";
 import styles from "./styles.module.css";
 import dowellLogo from "../../../assets/logo.png";
@@ -20,6 +20,7 @@ import { socketInstance } from "../../../utils/utils";
 import useUpdateEventStartTime from "../hooks/useUpdateEventStartTime";
 import ScreenCapture from "../../../components/CaptureScreen/captureScreen";
 import { getMessages } from "../../../services/eventServices";
+import html2canvas from "html2canvas";
 
 const dummyLink = "https://ll04-finance-dowell.github.io/100058-DowellEditor-V2/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9kdWN0X25hbWUiOiJXb3JrZmxvdyBBSSIsImRldGFpbHMiOnsiZmllbGQiOiJkb2N1bWVudF9uYW1lIiwiY2x1c3RlciI6IkRvY3VtZW50cyIsImRhdGFiYXNlIjoiRG9jdW1lbnRhdGlvbiIsImNvbGxlY3Rpb24iOiJDbG9uZVJlcG9ydHMiLCJkb2N1bWVudCI6IkNsb25lUmVwb3J0cyIsInRlYW1fbWVtYmVyX0lEIjoiMTIxMjAwMSIsImZ1bmN0aW9uX0lEIjoiQUJDREUiLCJjb21tYW5kIjoidXBkYXRlIiwiZmxhZyI6InNpZ25pbmciLCJfaWQiOiI2NWZlZDhjNzM3YzZkNmNmMTQ2YTFkOTAiLCJhY3Rpb24iOiJkb2N1bWVudCIsImF1dGhvcml6ZWQiOiJzYWdhci1oci1oaXJpbmciLCJ1c2VyX2VtYWlsIjoiIiwidXNlcl90eXBlIjoicHVibGljIiwiZG9jdW1lbnRfbWFwIjpbeyJjb250ZW50IjoiczEiLCJyZXF1aXJlZCI6ZmFsc2UsInBhZ2UiOjF9LHsiY29udGVudCI6ImkyIiwicmVxdWlyZWQiOmZhbHNlLCJwYWdlIjoyfSx7ImNvbnRlbnQiOiJpMyIsInJlcXVpcmVkIjpmYWxzZSwicGFnZSI6Mn0seyJjb250ZW50IjoiaTQiLCJyZXF1aXJlZCI6ZmFsc2UsInBhZ2UiOjJ9LHsiY29udGVudCI6Imk1IiwicmVxdWlyZWQiOmZhbHNlLCJwYWdlIjoyfV0sImRvY3VtZW50X3JpZ2h0IjoiYWRkX2VkaXQiLCJkb2N1bWVudF9mbGFnIjoicHJvY2Vzc2luZyIsInJvbGUiOiJGcmVlbGFuY2VyIiwicHJldmlvdXNfdmlld2VycyI6bnVsbCwibmV4dF92aWV3ZXJzIjpbIkR1bW15SFIiXSwibWV0YWRhdGFfaWQiOiI2NWZlZDhjODQwMDE2MmQ3MDRkNjk1MmEiLCJwcm9jZXNzX2lkIjoiNjVmZWQ4YzJiODZlM2E0ZTYwMGJiNDc3IiwidXBkYXRlX2ZpZWxkIjp7ImRvY3VtZW50X25hbWUiOiJVbnRpdGxlZCBEb2N1bWVudF9zYWdhci1oci1oaXJpbmciLCJjb250ZW50IjoiIiwicGFnZSI6IiJ9fX0.lX91uUpJY6oubfhKqLfJsX1IHW87-YkDXpHWqfshFQU&link_id=2130413081054482926";
 
@@ -54,7 +55,10 @@ const EventRegistrationPage = () => {
     const [newMessage, setNewMessage] = useState('');
     const chatContainerRef = useRef(null);
     const [isChatLoading, setIsChatLoading] = useState(false);
-    const [chatLoadedOnce,setChatLoadedOnce] = useState(false);
+    const [chatLoadedOnce, setChatLoadedOnce] = useState(false);
+    const [retrievedParticipantDetails, setRetrievedParticipantDetails] = useState(null);
+    const [isNextLoading, setIsNextLoading] = useState(false);
+    const [capturedImage, setCapturedImage] = useState(null);
 
     const handleSendMessage = () => {
         if (newMessage.trim() === '') return;
@@ -112,7 +116,7 @@ const EventRegistrationPage = () => {
     }, [socketInstance]);
 
     const fetchChatMessages = async () => {
-        if(chatLoadedOnce) return
+        if (chatLoadedOnce) return
         setIsChatLoading(true);
         try {
             const response = await getMessages({ "eventId": foundEventDetail?._id });
@@ -208,6 +212,22 @@ const EventRegistrationPage = () => {
         setUserDetails,
     );
 
+    function dataURLtoFile(dataURL, filename) {
+        const arr = dataURL.split(',');
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
+    }
+
+    function bytesToMB(bytes) {
+        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }    
+
     const handleGoToNextPage = async () => {
         const nextPage = currentFormPage + 1;
 
@@ -220,12 +240,53 @@ const EventRegistrationPage = () => {
                 if (userDetails.email.length < 1) return toast.info('Please enter your email');
                 if (!validateEmail(userDetails.email)) return toast.info('Please enter a valid email');
 
-                setCurrentFormPage(nextPage);
+                setIsNextLoading(true);
+                try {
+                    await getPartcipantData(userDetails.email, searchParams.get('event_id')).then(res => {
+                        console.log('particpant data', res?.data?.data[0]);
+                        setRetrievedParticipantDetails(res?.data?.data[0]);
+                        setCurrentFormPage(nextPage);
+                    }).catch(err => {
+                        toast.error('Error getting your data, Please try again later')
+                    }).finally(() => {
+                        setIsNextLoading(false);
+                    })
+                } catch (e) {
+                    toast.error('Error getting your data, Please try again later')
+                }
                 return;
             case 3:
                 if (!cameraPermissionGranted) return toast.info('Please grant access to your audio and video before proceeding');
 
-                setCurrentFormPage(nextPage);
+                try {
+                    html2canvas(videoRef.current)
+                        .then(async (canvas) => {
+                            const dataURL = canvas.toDataURL('image/png');
+                            const imageFile1 = dataURLtoFile(dataURL, 'image.png');
+                            const imageFile2 = dataURLtoFile(retrievedParticipantDetails?.user_image, 'image.png');
+                            const payLoadData = new FormData();
+                            payLoadData.append('image1', imageFile1);
+                            payLoadData.append('image2', imageFile2);
+
+                            setIsNextLoading(true);
+                            await faceCompare(payLoadData)
+                                .then(res => {
+                                    setCurrentFormPage(nextPage);
+                                })
+                                .catch(err => {
+                                    toast.error(err?.message);
+                                }).finally(() => {
+                                    setIsNextLoading(false);
+                                });
+                        })
+                        .catch(error => {
+                            toast.error('Unable to capture image. Please try again later.');
+                        })
+                } catch (e) {
+                    toast.error('Error');
+                    console.log('err', e);
+                }
+                // setCurrentFormPage(nextPage);
                 return;
             case 4: {
                 if (eventRegistrationLoading) return;
@@ -447,15 +508,18 @@ const EventRegistrationPage = () => {
                                                     :
                                                     currentFormPage === 2 ?
                                                         <div className={styles.user__Detail}>
-                                                            <video ref={videoRef}
-                                                                autoPlay
-                                                                playsInline
-                                                                controls={false}
-                                                                controlsList="nofullscreen"
-                                                                className={`${styles.video__Item} ${!cameraPermissionGranted ? styles.no__Display : ''}`}
-                                                            >
+                                                            {!capturedImage ?
+                                                                <video ref={videoRef}
+                                                                    autoPlay
+                                                                    playsInline
+                                                                    controls={false}
+                                                                    controlsList="nofullscreen"
+                                                                    className={`${styles.video__Item} ${!cameraPermissionGranted ? styles.no__Display : ''}`}
+                                                                >
 
-                                                            </video>
+                                                                </video> :
+                                                                <img src={capturedImage} alt="Captured" className={styles.video__Item} />
+                                                            }
                                                             {
                                                                 cameraPermissionGranted ? <>
                                                                     <p>Please ensure your face is fully visible in the frame before clicking &apos; Next &apos;</p>
@@ -542,7 +606,7 @@ const EventRegistrationPage = () => {
                                                 eventRegistrationLoading ? <LoadingSpinner />
                                                     :
                                                     currentFormPage <= 2 ?
-                                                        'Next'
+                                                        (isNextLoading ? <LoadingSpinner /> : 'Next')
                                                         :
                                                         'Begin'
                                             }

@@ -2,23 +2,19 @@
 import React from "react";
 import styles from "./styles.module.css";
 import { useEventsContext } from "../../contexts/index";
-import { useUserContext } from "../../contexts/index";
 import { formatDate } from "../../helpers/formatDate";
 import EventCard from "./EventCard/EventCard";
+import { allEventsData } from "../../services/eventsDataServices";
 
 const EventsPage = () => {
   const { allEvents } = useEventsContext();
-  const { currentUser } = useUserContext();
 
-  const filteredEvents = allEvents.filter(
-    (event) => event.user_id === currentUser?.userinfo?.userID
-  );
-  console.log(filteredEvents);
+  // console.log(allEventsData);
   return (
     <section className={styles.wrapper}>
       <h1 className={styles.title}>My Events</h1>
       <div className={styles.main__content}>
-        {filteredEvents.map((event) => (
+        {allEvents.map((event) => (
           <EventCard
             key={event._id}
             eventName={event.name}

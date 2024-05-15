@@ -9,22 +9,12 @@ const { connectToDb } = require('./config/db');
 const { loadModels } = require('./utils/faceDetectorUtils');
 const { Participant } = require("./models/participantModel");
 const { addmessage } = require('./controller/messageController'); 
-const createKafkaTopic = require('./utils/admin.kafka');
-const {Producer, Consumer} = require('./utils/kafka');
-
+const adminInit = require('./utils/admin.kafka');
+const {callProducer,producerRun, consumerRun} = require('./utils/kafka');
+const TOPIC = process.env.KAFKA_TOPIC;
 // creating a new express application
 const app = express();
 
-
-createKafkaTopic(process.env.KAFKA_TOPIC); 
-Consumer(process.env.KAFKA_TOPIC);
-
-
-const data = {
-  name:'manish',
-
-}
-console.log(Producer(process.env.KAFKA_TOPIC,data));
 
 // loading and parsing all the permitted frontend urls for cors
 let allowedOrigins = [];
@@ -42,11 +32,6 @@ const httpServer = createServer(app);
 
 // configuring a new socket io instance
 const io = new Server(httpServer, {
-  //cors: {
-  //   origin: Array.isArray(allowedOrigins) ? allowedOrigins : [],
-  //},
-  //methods: ["GET", "POST"],
-  //path: '/proctoring-socket/'
   cors: {
     origin: "*",//Array.isArray(allowedOrigins) ? allowedOrigins : [],
     methods: ["GET", "POST"],
@@ -91,7 +76,7 @@ io.on("connection", (socket) => {
         tagged:participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
       };
       //addmessage(message);
-      Producer(process.env.KAFKA_TOPIC,message);  
+      await producerRun(message);  
             
     } catch (error) {
             
@@ -107,8 +92,20 @@ io.on("connection", (socket) => {
 });
 
 function startServer() {
-  httpServer.listen(PORT, () => {
+  httpServer.listen(PORT, async () => {
     console.log(`Server running on port ${PORT}`);
+    await adminInit(TOPIC);
+    await consumerRun("realtime-messages", [TOPIC]);
+
+    // testing the producer-----
+    // const message = {
+    //   eventId: '123344',
+    //   useremail:'test@gmail.com',
+    //   username: 'oscaroguledo',
+    //   message: 'a test message',
+    //   tagged:['oscar', 'john'],
+    // };
+    //await callProducer(message);
   });
 }
 
@@ -116,7 +113,6 @@ async function initializeApp() {
   try {
     // Connect to database
     await connectToDb();
-    console.log("Database connected successfully.");
 
     // Load face detection models
     await loadModels();

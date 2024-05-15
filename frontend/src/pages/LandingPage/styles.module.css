@@ -69,3 +69,12 @@
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1.5rem;
 }
+
+.calendar__wrapper {
+  padding: 5rem 0;
+  height: 50rem;
+}
+
+.rbc-today {
+  background-color: #005734;
+}

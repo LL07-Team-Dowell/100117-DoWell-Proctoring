@@ -1,35 +1,40 @@
-# This is the Dockerfile for the frontend service using a multi-stage build process
-# Stage 1: Build the application
-FROM node:20-alpine as builder
+# Build stage: This stage is used for building the frontend application using Node.js
 
-# Create app directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+# Using Node.js version 20 based on Alpine for a lightweight image
+FROM node:20-alpine AS build
 
-# Installing dependencies
+# Set the working directory inside the container
+WORKDIR /usr/src/frontend
+
+# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Install all dependencies, including devDependencies
+# Install dependencies, including handling legacy peer dependencies
 RUN npm install --legacy-peer-deps
 
-# Bundle app source inside Docker image
+# Copy the rest of the frontend application source code to the working directory
 COPY . .
 
-# Build the application for production
+# Build the frontend application
 RUN npm run build
 
-# Stage 2: Serve the app with serve
-FROM node:20-alpine
 
-# Install serve to run the application
-RUN npm install -g serve
+# Serve stage: This stage sets up the environment to serve the built frontend application
+
+# Start a new stage from Node.js version 20 based on Alpine to keep the image lightweight
+FROM node:20-alpine  
+
+# Set the working directory where the application will be served
 WORKDIR /app
 
-# Copy the build directory from the builder stage
-COPY --from=builder /usr/src/app/dist /app
+# Globally install serve, a static file serving and directory listing module
+RUN npm install -g serve
 
-# Expose the port serve uses
-EXPOSE 4173
+# Copy the built application from the build stage to the serve directory
+COPY --from=build /usr/src/frontend/build /app 
 
-# Run serve to serve the static files
+# Expose port 4173 on which the application will run
+EXPOSE 4173  
+
+# Command to serve the application on the specified port
 CMD ["serve", "-s", ".", "-l", "4173"]

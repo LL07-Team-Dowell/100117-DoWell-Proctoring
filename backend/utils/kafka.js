@@ -1,65 +1,62 @@
-const { kafka } = require("../config/kafka.config");
+const { kafkaClient } = require("../config/kafka.config");
 const { addmessage } = require('../controller/messageController');
+const { Partitioners } = require("kafkajs");
 
-let producer = null;
+const TOPIC = process.env.KAFKA_TOPIC;
 
-async function initProducer() {
-    if (producer) return producer;
+const producerRun = async (message) => {
+  const producer = kafkaClient.producer({
+    createPartitioner: Partitioners.LegacyPartitioner,
+  });
 
-    const _producer = kafka.producer();
-    try {
-        await _producer.connect();
-        producer = _producer;
-        console.log("Producer connected successfully.");
-        return producer;
-    } catch (error) {
-        console.error("Error connecting to Kafka producer:", error);
-        throw error;
-    }
+  await producer.connect();
+  
+  await producer.send({
+    topic: TOPIC,
+
+    messages: [
+      {
+        value: JSON.stringify(message),
+      },
+    ],
+  });
+  //await producer.disconnect();
+};
+
+// Define a function to call producerRun() asynchronously every 5 seconds
+function callProducer(message) {
+  setInterval(async () => {
+      await producerRun(message);
+  }, 5000); // 5000 milliseconds = 5 seconds
 }
-async function Producer(topic,data) {
-    try {
-        const producer = await initProducer();
-        const dataValue = JSON.stringify(data);
-        await producer.send({
-            topic: topic,
-            messages: [{ value: dataValue }],
-        });
-        console.log(`${dataValue} produced successfully.`);
-        return true;
-    } catch (error) {
-        console.error(`Error producing the messagevalue ${data}: `, error);
-        return false;
-    }
-}
-async function Consumer(topic) {
-    try {
-        console.log("Consumer is running..");
-        const consumer = kafka.consumer({ groupId: "default" });
-        await consumer.connect();
-        console.log(consumer);
-        await consumer.subscribe({ topic: topic, fromBeginning: true });
 
-        await consumer.run({
-            autoCommit: true,
-            eachMessage: async ({ message, pause }) => {
-                if (!message.value) return;
-                console.log(`New message received..`);
-                try {
-                    addmessage(JSON.parse(message.value.toString()));
-                    console.log(`Consumer caught ${message.value} successfully.`);
-                } catch (err) {
-                    console.error(`Error processing ${topic}: `, err);
-                    pause();
-                    setTimeout(() => {
-                        consumer.resume([{ topic: topic }]);
-                    }, 60 * 1000);
-                }
-            },
-        });
-        
+const consumerRun = async (groupId, topics) => {
+    const consumer = kafkaClient.consumer({ groupId: groupId });
+    await consumer.connect();
+    await consumer.subscribe({ topics: topics, fromBeginning: true  });
+  
+    const handleMessage = async ({ topic, partition, message }) => {
+      console.log(`Topic - ${topic}, Partition - ${partition},`);
+      try {
+            //addmessage(JSON.parse(message.value.toString()));
+            console.log(`Consumer caught ${message.value.toString()} successfully.`);
+        } catch (err) {
+            console.error(`Error processing ${topic}: `, err);
+            pause();
+            setTimeout(() => {
+                consumer.resume([{ topic: topic }]);
+            }, 60 * 1000);
+        }
+      };
+  
+    try {
+      await consumer.run({
+        autoCommit: true,
+        eachMessage: handleMessage,
+      });
     } catch (error) {
-        console.error(`Error starting ${topic} consumer:`, error);
+      console.error(error);
     }
-}
-module.exports = { Producer, Consumer };
+  };
+  
+module.exports = { callProducer, consumerRun,producerRun };

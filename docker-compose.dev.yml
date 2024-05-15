@@ -1,28 +1,30 @@
-version: "3.8"
-
+version: "2"
 services:
   zookeeper:
-    image: 'bitnami/zookeeper:latest'
-    ports:
-      - '2181:2181'
-    container_name: dowell-proctoring-zookeeper
+    image: confluentinc/cp-zookeeper:latest
     environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+    container_name: dowell-proctoring-zookeeper
+    restart: always
 
   kafka:
-    image: 'bitnami/kafka:latest'
-    ports:
-      - '9092:9092'
-    container_name: dowell-proctoring-kafka
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_LISTENERS: PLAINTEXT://:9092
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_HOST}:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      ALLOW_PLAINTEXT_LISTENER: yes
+    image: confluentinc/cp-kafka:latest
     depends_on:
       - zookeeper
+    ports:
+      - 9092:9092
+    container_name: dowell-proctoring-kafka
+    restart: always
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_HOST}:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
 
   dowell-proctoring-backend:
     build: 
@@ -34,12 +36,8 @@ services:
       - "5000:5000"
     expose:
       - "5000"
-    volumes:
-      - ./backend:/usr/src/node_modules
     env_file:
       - ./backend/.env
-    networks:
-      - webnet
     command: ["npm", "run", "dev"]
     depends_on:
       - kafka
@@ -54,8 +52,6 @@ services:
       - "4173:4173"
     expose:
       - "4173"
-    networks:
-      - webnet
     command: ["npm", "run", "dev"]
     
   dowell-proctoring-peerjs:
@@ -67,11 +63,4 @@ services:
       - PEERJS_PORT=9000
       - PEERJS_KEY=peerjs
       - PEERJS_PATH=/myapp
-    networks:
-      - webnet
 
-networks:
-    webnet: {}
-
-volumes:
-  backend: {}
