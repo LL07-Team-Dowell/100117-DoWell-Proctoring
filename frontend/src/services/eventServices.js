@@ -10,8 +10,10 @@ export const addNewEvent = async (data) => {
   return await defaultAxiosInstance.post(`${eventRoutePrefix}/new`, data);
 };
 
-export const getAllEvents = async () => {
-  return await defaultAxiosInstance.get(`${eventRoutePrefix}/all`);
+export const getAllEvents = async (userId) => {
+  return await defaultAxiosInstance.get(
+    `${eventRoutePrefix}/all?user_id=${userId}`
+  );
 };
 export const getMessages = async (data) => {
   return await defaultAxiosInstance.post(`${messageRoutePrefix}/get`, data);
