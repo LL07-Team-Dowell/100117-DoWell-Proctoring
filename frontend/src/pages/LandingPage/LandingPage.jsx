@@ -64,7 +64,7 @@ const LandingPage = () => {
             </button>
           </div>
           <section className={styles.main__content__wrapper}>
-            {allEvents?.slice(0, 3)?.map((event) => (
+            {allEvents?.slice(0, 5)?.map((event) => (
               <EventCard
                 key={event._id}
                 eventName={event.name}
