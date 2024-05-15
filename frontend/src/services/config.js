@@ -8,15 +8,16 @@ const currentBaseApiOrigin = 'http://localhost:5000'; // local
 // const currentBaseApiOrigin = 'https://www.uxlive.me'; // prod
 
 
-// CONFIG FOR PEERJS (TO USE LOCALLY: comment 18-20 and uncomment 12-15)
+// CONFIG FOR PEERJS (TO USE LOCALLY: comment 19-21 and uncomment 15-17)
+const peerServerKey = 'peerjs';
+const peerServerPort = 9000;
+
 // // Local environment usage
 // const peerServerHost = 'localhost';
-// const peerServerPort = 9000;
 // const peerServerPath = '/myapp';
 
 // Default values for production environment
 const peerServerHost = 'uxlive.me';
-const peerServerPort = 9000;
 const peerServerPath = '/dowellproctoring/peer/myapp';
 
 
@@ -46,4 +47,5 @@ export {
     peerServerHost,
     peerServerPort,
     peerServerPath,
+    peerServerKey,
 }

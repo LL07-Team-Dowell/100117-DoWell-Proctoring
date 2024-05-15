@@ -20,6 +20,7 @@ export default function useSocketIo(
             // port: peerServerPort,
             path: peerServerPath,
             secure: true,
+            key: 'peerjs'
         });
 
         peer.on('open', (id) => {
