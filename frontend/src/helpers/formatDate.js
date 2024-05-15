@@ -24,15 +24,17 @@ export const formatDate = (inputDate) => {
     "December",
   ];
 
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
   // Convert hour to 12-hour format and determine AM/PM
   let formattedHour = parseInt(hour, 10);
   const amPm = formattedHour >= 12 ? "PM" : "AM";
   formattedHour = formattedHour % 12 || 12;
 
-  // Construct the formatted date string
-  const formattedDate = `${day} ${
-    monthNames[parseInt(month, 10) - 1]
-  } ${year} ${formattedHour}:${minute} ${amPm}`;
+  // Format the date string
+  const formattedDate = `${days[new Date(inputDate).getDay()]} ${day} ${
+    monthNames[month - 1]
+  } ${year} at ${formattedHour}:${minute} ${amPm}`;
 
   return formattedDate;
 };

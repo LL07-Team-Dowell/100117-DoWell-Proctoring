@@ -4,11 +4,12 @@ import styles from "./styles.module.css";
 import { useEventsContext } from "../../contexts/index";
 import { formatDate } from "../../helpers/formatDate";
 import EventCard from "./EventCard/EventCard";
+import { allEventsData } from "../../services/eventsDataServices";
 
 const EventsPage = () => {
   const { allEvents } = useEventsContext();
 
-  console.log(allEvents);
+  // console.log(allEventsData);
   return (
     <section className={styles.wrapper}>
       <h1 className={styles.title}>My Events</h1>

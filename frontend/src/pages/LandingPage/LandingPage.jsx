@@ -7,12 +7,17 @@ import styles from "./styles.module.css";
 import AddEventModal from "./EventModal/EventModal";
 import RecordView from "../../components/RecordScreen/recordScreen";
 import EmailInput from "../../components/ValidatingEmail/validatingEmail";
-import Card from "../../components/Card/Card";
 // import RecordView from "../../utils/recordScreen";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { formatDate } from "../../helpers/formatDate";
 import EventCard from "../EventsPage/EventCard/EventCard";
 import { useEventsContext } from "../../contexts/index";
+import { allEventsData } from "../../services/eventsDataServices";
+import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+
+const localizer = momentLocalizer(moment);
 
 const LandingPage = () => {
   const [greeting, setGreeting] = useState("");
@@ -22,7 +27,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const { allEvents } = useEventsContext();
 
-  const visibleEvents = allEvents?.slice(0, 3);
+  // const visibleEvents = allEventsData?.slice(0, 3);
 
   const handleShowAddEventModal = () => {
     setShowAddEventModal(true);
@@ -59,7 +64,7 @@ const LandingPage = () => {
             </button>
           </div>
           <section className={styles.main__content__wrapper}>
-            {visibleEvents?.map((event) => (
+            {allEvents?.slice(0, 3)?.map((event) => (
               <EventCard
                 key={event._id}
                 eventName={event.name}
@@ -68,6 +73,25 @@ const LandingPage = () => {
                 participants={event.participants}
               />
             ))}
+          </section>
+          <section className={styles.calendar__wrapper}>
+            <BigCalendar
+              localizer={localizer}
+              events={allEvents}
+              startAccessor="start"
+              endAccessor="end"
+              titleAccessor="title"
+              defaultDate={moment().toDate()}
+              eventPropGetter={() => {
+                return {
+                  style: {
+                    backgroundColor: "#005734",
+                    color: "#fff",
+                    borderRadius: "7px",
+                  },
+                };
+              }}
+            />
           </section>
         </div>
         {showAddEventModal && (
