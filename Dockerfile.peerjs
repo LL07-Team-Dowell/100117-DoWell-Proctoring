@@ -7,9 +7,6 @@ WORKDIR /app
 # Install PeerJS globally
 RUN npm install -g peer
 
-# Copy the PeerJS configuration or scripts if you have any
-# COPY ./peer-config.js /app/peer-config.js
-
 # Expose port 9000 for the PeerJS server
 EXPOSE 9000
 
