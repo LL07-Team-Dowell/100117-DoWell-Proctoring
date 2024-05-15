@@ -2,9 +2,11 @@
 FROM node:20-alpine AS build
 
 # Install Python and other build dependencies
-RUN apk add --no-cache python3 make g++ py3-pip
-# Create a symlink for python3 to be accessible as python
-RUN ln -s /usr/bin/python3 /usr/bin/python
+RUN apk add --no-cache python3 make g++ py3-pip \
+    pkgconfig pixman-dev cairo-dev pango-dev jpeg-dev giflib-dev
+
+# Create a symlink for python3 to be accessible as python only if it doesn't already exist
+RUN if [ ! -f /usr/bin/python ]; then ln -s /usr/bin/python3 /usr/bin/python; fi
 
 # Create a directory where our app will be placed
 RUN mkdir -p /usr/src/backend/node_modules && chown -R node:node /usr/src/backend
@@ -16,9 +18,9 @@ WORKDIR /usr/src/backend
 COPY package*.json ./
 
 # Install project dependencies, this will now have the required tools and environment to build 'canvas'
-RUN npm install --production
+RUN npm install --omit=dev
 
-# Copy the rest of the application code
+# Copy the rest of the application codecl
 COPY . .
 
 # Expose the port your app runs on
