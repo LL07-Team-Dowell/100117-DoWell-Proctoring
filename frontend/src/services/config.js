@@ -8,16 +8,16 @@ const clientAdminBaseUrl = 'https://100093.pythonanywhere.com/api/';
 const currentBaseApiOrigin = 'https://www.uxlive.me'; // prod
 
 
-// CONFIG FOR PEERJS (TO USE LOCALLY: comment 18-20 and uncomment 12-15)
+// CONFIG FOR PEERJS (TO USE LOCALLY: comment 17-20 and uncomment 12-15)
 // // Local environment usage
-// const peerServerHost = 'localhost';
-// const peerServerPort = 9000;
-// const peerServerPath = '/myapp';
+const peerServerPort = 9000;
+const peerServerHost = 'localhost';
+const peerServerPath = '/myapp';
 
 // Default values for production environment
-const peerServerHost = 'uxlive.me';
-const peerServerPort = 9000;
-const peerServerPath = '/dowellproctoring/peer/myapp';
+// const peerServerPort = 9000;
+// const peerServerHost = 'uxlive.me';
+// const peerServerPath = '/dowellproctoring/peer/myapp';
 
 
 // creating separate axios instances for each API interaction
