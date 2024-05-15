@@ -4,8 +4,8 @@ import axios from 'axios';
 // different API base URLs
 const loginBaseUrl = 'https://100014.pythonanywhere.com/api/';
 const clientAdminBaseUrl = 'https://100093.pythonanywhere.com/api/';
-// const currentBaseApiOrigin = 'http://localhost:5000'; // local
-const currentBaseApiOrigin = 'https://www.uxlive.me'; // prod
+const currentBaseApiOrigin = 'http://localhost:5000'; // local
+// const currentBaseApiOrigin = 'https://www.uxlive.me'; // prod
 
 
 // CONFIG FOR PEERJS (TO USE LOCALLY: comment 18-20 and uncomment 12-15)
@@ -32,8 +32,8 @@ const clientAdminAxiosInstance = axios.create({
 })
 
 const defaultAxiosInstance = axios.create({
-    // baseURL: `${currentBaseApiOrigin}/api/v1`, // local usage
-    baseURL: `${currentBaseApiOrigin}/dowellproctoring-backend/api/v1/`, // production usage
+    baseURL: `${currentBaseApiOrigin}/api/v1`, // local usage
+    // baseURL: `${currentBaseApiOrigin}/dowellproctoring-backend/api/v1/`, // production usage
     withCredentials: true,
 })
 
