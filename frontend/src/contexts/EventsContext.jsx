@@ -37,7 +37,7 @@ export default function EventsContextProvider({ children }) {
     };
 
     getAllEventsData();
-  }, [eventsLoaded]);
+  }, [eventsLoaded, currentUser]);
 
   return (
     <>
