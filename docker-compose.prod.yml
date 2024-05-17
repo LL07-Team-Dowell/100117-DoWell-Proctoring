@@ -81,14 +81,12 @@ services:
 
   # PeerJS server configuration for peer-to-peer communication
   dowell-proctoring-peerjs:
-    image: peerjs/peerjs-server
+    build: 
+      context: ./peer
+      dockerfile: Dockerfile
     container_name: dowell-proctoring-peerjs
     ports:
       - "9000:9000"
-    environment:
-      PEERJS_PORT: 9000
-      PEERJS_KEY: peerjs
-      PEERJS_PATH: /myapp
     restart: always
     networks:
       - webnet
