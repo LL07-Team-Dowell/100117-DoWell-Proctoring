@@ -17,17 +17,16 @@ export default function EventsContextProvider({ children }) {
     const getAllEventsData = async () => {
       try {
         setEventsLoading(true);
-        const res = (await getAllEvents()).data;
-        const data = res?.data
-          ?.filter((event) => event.user_id === currentUser?.userinfo?.userID)
-          .map((event) => {
-            const copyOfEvent = { ...event };
-            copyOfEvent.start = new Date(event.start_time);
-            copyOfEvent.end = new Date(event.close_date);
-            copyOfEvent.title = event.name;
+        const id = currentUser?.userinfo?.userID;
+        const res = (await getAllEvents(id)).data;
+        const data = res?.data?.map((event) => {
+          const copyOfEvent = { ...event };
+          copyOfEvent.start = new Date(event.start_time);
+          copyOfEvent.end = new Date(event.close_date);
+          copyOfEvent.title = event.name;
 
-            return copyOfEvent;
-          });
+          return copyOfEvent;
+        });
         setAllEvents(data);
         setEventsLoading(false);
         setEventsLoaded(true);
@@ -38,7 +37,7 @@ export default function EventsContextProvider({ children }) {
     };
 
     getAllEventsData();
-  }, [eventsLoaded]);
+  }, [eventsLoaded, currentUser]);
 
   return (
     <>

@@ -12,6 +12,8 @@ const { addmessage } = require('./controller/messageController');
 const adminInit = require('./utils/admin.kafka');
 const {callProducer,producerRun, consumerRun} = require('./utils/kafka');
 const TOPIC = process.env.KAFKA_TOPIC;
+
+
 // creating a new express application
 const app = express();
 
@@ -33,9 +35,9 @@ const httpServer = createServer(app);
 // configuring a new socket io instance
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",//Array.isArray(allowedOrigins) ? allowedOrigins : [],
+    origin: Array.isArray(allowedOrigins) ? allowedOrigins : [],
     methods: ["GET", "POST"],
-    path: '/proctoring-socket/'
+    path: '/proctoring-socket/' // comment out when testing locally, it's only to be uncommented for production usage
   }
 })
 
@@ -46,14 +48,14 @@ io.on("connection", (socket) => {
   
 
   // join event
-  socket.on("join-event", (eventId, userPeerId, userEmail, nameOfUser) => {
+  socket.on("join-event", (eventId, userPeerId, userEmail, nameOfUser, userSocketId) => {
     console.log(nameOfUser + " with email '" + userEmail + "' and peer id: '" + userPeerId + "' joined event: " + eventId);
     socket.join(eventId);
-    socket.broadcast.to(eventId).emit('user-connected', userPeerId, userEmail, nameOfUser); 
+    socket.broadcast.to(eventId).emit('user-connected', userPeerId, userEmail, nameOfUser, userSocketId); 
 
-    socket.on('disconnect', (reason) => {
+    socket.on('disconnect', async (reason) => {
       console.log("User with socket id disconnected: '" + socket.id +"' because '" + reason + "'");
-      socket.broadcast.to(eventId).emit('user-disconnected', userPeerId, userEmail, nameOfUser);
+      socket.broadcast.to(eventId).emit('user-disconnected', userPeerId, userEmail, nameOfUser, userSocketId);
     });
   })
 
