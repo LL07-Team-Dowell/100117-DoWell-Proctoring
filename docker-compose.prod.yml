@@ -87,6 +87,8 @@ services:
     container_name: dowell-proctoring-peerjs
     ports:
       - "9000:9000"
+    env_file:
+      - ./backend/.env
     restart: always
     networks:
       - webnet
