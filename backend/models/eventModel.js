@@ -53,6 +53,7 @@ const validateEvent = (eventData, isExistingData = false) => {
             duration_in_hours: Joi.number(),
             user_id: Joi.string(),
             participants: Joi.array().items(Joi.string()),
+            active_participants: Joi.array().items(Joi.string()),
             max_cap: Joi.number(),
             link: Joi.string().uri(),
             registration_end_date: Joi.date()
@@ -67,6 +68,7 @@ const validateEvent = (eventData, isExistingData = false) => {
             duration_in_hours: Joi.number().required(),
             user_id: Joi.string().required(),
             participants: Joi.array().items(Joi.string()),
+            active_participants: Joi.array().items(Joi.string()),
             max_cap: Joi.number().allow(''),
             link: Joi.string().uri().required(),
             registration_end_date: Joi.date()
