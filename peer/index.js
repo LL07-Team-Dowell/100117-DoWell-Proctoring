@@ -6,10 +6,30 @@ require("dotenv").config();
 
 // loading and parsing all the permitted frontend urls for cors
 let allowedOrigins = [];
+
 try {
     allowedOrigins = JSON.parse(process.env.FRONTEND_URLS);
 } catch (error) {
-    console.log("Error parsing the 'FRONTEND_URLS' variable stored in your .env file. Please make sure it is in this format: ", '["valid_url_1", "valid_url_2"]');
+    
+    if (typeof window === 'undefined') {
+        // Node.js environment
+        console.log("\x1b[31m%s\x1b[0m",error)
+        console.log(
+            "\x1b[31m%s\x1b[0m", 
+            "Error parsing the 'FRONTEND_URLS' variable stored in your .env file. Please make sure it is in this format: ", '["valid_url_1", "valid_url_2"]'
+        );
+    } else {
+        // Browser environment
+        console.log(`%c${error}`,
+                    "color: red;",
+                    "color: black;")
+        console.log(
+            "%cError parsing the 'FRONTEND_URLS' variable stored in your .env file. Please make sure it is in this format: %c['valid_url_1', 'valid_url_2']",
+            "color: red;",
+            "color: black;"
+        );
+    }
+    
 }
 
 // creating a new express application
