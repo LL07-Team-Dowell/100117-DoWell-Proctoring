@@ -6,6 +6,8 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
+echo -e "\e[32m✓\e[0m Intializing ..."
+
 # Check if the system is running Linux
 if [ "$(uname)" == "Linux" ]; then
     echo -e "\e[32m✓\e[0m System OS: Linux Detected"
@@ -17,6 +19,28 @@ if [ "$(uname)" == "Linux" ]; then
     cd backend
 
     # Check if the variables exist in the .env file
+    # if grep -q "^FRONTEND_URLS=" .env; then
+    #     sed -i 's|^FRONTEND_URLS=.*|FRONTEND_URLS="\[\"http://localhost:4173\", \"http://localhost:5173\", \"http://192.64.86.227:4173\", \"https://www.uxlive.me/dowellproctoring\", \"http://localhost:3000\"\]"|' .env
+    # else
+    #     echo "" >> .env
+    #     echo "FRONTEND_URLS='[\"http://localhost:4173\", \"http://localhost:5173\", \"http://192.64.86.227:4173\", \"https://www.uxlive.me/dowellproctoring\", "http://localhost:3000"]'" >> .env
+    # fi
+
+
+    if grep -q "^MONGO_DB_URI=" .env; then
+        sed -i "s/^MONGO_DB_URI=.*/MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" .env
+    else
+        echo "" >> .env
+        echo "MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" >> .env
+    fi
+    
+    if grep -q "^PORT=" .env; then
+        sed -i "s/^PORT=.*/PORT=8005" .env
+    else
+        echo "" >> .env
+        echo "PORT=8005" >> .env
+    fi
+
     if grep -q "^IP=" .env; then
         sed -i "s/^IP=.*/IP=$ip_address:9092/" .env
     else
@@ -64,9 +88,28 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
     # Get the IP address for Windows
     ip_address=$(ipconfig | grep IPv4 | grep -v "127.0.0.1" | awk '{print $NF}')
     num_addresses=$(echo "$ip_address" | wc -l)
-    
 
     cd backend
+    if grep -q "^FRONTEND_URLS=" .env; then
+        sed -i "s/^FRONTEND_URLS=.*/FRONTEND_URLS=['http://localhost:4173', 'http://localhost:5173', 'http://192.64.86.227:4173']/" .env
+    else
+        echo "" >> .env
+        echo "FRONTEND_URLS=['http://localhost:4173', 'http://localhost:5173', 'http://192.64.86.227:4173']" >> .env
+    fi
+
+    if grep -q "^MONGO_DB_URI=" .env; then
+        sed -i "s/^MONGO_DB_URI=.*/MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" .env
+    else
+        echo "" >> .env
+        echo "MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" >> .env
+    fi
+    
+    if grep -q "^PORT=" .env; then
+        sed -i "s/^PORT=.*/PORT=8005" .env
+    else
+        echo "" >> .env
+        echo "PORT=8005" >> .env
+    fi
 
     # Check if the variables exist in the .env file
     if grep -q "^IP=" .env; then
@@ -121,6 +164,27 @@ elif [ "$(uname)" == "Darwin" ]; then
     cd backend
 
     # Check if the variables exist in the .env file
+    if grep -q "^FRONTEND_URLS=" .env; then
+        sed -i "s/^FRONTEND_URLS=.*/FRONTEND_URLS=['http://localhost:4173', 'http://localhost:5173', 'http://192.64.86.227:4173']/" .env
+    else
+        echo "" >> .env
+        echo "FRONTEND_URLS=['http://localhost:4173', 'http://localhost:5173', 'http://192.64.86.227:4173']" >> .env
+    fi
+
+    if grep -q "^MONGO_DB_URI=" .env; then
+        sed -i "s/^MONGO_DB_URI=.*/MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" .env
+    else
+        echo "" >> .env
+        echo "MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" >> .env
+    fi
+    
+    if grep -q "^PORT=" .env; then
+        sed -i "s/^PORT=.*/PORT=8005" .env
+    else
+        echo "" >> .env
+        echo "PORT=8005" >> .env
+    fi
+
     if grep -q "^KAFKA_HOST=" .env; then
         sed -i "s/^KAFKA_HOST=.*/KAFKA_HOST=$ip_address/" .env
     else
@@ -159,11 +223,15 @@ fi
 #==========================================================================================================
 # Check the provided argument
 if [ "$1" == "dev" ]; then
+    docker network create webnet
+
     # biuld docker-compose for development
     docker-compose -f docker-compose.dev.yml build
     # Run docker-compose for development environment
     docker-compose -f docker-compose.dev.yml up
 elif [ "$1" == "prod" ]; then
+    docker network create webnet
+
     # biuld docker-compose for prodcution
     docker-compose -f docker-compose.prod.yml build
     # Run docker-compose for production environment
