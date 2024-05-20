@@ -19,7 +19,7 @@ export default function EventsContextProvider({ children }) {
         setEventsLoading(true);
         const id = currentUser?.userinfo?.userID;
         const res = (await getAllEvents(id)).data;
-        const data = res?.data?.map((event) => {
+        const data = res?.data?.events?.map((event) => {
           const copyOfEvent = { ...event };
           copyOfEvent.start = new Date(event.start_time);
           copyOfEvent.end = new Date(event.close_date);
