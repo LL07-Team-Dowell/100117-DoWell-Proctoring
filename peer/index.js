@@ -1,6 +1,6 @@
 const express = require("express");
 const { createServer } = require("http");
-const PORT = process.env.PORT || 9000;
+const PORT = 9000;
 
 require("dotenv").config();
 

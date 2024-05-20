@@ -51,7 +51,7 @@ services:
       dockerfile: Dockerfile.prod
     container_name: dowell-proctoring-backend
     ports:
-      - "5000:8005"
+      - "5000:5000"
     env_file:
       - ./backend/.env
     # depends_on:
@@ -86,7 +86,7 @@ services:
       dockerfile: Dockerfile
     container_name: dowell-proctoring-peerjs
     ports:
-      - "9000:8005"
+      - "9000:9000"
     env_file:
       - ./backend/.env
     restart: always
