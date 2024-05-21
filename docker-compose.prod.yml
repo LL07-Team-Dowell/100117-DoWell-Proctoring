@@ -33,8 +33,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
-      - zookeeper
-        # condition: service_healthy
+      - zookeeper # condition: service_healthy
     # healthcheck:
     #   test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
     #   interval: 30s
@@ -46,7 +45,7 @@ services:
 
   # Backend API service configuration
   dowell-proctoring-backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile.prod
     container_name: dowell-proctoring-backend
@@ -69,7 +68,7 @@ services:
 
   # Frontend service configuration serving static files
   dowell-proctoring-frontend:
-    build: 
+    build:
       context: ./frontend
       dockerfile: Dockerfile.prod
     container_name: dowell-proctoring-frontend
@@ -81,14 +80,18 @@ services:
 
   # PeerJS server configuration for peer-to-peer communication
   dowell-proctoring-peerjs:
-    build: 
+    build:
       context: ./peer
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     container_name: dowell-proctoring-peerjs
     ports:
-      - "9000:9000"
+      - "9000:443"
+    volumes:
+      - /etc/letsencrypt/live/www.uxlive.me:/etc/letsencrypt/live/www.uxlive.me:ro
     env_file:
       - ./backend/.env
+    environment:
+      - NODE_ENV=production
     restart: always
     networks:
       - webnet
