@@ -34,7 +34,7 @@ const ProctorLiveEventPage = () => {
     const [activeUsers, setActiveUsers] = useState([]);
     const chatContainerRef = useRef(null);
     const [isChatLoading, setIsChatLoading] = useState(false);
-    const [chatLoadedOnce,setChatLoadedOnce] = useState(false);
+    const [chatLoadedOnce, setChatLoadedOnce] = useState(false);
 
     const participantVideosRef = useRef();
 
@@ -122,9 +122,9 @@ const ProctorLiveEventPage = () => {
     }, [activeUsers])
 
     useEffect(() => {
-        
+
         if (!socketInstance) return;
-    
+
         const handleNewMessage = (eventId, userName, userEmail, isProctor, message, messageCreatedDate) => {
 
             const receivedMessage = {
@@ -139,38 +139,38 @@ const ProctorLiveEventPage = () => {
             console.log('recieved message on proctor end', receivedMessage);
 
             setChatMessages(prevMessages => [...prevMessages, receivedMessage]);
-    
+
             if (chatContainerRef.current) {
                 chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
             }
         };
-    
+
         socketInstance.on('new-message', handleNewMessage);
-    
+
         return () => {
             socketInstance.off('new-message', handleNewMessage);
         };
     }, [socketInstance]);
 
     const handleSendMessage = () => {
-        console.log('connesction',socketInstance);
+        console.log('connesction', socketInstance);
         if (newMessage.trim() === '') return;
-    
+
         const data = {
             eventId: eventId,
             email: currentUser?.userinfo?.email,
             username: `${currentUser?.userinfo?.first_name} ${currentUser?.userinfo?.last_name}`,
-            isProctor: true, 
+            isProctor: true,
             message: newMessage.trim(),
         };
-    
-        console.log('send message from proctor end',data);
-    
+
+        console.log('send message from proctor end', data);
+
         setChatMessages(prevMessages => [...prevMessages, data]);
         setNewMessage('');
-    
+
         socketInstance.emit('incoming-message', data);
-    
+
         setTimeout(() => {
             if (chatContainerRef.current) {
                 chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -179,7 +179,7 @@ const ProctorLiveEventPage = () => {
     };
 
     const fetchChatMessages = async () => {
-        if(chatLoadedOnce) return
+        if (chatLoadedOnce) return
         setIsChatLoading(true);
         try {
             const response = await getMessages({ "eventId": eventId });
@@ -198,7 +198,7 @@ const ProctorLiveEventPage = () => {
             }
         }, 50);
     };
-    
+
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
             handleSendMessage();
@@ -245,10 +245,10 @@ const ProctorLiveEventPage = () => {
 
                     {
                         React.Children.toArray(activeUsers.map(userStreamItem => {
-                            return <video 
-                                autoPlay 
-                                playsInline 
-                                controls={false} 
+                            return <video
+                                autoPlay
+                                playsInline
+                                controls={false}
                                 controlsList="nofullscreen"
                                 muted
                             >
@@ -267,23 +267,41 @@ const ProctorLiveEventPage = () => {
                     </div>
                     {
                         isChatLoading ? <div className={styles.chat__main} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><DotLoader /></div> :
-                        <div ref={chatContainerRef} className={styles.chat__main}>
-                        {React.Children.toArray(chatMessages.map(message => (
-                            <div className={styles.chat_message}>
-                                <div className={styles.avatarContainer}>
-                                    <div className={styles.avatar}>
-                                        {message.username[0]}
-                                    </div>
-                                </div>
-                                <div key={message.eventId} className={styles.chat__message}>
-                                    <div className={styles.messageContent}>
-                                        <strong>{message.username}: </strong>
-                                        {message.message}
-                                    </div>
-                                </div>
+                            <div ref={chatContainerRef} className={styles.chat__main}>
+                                {React.Children.toArray(chatMessages.map(message => {
+                                    const isCurrentUser = message.username === `${currentUser?.userinfo?.first_name} ${currentUser?.userinfo?.last_name}`;
+                                    return (
+                                        <div className={`${styles.chat_message} ${isCurrentUser ? styles.chat_messageRight : styles.chat_messageLeft}`}>
+                                            <div className={styles.avatarContainer} style={{ display: isCurrentUser ? 'none' : 'block' }}>
+                                                <div className={styles.avatar}>
+                                                    {message.username[0].toUpperCase()}
+                                                </div>
+                                            </div>
+                                            <div className={styles.main_msg_content}>
+                                                <div className={`${styles.username_date} ${styles.username__}`} style={{ justifyContent: isCurrentUser ? 'end' : 'space-between' }}>
+                                                    <strong className={styles.username_} style={{ display: isCurrentUser ? 'none' : 'block' }}>
+                                                        {message.username}
+                                                    </strong>
+                                                    <p>{new Date(message.createdAt).toLocaleString()}</p>
+                                                </div>
+                                                <div className={styles.message_} style={{}}>
+                                                    <div key={message.eventId} className={styles.chat__message} style={{ width: isCurrentUser ? 'max-content' : '100%' }}>
+                                                        <div className={styles.messageContent}>
+                                                            {message.message}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className={styles.avatarContainer} style={{ display: isCurrentUser ? 'block' : 'none', marginLeft: '0.3rem' }}>
+                                                <div className={styles.avatar}>
+                                                    {message.username[0]}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                }))}
                             </div>
-                        )))}
-                    </div>
+
                     }
                     <div className={styles.chat__input}>
                         <input

@@ -286,14 +286,6 @@
     border-bottom: 1px solid #ccc;
 }
 
-.myMessage {
-    align-items: center;
-    justify-content: end;
-}
-
-.otherMessage {
-    align-items: start;
-}
 
 @media screen and (max-width: 767px) {
     .event__Card {

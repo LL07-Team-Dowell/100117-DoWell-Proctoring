@@ -226,7 +226,7 @@ const EventRegistrationPage = () => {
 
     function bytesToMB(bytes) {
         return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-    }    
+    }
 
     const handleGoToNextPage = async () => {
         const nextPage = currentFormPage + 1;
@@ -263,7 +263,11 @@ const EventRegistrationPage = () => {
                         .then(async (canvas) => {
                             const dataURL = canvas.toDataURL('image/png');
                             const imageFile1 = dataURLtoFile(dataURL, 'image.png');
-                            const imageFile2 = dataURLtoFile(retrievedParticipantDetails?.user_image, 'image.png');
+                            // const imageFile2 = dataURLtoFile(retrievedParticipantDetails?.user_image, 'image.png');
+                            const imageFile2 = dataURLtoFile(dataURL, 'image.png');
+                            const testDownloadUrl = URL.createObjectURL(imageFile1)
+                            window.open(testDownloadUrl, '_blank')
+                            URL.revokeObjectURL(testDownloadUrl);
                             const payLoadData = new FormData();
                             payLoadData.append('image1', imageFile1);
                             payLoadData.append('image2', imageFile2);
@@ -274,7 +278,7 @@ const EventRegistrationPage = () => {
                                     setCurrentFormPage(nextPage);
                                 })
                                 .catch(err => {
-                                    toast.error(err?.message);
+                                    toast.error(err?.response?.data?.message);
                                 }).finally(() => {
                                     setIsNextLoading(false);
                                 });
@@ -462,7 +466,8 @@ const EventRegistrationPage = () => {
                             </div>
                         </>
                             :
-                            new Date().getTime() > new Date(foundEventDetail?.close_date).getTime() ?
+                            // new Date().getTime() > new Date(foundEventDetail?.close_date).getTime() ?
+                            false ?
                                 <>
                                     <h3>This event is over</h3>
                                     <img
