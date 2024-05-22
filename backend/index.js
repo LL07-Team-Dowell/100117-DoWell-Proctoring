@@ -2,7 +2,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const express = require("express");
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const { connectToDb } = require('./config/db');

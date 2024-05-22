@@ -27,6 +27,7 @@ describe('Event API Tests', function () {
                 duration_in_hours: 3,
                 user_id: "user_1234543",
                 participants: [],
+                active_participants: [],
                 max_cap: 50,
                 link: "http://abc.com/meeting"
             });
