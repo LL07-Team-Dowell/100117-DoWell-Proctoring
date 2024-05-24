@@ -5,7 +5,7 @@ import axios from 'axios';
 const loginBaseUrl = 'https://100014.pythonanywhere.com/api/';
 const clientAdminBaseUrl = 'https://100093.pythonanywhere.com/api/';
 // const currentBaseApiOrigin = 'http://localhost:5000'; // local
-const currentBaseApiOrigin = 'https://www.uxlive.me'; // prod
+const currentBaseApiOrigin = 'https://www.dowellproctoring.uxlivinglab.online'; // prod
 
 
 // CONFIG FOR PEERJS (TO USE LOCALLY: comment 17-20 and uncomment 12-15)
