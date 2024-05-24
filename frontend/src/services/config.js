@@ -16,7 +16,7 @@ const currentBaseApiOrigin = 'https://www.dowellproctoring.uxlivinglab.online'; 
 
 // Default values for production environment
 const peerServerPort = 9000;
-const peerServerHost = 'uxlive.me';
+const peerServerHost = 'dowellproctoring.uxlivinglab.online';
 const peerServerPath = '/dowellproctoring/peer/myapp';
 
 
