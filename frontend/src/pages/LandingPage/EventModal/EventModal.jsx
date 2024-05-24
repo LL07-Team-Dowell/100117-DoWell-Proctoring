@@ -134,13 +134,13 @@ const AddEventModal = ({ handleCloseModal }) => {
                   type="text"
                   name={"link"}
                   placeholder="Event link"
-                  value={`${window.location.origin}/dowellproctoring/?view=public&event_id=${eventId}`}
+                  value={`${window.location.origin}/?view=public&event_id=${eventId}`}
                   style={{ width: "100%" }}
                 />
                 <button
                   onClick={async () => {
                     await navigator.clipboard.writeText(
-                      `${window.location.origin}/dowellproctoring/?view=public&event_id=${eventId}`
+                      `${window.location.origin}/?view=public&event_id=${eventId}`
                     );
 
                     setCopiedId("write-text");
@@ -188,7 +188,7 @@ const AddEventModal = ({ handleCloseModal }) => {
               </div>
               <EmailInput
                 newEvent={event.name}
-                eventLink={`${window.location.origin}/dowellproctoring/?view=public&event_id=${eventId}`}
+                eventLink={`${window.location.origin}/?view=public&event_id=${eventId}`}
                 closeModal={handleCloseModal}
               />
             </label>

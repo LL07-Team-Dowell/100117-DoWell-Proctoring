@@ -5,12 +5,12 @@ import { FiBarChart } from "react-icons/fi";
 export const userNavLinks = [
   {
     icon: FiHome,
-    path: "/dowellproctoring",
+    path: "/",
     name: "home",
   },
   {
     icon: BsRecordBtn,
-    path: "/dowellproctoring/events",
+    path: "/events",
     name: "events",
   },
   {
