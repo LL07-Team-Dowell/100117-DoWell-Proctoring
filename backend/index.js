@@ -37,7 +37,6 @@ const io = new Server(httpServer, {
   cors: {
     origin: Array.isArray(allowedOrigins) ? allowedOrigins : [],
     methods: ["GET", "POST"],
-    path: '/proctoring-socket/' // comment out when testing locally, it's only to be uncommented for production usage
   }
 })
 
