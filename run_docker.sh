@@ -8,6 +8,12 @@ fi
 
 echo -e "\e[32m✓\e[0m Intializing ..."
 
+front_url1='http://localhost:4173'
+front_url2='http://localhost:5173'
+front_url3='http://192.64.86.227:4173'
+
+json_array="[\"$front_url1\", \"$front_url2\", \"$front_url3\"]"
+
 # Check if the system is running Linux
 if [ "$(uname)" == "Linux" ]; then
     echo -e "\e[32m✓\e[0m System OS: Linux Detected"
@@ -19,12 +25,13 @@ if [ "$(uname)" == "Linux" ]; then
     cd backend
 
     # Check if the variables exist in the .env file
-    # if grep -q "^FRONTEND_URLS=" .env; then
-    #     sed -i 's|^FRONTEND_URLS=.*|FRONTEND_URLS="\[\"http://localhost:4173\", \"http://localhost:5173\", \"http://192.64.86.227:4173\", \"https://www.uxlive.me/dowellproctoring\", \"http://localhost:3000\"\]"|' .env
-    # else
-    #     echo "" >> .env
-    #     echo "FRONTEND_URLS='[\"http://localhost:4173\", \"http://localhost:5173\", \"http://192.64.86.227:4173\", \"https://www.uxlive.me/dowellproctoring\", "http://localhost:3000"]'" >> .env
-    # fi
+    if grep -q "^FRONTEND_URLS=" .env; then
+        # Use double quotes around the variable to ensure it's properly interpreted as a string
+        sed -i "s|^FRONTEND_URLS=.*|FRONTEND_URLS=$json_array|" .env
+    else
+        echo "" >> .env
+        echo "FRONTEND_URLS=$json_array" >> .env
+    fi
 
 
     if grep -q "^MONGO_DB_URI=" .env; then
@@ -34,12 +41,6 @@ if [ "$(uname)" == "Linux" ]; then
         echo "MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" >> .env
     fi
     
-    if grep -q "^PORT=" .env; then
-        sed -i "s/^PORT=.*/PORT=8005" .env
-    else
-        echo "" >> .env
-        echo "PORT=8005" >> .env
-    fi
 
     if grep -q "^IP=" .env; then
         sed -i "s/^IP=.*/IP=$ip_address:9092/" .env
@@ -90,11 +91,13 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
     num_addresses=$(echo "$ip_address" | wc -l)
 
     cd backend
+    # Check if the variables exist in the .env file
     if grep -q "^FRONTEND_URLS=" .env; then
-        sed -i "s/^FRONTEND_URLS=.*/FRONTEND_URLS=['http://localhost:4173', 'http://localhost:5173', 'http://192.64.86.227:4173']/" .env
+        # Use double quotes around the variable to ensure it's properly interpreted as a string
+        sed -i "s|^FRONTEND_URLS=.*|FRONTEND_URLS=$json_array|" .env
     else
         echo "" >> .env
-        echo "FRONTEND_URLS=['http://localhost:4173', 'http://localhost:5173', 'http://192.64.86.227:4173']" >> .env
+        echo "FRONTEND_URLS=$json_array" >> .env
     fi
 
     if grep -q "^MONGO_DB_URI=" .env; then
@@ -102,13 +105,6 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
     else
         echo "" >> .env
         echo "MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" >> .env
-    fi
-    
-    if grep -q "^PORT=" .env; then
-        sed -i "s/^PORT=.*/PORT=8005" .env
-    else
-        echo "" >> .env
-        echo "PORT=8005" >> .env
     fi
 
     # Check if the variables exist in the .env file
@@ -165,10 +161,11 @@ elif [ "$(uname)" == "Darwin" ]; then
 
     # Check if the variables exist in the .env file
     if grep -q "^FRONTEND_URLS=" .env; then
-        sed -i "s/^FRONTEND_URLS=.*/FRONTEND_URLS=['http://localhost:4173', 'http://localhost:5173', 'http://192.64.86.227:4173']/" .env
+        # Use double quotes around the variable to ensure it's properly interpreted as a string
+        sed -i "s|^FRONTEND_URLS=.*|FRONTEND_URLS=$json_array|" .env
     else
         echo "" >> .env
-        echo "FRONTEND_URLS=['http://localhost:4173', 'http://localhost:5173', 'http://192.64.86.227:4173']" >> .env
+        echo "FRONTEND_URLS=$json_array" >> .env
     fi
 
     if grep -q "^MONGO_DB_URI=" .env; then
@@ -176,13 +173,6 @@ elif [ "$(uname)" == "Darwin" ]; then
     else
         echo "" >> .env
         echo "MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" >> .env
-    fi
-    
-    if grep -q "^PORT=" .env; then
-        sed -i "s/^PORT=.*/PORT=8005" .env
-    else
-        echo "" >> .env
-        echo "PORT=8005" >> .env
     fi
 
     if grep -q "^KAFKA_HOST=" .env; then
