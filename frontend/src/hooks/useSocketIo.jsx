@@ -15,12 +15,7 @@ export default function useSocketIo(
     useEffect(() => {
         if (!canStartUsing) return;
 
-        const peer = new Peer(undefined, {
-            host: peerServerHost,
-            // port: peerServerPort, // COMMENT FOR PROD
-            path: peerServerPath,
-            secure: true, // COMMENT THIS WHILE TESTING LOCALLY
-        });
+        const peer = new Peer(undefined);
 
         peer.on('open', (id) => {
             console.log('current user peer id::' + id + ', and email::' + userEmail);
