@@ -86,8 +86,8 @@ services:
     container_name: dowell-proctoring-peerjs
     ports:
       - "9000:443"
-    volumes:
-      - /etc/letsencrypt/live/www.uxlive.me:/etc/letsencrypt/live/www.uxlive.me:ro
+    #    volumes:
+    #      - /etc/letsencrypt/live/www.dowellproctoring.uxlivinglab.online/:/home/DowellProctoring/100117-DoWell-Proctoring/peer/certs/
     env_file:
       - ./backend/.env
     environment:

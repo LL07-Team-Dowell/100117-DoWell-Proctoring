@@ -15,9 +15,9 @@ let httpsServer;
 
 if (isProduction) {
     // Load SSL certificate and key
-    const privateKey = fs.readFileSync('/etc/letsencrypt/live/www.uxlive.me/privkey.pem', 'utf8');
-    const certificate = fs.readFileSync('/etc/letsencrypt/live/www.uxlive.me/fullchain.pem', 'utf8');
-    const ca = fs.readFileSync('/etc/letsencrypt/live/www.uxlive.me/chain.pem', 'utf8');
+    const privateKey = fs.readFileSync('./certs/privkey.pem', 'utf8');
+    const certificate = fs.readFileSync('./certs/fullchain.pem', 'utf8');
+    const ca = fs.readFileSync('./certs/chain.pem', 'utf8');
 
     const credentials = {
         key: privateKey,

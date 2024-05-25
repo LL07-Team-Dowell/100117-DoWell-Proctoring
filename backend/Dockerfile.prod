@@ -17,6 +17,9 @@ WORKDIR /usr/src/backend
 # Copy the package.json and package-lock.json
 COPY package*.json ./
 
+# Upgrade npm to the latest version
+RUN npm install -g npm@latest
+
 # Install project dependencies, this will now have the required tools and environment to build 'canvas'
 RUN npm install --omit=dev
 

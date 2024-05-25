@@ -15,9 +15,11 @@ RUN npm install --legacy-peer-deps
 # Copy the rest of the frontend application source code to the working directory
 COPY . .
 
+# Upgrade npm to the latest version
+RUN npm install -g npm@latest
+
 # Build the frontend application
 RUN npm run build
-
 
 # Serve stage: This stage sets up the environment to serve the built frontend application
 
@@ -26,6 +28,9 @@ FROM node:20-alpine
 
 # Set the working directory where the application will be served
 WORKDIR /app
+
+# Upgrade npm to the latest version
+RUN npm install -g npm@latest
 
 # Globally install serve, a static file serving and directory listing module
 RUN npm install -g serve
