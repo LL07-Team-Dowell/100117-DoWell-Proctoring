@@ -226,14 +226,28 @@ fi
 #==========================================================================================================
 # Check the provided argument
 if [ "$1" == "dev" ]; then
-    docker network create webnet
+    # Check if the network exists
+    if ! docker network inspect webnet &> /dev/null; then
+        # If the network doesn't exist, create it
+        docker network create webnet
+    else
+        # If the network exists, display a message indicating that it already exists
+        echo -e "${YELLOW}Network 'webnet' already exists.${NC}"
+    fi
 
     # biuld docker-compose for development
     docker-compose -f docker-compose.dev.yml build
     # Run docker-compose for development environment
     docker-compose -f docker-compose.dev.yml up
 elif [ "$1" == "prod" ]; then
-    docker network create webnet
+    # Check if the network exists
+    if ! docker network inspect webnet &> /dev/null; then
+        # If the network doesn't exist, create it
+        docker network create webnet
+    else
+        # If the network exists, display a message indicating that it already exists
+        echo -e "${YELLOW}Network 'webnet' already exists.${NC}"
+    fi
 
     # biuld docker-compose for prodcution
     docker-compose -f docker-compose.prod.yml build
