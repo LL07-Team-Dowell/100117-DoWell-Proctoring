@@ -9,7 +9,7 @@ import EventsContextProvider from "./contexts/EventsContext";
 
 function App() {
   const { currentUser, isPublicUser, userDetailLoading } = useUserContext();
-  const publicBasePath = "/dowellproctoring";
+  const publicBasePath = "";
 
   useDowellLogin();
 

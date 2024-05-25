@@ -59,7 +59,7 @@ const LandingPage = () => {
         <div className={styles.main__content}>
           <div className={styles.event__header}>
             <h3>My Events</h3>
-            <button onClick={() => navigate("/dowellproctoring/events")}>
+            <button onClick={() => navigate("/events")}>
               View All <MdKeyboardDoubleArrowRight className={styles.arrow} />
             </button>
           </div>

@@ -22,7 +22,7 @@ services:
 
   # Kafka configuration for message queuing and streaming
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: bitnami/kafka:latest
     container_name: dowell-proctoring-kafka
     ports:
       - 9092:9092
