@@ -1,23 +1,16 @@
 import axios from 'axios';
+require("dotenv").config();
 
-
+const isProduction = process.env.NODE_ENV === 'production';
 // different API base URLs
 const loginBaseUrl = 'https://100014.pythonanywhere.com/api/';
 const clientAdminBaseUrl = 'https://100093.pythonanywhere.com/api/';
-// const currentBaseApiOrigin = 'http://localhost:5000'; // local
-const currentBaseApiOrigin = 'https://www.dowellproctoring.uxlivinglab.online'; // prod
 
-
-// CONFIG FOR PEERJS (TO USE LOCALLY: comment 17-20 and uncomment 12-15)
-// // Local environment usage
-const peerServerPort = 9000;
-const peerServerHost = 'localhost';
-const peerServerPath = '/myapp';
-
-// Default values for production environment
-// const peerServerPort = 9000;
-// const peerServerHost = 'dowellproctoring.uxlivinglab.online';
-// const peerServerPath = '/myapp'; //previous : '/dowellproctoring/peer/myapp'
+const currentBaseApiOrigin = (isProduction) ? 'https://www.dowellproctoring.uxlivinglab.online':'http://localhost:5000';
+const peerServerPort = (isProduction) ?9000:9000;
+const peerServerHost = (isProduction) ?'dowellproctoring.uxlivinglab.online':'localhost';
+const peerServerPath  = (isProduction) ?'/peer/myapp':'/myapp';
+const baseURL = (isProduction) ? `${currentBaseApiOrigin}/backend/api/v1/`:'${currentBaseApiOrigin}/api/v1';
 
 
 // creating separate axios instances for each API interaction
@@ -32,9 +25,7 @@ const clientAdminAxiosInstance = axios.create({
 })
 
 const defaultAxiosInstance = axios.create({
-    // baseURL: `${currentBaseApiOrigin}/api/v1`, // local usage
-    baseURL: `${currentBaseApiOrigin}/dowellproctoring-backend/api/v1/`,
-    // baseURL: `${currentBaseApiOrigin}/api/v1/`, // production usage //previous:`${currentBaseApiOrigin}/dowellproctoring-backend/api/v1/`
+    baseURL: baseURL,
     withCredentials: true,
 })
 
@@ -44,6 +35,7 @@ export {
     clientAdminAxiosInstance,
     defaultAxiosInstance,
     currentBaseApiOrigin,
+    isProduction,
     peerServerHost,
     peerServerPort,
     peerServerPath,
