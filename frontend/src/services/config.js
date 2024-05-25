@@ -10,14 +10,14 @@ const currentBaseApiOrigin = 'https://www.uxlive.me'; // prod
 
 // CONFIG FOR PEERJS (TO USE LOCALLY: comment 17-20 and uncomment 12-15)
 // // Local environment usage
-const peerServerPort = 9000;
-const peerServerHost = 'localhost';
-const peerServerPath = '/myapp';
+// const peerServerPort = 9000;
+// const peerServerHost = 'localhost';
+// const peerServerPath = '/myapp';
 
 // Default values for production environment
-// const peerServerPort = 9000;
-// const peerServerHost = 'uxlive.me';
-// const peerServerPath = '/dowellproctoring/peer/myapp';
+const peerServerPort = 9000;
+const peerServerHost = 'uxlive.me';
+const peerServerPath = '/dowellproctoring/peer/myapp';
 
 
 // creating separate axios instances for each API interaction

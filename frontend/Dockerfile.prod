@@ -1,7 +1,7 @@
 # Build stage: This stage is used for building the frontend application using Node.js
 
 # Using Node.js version 20 based on Alpine for a lightweight image
-FROM node:20-alpine AS build
+FROM node:20-alpine AS dist
 
 # Set the working directory inside the container
 WORKDIR /usr/src/frontend
@@ -36,7 +36,7 @@ RUN npm install -g npm@latest
 RUN npm install -g serve
 
 # Copy the built application from the build stage to the serve directory
-COPY --from=build /usr/src/frontend/build /app 
+COPY --from=dist /usr/src/frontend/dist /app 
 
 # Expose port 4173 on which the application will run
 EXPOSE 4173  
