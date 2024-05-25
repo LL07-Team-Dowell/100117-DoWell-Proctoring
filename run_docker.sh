@@ -1,12 +1,18 @@
 #!/bin/bash
 
+# Define color codes
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
 # Check if an argument is provided
 if [ -z "$1" ]; then
-    echo "Usage: $0 <environment>"
+    echo -e "${YELLOW}Usage: $0 <environment>${NC}"
     exit 1
 fi
 
-echo -e "\e[32m✓\e[0m Intializing ..."
+echo -e "${GREEN}✓${NC} Intializing ..."
 
 front_url1='http://localhost:4173'
 front_url2='http://localhost:5173'
@@ -16,7 +22,7 @@ json_array="[\"$front_url1\", \"$front_url2\", \"$front_url3\"]"
 
 # Check if the system is running Linux
 if [ "$(uname)" == "Linux" ]; then
-    echo -e "\e[32m✓\e[0m System OS: Linux Detected"
+    echo -e "${GREEN}✓${NC} System OS: Linux Detected"
     
     # getting the ip address
     # Get the IP address of the Linux system
@@ -67,7 +73,7 @@ if [ "$(uname)" == "Linux" ]; then
         echo "KAFKA_TOPIC=MESSAGES" >> .env
     fi
     cd ..
-    echo -e "\e[32m✓\e[0m Created env file for backend"
+    echo -e "${GREEN}✓${NC} Created env file for backend"
     # Store the IP address in a .env file
     if grep -q "^KAFKA_HOST=" .env; then
         sed -i "s/^KAFKA_HOST=.*/KAFKA_HOST=$ip_address/" .env
@@ -80,11 +86,11 @@ if [ "$(uname)" == "Linux" ]; then
     else
         echo "KAFKA_TOPIC=MESSAGES" >> .env
     fi
-    echo -e "\e[32m✓\e[0m Created env kafka"
+    echo -e "${GREEN}✓${NC} Created env kafka"
 
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
-    echo -e "\e[32m✓\e[0m System OS: Windows Detected"
+    echo -e "${GREEN}✓${NC} System OS: Windows Detected"
 
     # Get the IP address for Windows
     ip_address=$(ipconfig | grep IPv4 | grep -v "127.0.0.1" | awk '{print $NF}')
@@ -133,7 +139,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
         echo "KAFKA_TOPIC=MESSAGES" >> .env
     fi
     cd ..
-    echo -e "\e[32m✓\e[0m Created env file for backend"
+    echo -e "${GREEN}✓${NC} Created env file for backend"
     # Store the IP address in a .env file
     if grep -q "^KAFKA_HOST=" .env; then
         sed -i "s/^KAFKA_HOST=.*/KAFKA_HOST=$ip_address/" .env
@@ -149,9 +155,16 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
     echo -e "\e[32m✓\e[0m Created env kafka"
 
 elif [ "$(uname)" == "Darwin" ]; then
-    echo -e "\e[32m✓\e[0m System OS: macOS Detected"
+    echo -e "${GREEN}✓${NC} System OS: macOS Detected"
 
-    brew install node
+    # Check if Node.js is installed
+    # Check if Node.js is installed
+    if ! command -v node &> /dev/null; then
+        echo -e "${RED}✗ Node.js is not installed.${NC} Installing Node.js..."
+        brew install node
+    else
+        echo -e "${GREEN}✓ Node.js is already installed. Skipping installation.${NC}"
+    fi
 
     # Get the IP address for macOS
     ip_address=$(ifconfig | grep "inet " | grep -v "127.0.0.1" | awk '{print $2}')
@@ -188,7 +201,7 @@ elif [ "$(uname)" == "Darwin" ]; then
     fi
 
     cd ..
-    echo -e "\e[32m✓\e[0m Created env file for backend"
+    echo -e "${GREEN}✓${NC} Created env file for backend"
     # Store the IP address in a .env file
     if grep -q "^KAFKA_HOST=" .env; then
         sed -i "s/^KAFKA_HOST=.*/KAFKA_HOST=$ip_address/" .env
@@ -201,12 +214,12 @@ elif [ "$(uname)" == "Darwin" ]; then
     else
         echo "KAFKA_TOPIC=MESSAGES" >> .env
     fi
-    echo -e "\e[32m✓\e[0m Created env kafka"
+    echo -e "${GREEN}✓${NC} Created env kafka"
 
 else
-    echo -e "\e[31mUnsupported operating system\e[0m"
-    echo -e "\e[33mEnsure nodejs and npm are installed manually for your OS\e[0m"
-    echo -e "\e[33mEnsure .env files are added manually for your OS\e[0m"
+    echo -e "${RED}Unsupported operating system Detected ${NC}"
+    echo -e "${RED}Ensure nodejs and npm are installed manually for your OS ${NC}"
+    echo -e "${RED}Ensure .env files are added manually for your OS ${NC}"
 
 fi
 
@@ -227,6 +240,6 @@ elif [ "$1" == "prod" ]; then
     # Run docker-compose for production environment
     docker-compose -f docker-compose.prod.yml up -d
 else
-    echo "Invalid environment specified. Please use 'dev' or 'prod'."
+    echo -e "${RED}Invalid environment specified. Please use 'dev' or 'prod'.${NC}"
     exit 1
 fi
