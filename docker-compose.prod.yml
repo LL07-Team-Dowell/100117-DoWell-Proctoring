@@ -75,6 +75,8 @@ services:
     ports:
       - "4173:4173"
     restart: always
+    env_file:
+      - ./backend/.env
     networks:
       - webnet
 

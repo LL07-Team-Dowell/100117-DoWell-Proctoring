@@ -72,6 +72,21 @@ if [ "$(uname)" == "Linux" ]; then
     else
         echo "KAFKA_TOPIC=MESSAGES" >> .env
     fi
+    if [ "$1" == "dev" ]; then
+        if grep -q "^NODE_ENV=" .env; then
+            sed -i "s/^NODE_ENV=.*/NODE_ENV=development/" .env
+        else
+            echo "NODE_ENV=development" >> .env
+        fi
+    elif [ "$1" == "prod" ]; then
+        if grep -q "^NODE_ENV=" .env; then
+            sed -i "s/^NODE_ENV=.*/NODE_ENV=production/" .env
+        else
+            echo "NODE_ENV=production" >> .env
+        fi
+    else
+        echo -e "${YELLOW}!: No environment[dev||prod] detected. ${NC}"
+    fi
     cd ..
     echo -e "${GREEN}✓${NC} Created env file for backend"
     # Store the IP address in a .env file
@@ -138,6 +153,21 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
     else
         echo "KAFKA_TOPIC=MESSAGES" >> .env
     fi
+    if [ "$1" == "dev" ]; then
+        if grep -q "^NODE_ENV=" .env; then
+            sed -i "s/^NODE_ENV=.*/NODE_ENV=development/" .env
+        else
+            echo "NODE_ENV=development" >> .env
+        fi
+    elif [ "$1" == "prod" ]; then
+        if grep -q "^NODE_ENV=" .env; then
+            sed -i "s/^NODE_ENV=.*/NODE_ENV=production/" .env
+        else
+            echo "NODE_ENV=production" >> .env
+        fi
+    else
+        echo -e "${YELLOW}!: No environment[dev||prod] detected. ${NC}"
+    fi
     cd ..
     echo -e "${GREEN}✓${NC} Created env file for backend"
     # Store the IP address in a .env file
@@ -198,6 +228,22 @@ elif [ "$(uname)" == "Darwin" ]; then
         sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
     else
         echo "KAFKA_TOPIC=MESSAGES" >> .env
+    fi
+    
+    if [ "$1" == "dev" ]; then
+        if grep -q "^NODE_ENV=" .env; then
+            sed -i "s/^NODE_ENV=.*/NODE_ENV=development/" .env
+        else
+            echo "NODE_ENV=development" >> .env
+        fi
+    elif [ "$1" == "prod" ]; then
+        if grep -q "^NODE_ENV=" .env; then
+            sed -i "s/^NODE_ENV=.*/NODE_ENV=production/" .env
+        else
+            echo "NODE_ENV=production" >> .env
+        fi
+    else
+        echo -e "${YELLOW}!: No environment[dev||prod] detected. ${NC}"
     fi
 
     cd ..
