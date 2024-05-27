@@ -92,8 +92,6 @@ services:
     #      - /etc/letsencrypt/live/www.dowellproctoring.uxlivinglab.online/:/home/DowellProctoring/100117-DoWell-Proctoring/peer/certs/
     env_file:
       - ./backend/.env
-    environment:
-      - NODE_ENV=production
     restart: always
     networks:
       - webnet
