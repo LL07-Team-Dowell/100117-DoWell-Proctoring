@@ -26,8 +26,7 @@ const emailTemplate = `
 
 const sendEmail = async (message, email, newEvent) => {
   try {
-    let emailContent = emailTemplate.replace("{message}", message);
-    emailContent = emailContent.replace("{eventTitle}", newEvent);
+    const emailContent = emailTemplate.replace("{message}", message).replace("{eventTitle}", newEvent);
 
     const response = await axios.post(
       "https://100085.pythonanywhere.com/api/dowell_bulk_email/",
