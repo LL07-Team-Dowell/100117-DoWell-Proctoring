@@ -22,7 +22,7 @@ services:
 
   # Kafka configuration for message queuing and streaming
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: bitnami/kafka:latest
     container_name: dowell-proctoring-kafka
     ports:
       - 9092:9092
@@ -75,6 +75,8 @@ services:
     ports:
       - "4173:4173"
     restart: always
+    env_file:
+      - ./backend/.env
     networks:
       - webnet
 
@@ -86,12 +88,10 @@ services:
     container_name: dowell-proctoring-peerjs
     ports:
       - "9000:443"
-    volumes:
-      - /etc/letsencrypt/live/www.uxlive.me:/etc/letsencrypt/live/www.uxlive.me:ro
+    #    volumes:
+    #      - /etc/letsencrypt/live/www.dowellproctoring.uxlivinglab.online/:/home/DowellProctoring/100117-DoWell-Proctoring/peer/certs/
     env_file:
       - ./backend/.env
-    environment:
-      - NODE_ENV=production
     restart: always
     networks:
       - webnet

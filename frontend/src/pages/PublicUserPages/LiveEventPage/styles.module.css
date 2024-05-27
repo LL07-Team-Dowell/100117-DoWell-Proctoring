@@ -210,7 +210,7 @@
 }
 
 .chat__main {
-    overflow-y: auto;
+    overflow-x: auto; 
     height: calc(310px - 2.5rem);
     margin-bottom: 1rem;
     flex: 1;
@@ -255,9 +255,19 @@
     vertical-align: top;
 }
 
-.chat_message{
+.chat_message {
     display: flex;
     margin-bottom: 10px;
+    align-items:center;
+    /* justify-content:end; */
+}
+
+.chat_messageRight .chat__message {
+    background-color: #d4f0d4;
+}
+
+.main_msg_content{
+    width: 100%;
 }
 
 .chat__input {
@@ -286,13 +296,59 @@
     border-bottom: 1px solid #ccc;
 }
 
-.myMessage {
-    align-items: center;
-    justify-content: end;
+.container {
+    position: relative;
+    display: inline-block;
 }
 
-.otherMessage {
-    align-items: start;
+.video__Item {
+    width: 100%;
+    height: auto;
+}
+
+.overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 80%;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    border: 5px dotted #ffffff; /* Optional: to make the circle more visible */
+}
+
+.no__Display {
+    display: none;
+}
+
+.message_{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.username_{
+    font-size: 0.7rem;
+}
+
+.username_date{
+    width:100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.username__{
+    font-size: 0.5rem;
+}
+
+.main_msg_content{
+    width: 100%;
+}
+
+.chat__message strong {
+    font-weight: 600;
+    margin-right: 0.5rem;
 }
 
 @media screen and (max-width: 767px) {

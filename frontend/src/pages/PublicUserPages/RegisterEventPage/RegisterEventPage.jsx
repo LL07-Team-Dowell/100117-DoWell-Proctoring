@@ -144,7 +144,7 @@ const RegisterEvent = () => {
                 ) : (
                     showEventOverModal ?
                         <div className={styles.event_over_modal}>
-                            <h3>This event is over</h3>
+                            <h3>Registration for this event is over</h3>
                             <img
                                 src={expiredIllus}
                                 alt="illustration"
