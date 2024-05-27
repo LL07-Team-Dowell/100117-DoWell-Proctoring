@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const isProduction = import.meta.env.PROD;
-// const isProduction = true; // For local frontend development only. DO NOT LEAVE THIS UNCOMMENTED AND PUSH
+const isProduction = import.meta.env.PROD; // for local frontend development, comment this
+// const isProduction = true; // Uncomment this For local frontend development only. DO NOT LEAVE THIS UNCOMMENTED AND PUSH
 const productionBackendSuffix = 'dowellproctoring-backend';
 
 
