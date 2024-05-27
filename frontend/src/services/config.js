@@ -1,16 +1,17 @@
 import axios from 'axios';
-require("dotenv").config();
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = import.meta.env.PROD;
+// const isProduction = true; // For local frontend development only. DO NOT LEAVE THIS UNCOMMENTED AND PUSH
+
 // different API base URLs
 const loginBaseUrl = 'https://100014.pythonanywhere.com/api/';
 const clientAdminBaseUrl = 'https://100093.pythonanywhere.com/api/';
 
-const currentBaseApiOrigin = (isProduction) ? 'https://www.dowellproctoring.uxlivinglab.online':'http://localhost:5000';
-const peerServerPort = (isProduction) ?9000:9000;
-const peerServerHost = (isProduction) ?'dowellproctoring.uxlivinglab.online':'localhost';
-const peerServerPath  = (isProduction) ?'/peer/myapp':'/myapp';
-const baseURL = (isProduction) ? `${currentBaseApiOrigin}/backend/api/v1/`:'${currentBaseApiOrigin}/api/v1';
+const currentBaseApiOrigin = (isProduction) ? 'https://www.dowellproctoring.uxlivinglab.online' : 'http://localhost:5000';
+const peerServerPort = (isProduction) ? 9000 : 9000;
+const peerServerHost = (isProduction) ? 'dowellproctoring.uxlivinglab.online' : 'localhost';
+const peerServerPath  = (isProduction) ? '/peer/myapp' : '/myapp';
+const baseURL = (isProduction) ? `${currentBaseApiOrigin}/backend/api/v1/`: `${currentBaseApiOrigin}/api/v1`;
 
 
 // creating separate axios instances for each API interaction
@@ -35,8 +36,8 @@ export {
     clientAdminAxiosInstance,
     defaultAxiosInstance,
     currentBaseApiOrigin,
-    isProduction,
     peerServerHost,
     peerServerPort,
     peerServerPath,
+    isProduction,
 }
