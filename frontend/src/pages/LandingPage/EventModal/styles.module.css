@@ -2,7 +2,7 @@
   background-color: white;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   border-radius: 8px;
-  width: 35%;
+  width: 46%;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -127,4 +127,14 @@
   background-color: #fff;
   color: #005734;
   border: 1px solid #005734;
+}
+
+@media screen and (max-width: 767px) {
+  .event__Modal__wrapper {
+    width: 80%;
+  }
+
+  .event_desc {
+    flex-direction: column;
+  }
 }

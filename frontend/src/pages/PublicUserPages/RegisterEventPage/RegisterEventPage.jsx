@@ -8,6 +8,33 @@ import logo from "../../../assets/logo.png";
 import expiredIllus from "../../../assets/expired-illustration.svg";
 import html2canvas from "html2canvas";
 import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
+import { sendEmailToSingleRecipient } from "../../../services/emailServices";
+
+
+const emailContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link to join event</title>
+</head>
+<body>
+    <div style="font-family: Helvetica,Arial,sans-serif;min-width:100px;overflow:auto;line-height:2">
+        <div style="margin:50px auto;width:70%;padding:20px 0">
+          <div style="border-bottom:1px solid #eee">
+            <a href="#" style="font-size:1.2em;color: #00466a;text-decoration:none;font-weight:600">Dowell UX Living Lab</a>
+          </div>
+          <p style="font-size:1.1em">You have been successfully registered for: {eventTitle}</p>
+          <br />
+          <p style="font-size:1.1em">{message}</p>
+        </div>
+      </div>
+</body>
+</html>
+`;
+
 
 const RegisterEvent = () => {
     const [name, setName] = useState("");
@@ -127,10 +154,19 @@ const RegisterEvent = () => {
         console.log('data to post', dataToPost);
 
         setIsRegisteringEvent(true);
-        await registerForEvent(dataToPost).then(() => {
-            toast.success('Registered successfully');
-        }).catch(() => {
-            toast.error('Unable to register for event, Please try again later');
+        await registerForEvent(dataToPost).then(async () => {
+            try {
+                const message = `Please use this link: ${window.location.origin}/?view=public&event_id=${eventDetails?._id} to begin.`;
+                let formattedEmailContent = emailContent.replace("{message}", message).replace("{eventTitle}", eventDetails?.name);
+
+                await sendEmailToSingleRecipient(dataToPost.email, dataToPost.name, `Link to join event: ${eventDetails?.name}`, formattedEmailContent);
+                toast.success('Successfully registered for event! An email has been sent to you containing details on how to join in for this event');
+            } catch (error) {
+                toast.success('Successfully registered for event!');
+            }
+        }).catch((err) => {
+            const errorMessage = err?.response ? err?.response?.data?.message : 'Unable to register for event, Please try again later';
+            toast.error(errorMessage);
         }).finally(() => {
             setIsRegisteringEvent(false);
         })
@@ -210,7 +246,7 @@ const RegisterEvent = () => {
                             </div>
                             <div className={styles.register_event}>
                                 <button className={styles.register__} onClick={handleRegisterEvent} disabled={!isCameraAllowed}>
-                                    {isRegisteringEvent ? <LoadingSpinner /> : 'Register'}
+                                    {isRegisteringEvent ? <LoadingSpinner width={'1.5rem'} height={'1.5rem'} /> : 'Register'}
                                 </button>
                             </div>
                         </div>
