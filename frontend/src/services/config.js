@@ -2,6 +2,8 @@ import axios from 'axios';
 
 const isProduction = import.meta.env.PROD;
 // const isProduction = true; // For local frontend development only. DO NOT LEAVE THIS UNCOMMENTED AND PUSH
+const productionBackendSuffix = 'dowellproctoring-backend';
+
 
 // different API base URLs
 const loginBaseUrl = 'https://100014.pythonanywhere.com/api/';
@@ -11,7 +13,7 @@ const currentBaseApiOrigin = (isProduction) ? 'https://www.dowellproctoring.uxli
 const peerServerPort = (isProduction) ? 9000 : 9000;
 const peerServerHost = (isProduction) ? 'dowellproctoring.uxlivinglab.online' : 'localhost';
 const peerServerPath  = (isProduction) ? '/peer/myapp' : '/myapp';
-const baseURL = (isProduction) ? `${currentBaseApiOrigin}/backend/api/v1/`: `${currentBaseApiOrigin}/api/v1`;
+const baseURL = (isProduction) ? `${currentBaseApiOrigin}/${productionBackendSuffix}/api/v1/`: `${currentBaseApiOrigin}/api/v1`;
 
 
 // creating separate axios instances for each API interaction
@@ -40,4 +42,5 @@ export {
     peerServerPort,
     peerServerPath,
     isProduction,
+    productionBackendSuffix,
 }
