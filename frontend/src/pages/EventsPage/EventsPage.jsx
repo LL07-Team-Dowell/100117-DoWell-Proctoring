@@ -13,7 +13,7 @@ import { getEventsForPage } from "../../services/eventServices";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
 const EventsPage = () => {
-  const { eventsLoading, totalPages } = useEventsContext();
+  const { totalPages } = useEventsContext();
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,31 +25,39 @@ const EventsPage = () => {
     const page = searchParams.get("page");
     if (page) {
       setCurrentPage(parseInt(page));
-      const id = currentUser?.userinfo?.userID;
-      const eventsForPage = async () => {
-        // const events = (await getEventsForPage(id, page)).data;
-        const events = sampleEventResponse?.data?.events;
-        console.log(events);
-        setEventsToShowForPage(events);
-        setEventsForPageLoading(false);
-      };
-
-      eventsForPage();
     }
-  }, [searchParams]);
+
+    const eventsForPage = async () => {
+      try {
+        setEventsForPageLoading(true);
+        const id = currentUser?.userinfo?.userID;
+        const events = (await getEventsForPage(id, page)).data;
+        const data = events?.data?.events;
+        // const events = sampleEventResponse?.data?.events;
+        console.log(data);
+        setEventsToShowForPage(data);
+        setEventsForPageLoading(false);
+      } catch (error) {
+        console.log(error);
+        setEventsForPageLoading(false);
+      }
+    };
+
+    eventsForPage();
+  }, [searchParams, currentUser]);
 
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
     setSearchParams({ page: page });
-    navigate(`/dowellproctoring/events?page=${page}`);
+    navigate(`/events?page=${page}`);
   };
 
   // console.log(allEventsData);
   return (
     <section className={styles.wrapper}>
       <h1 className={styles.title}>My Events</h1>
-      {eventsLoading ? (
+      {eventsForPageLoading ? (
         <LoadingSpinner />
       ) : (
         <>

@@ -20,8 +20,8 @@ export default function EventsContextProvider({ children }) {
       try {
         setEventsLoading(true);
         const id = currentUser?.userinfo?.userID;
-        // const res = (await getAllEvents(id)).data;
-        const res = sampleEventResponse;
+        const res = (await getAllEvents(id)).data;
+        // const res = sampleEventResponse;
         const data = res?.data?.events?.map((event) => {
           const copyOfEvent = { ...event };
           copyOfEvent.start = new Date(event.start_time);

@@ -28,8 +28,6 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const { allEvents, eventsLoading } = useEventsContext();
 
-  // const visibleEvents = allEventsData?.slice(0, 3);
-
   const handleShowAddEventModal = () => {
     setShowAddEventModal(true);
   };
