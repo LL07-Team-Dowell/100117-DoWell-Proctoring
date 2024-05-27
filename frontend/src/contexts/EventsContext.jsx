@@ -3,11 +3,13 @@
 import { createContext, useState, useEffect } from "react";
 import { getAllEvents } from "../services/eventServices";
 import { useUserContext } from "../contexts";
+import { sampleEventResponse } from "../services/eventsDataServices";
 
 export const EventsContext = createContext({});
 
 export default function EventsContextProvider({ children }) {
   const [allEvents, setAllEvents] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [eventsLoading, setEventsLoading] = useState(false);
   const [eventsLoaded, setEventsLoaded] = useState(false);
   const { currentUser } = useUserContext();
@@ -18,7 +20,8 @@ export default function EventsContextProvider({ children }) {
       try {
         setEventsLoading(true);
         const id = currentUser?.userinfo?.userID;
-        const res = (await getAllEvents(id)).data;
+        // const res = (await getAllEvents(id)).data;
+        const res = sampleEventResponse;
         const data = res?.data?.events?.map((event) => {
           const copyOfEvent = { ...event };
           copyOfEvent.start = new Date(event.start_time);
@@ -27,7 +30,9 @@ export default function EventsContextProvider({ children }) {
 
           return copyOfEvent;
         });
+        const getPaginationDetails = res?.data?.pagination?.totalPages;
         setAllEvents(data);
+        setTotalPages(getPaginationDetails);
         setEventsLoading(false);
         setEventsLoaded(true);
       } catch (error) {
@@ -49,6 +54,8 @@ export default function EventsContextProvider({ children }) {
           setEventsLoading,
           eventsLoaded,
           setEventsLoaded,
+          totalPages,
+          setTotalPages,
         }}
       >
         {children}
