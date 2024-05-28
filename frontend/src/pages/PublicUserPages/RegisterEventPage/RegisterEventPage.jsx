@@ -47,6 +47,7 @@ const RegisterEvent = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isRegisteringEvent, setIsRegisteringEvent] = useState(false);
     const [showEventOverModal, setShowEventOverModal] = useState(false);
+    const [isEventDetailsLoading, setIsEventDetailsLoading] = useState(false);
 
     const handleNameChange = (event) => {
         setName(event.target.value);
@@ -89,17 +90,17 @@ const RegisterEvent = () => {
 
 
     useEffect(() => {
-        // if(new Date(eventDetails?.registration_end_date).getTime() > new Date().getTime()) return
         const requestCameraPermission = async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 if (videoRef.current) {
                     videoRef.current.srcObject = stream;
+                    setIsCameraAllowed(true); 
                 }
                 setIsLoading(false);
             } catch (error) {
                 toast.error('Error accessing camera:', error);
-                setIsCameraAllowed(false);
+                setIsCameraAllowed(false); 
                 setIsLoading(false);
             }
         };
@@ -115,15 +116,16 @@ const RegisterEvent = () => {
                 }
             }
         };
-    }, []);
+    }, [eventDetails]);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const eventId = urlParams.get('event_id');
+        setIsEventDetailsLoading(true);
         getEventById(eventId).then(res => {
             console.log('event details retrieved', res?.data?.data);
             setEventDetails(res?.data?.data);
-
+            setIsEventDetailsLoading(false);
             new Date(res?.data?.data?.registration_end_date) < new Date() ? setShowEventOverModal(true) : setShowEventOverModal(false);
         }).catch(error => {
             // console.log('error getting events details', error);
@@ -175,10 +177,11 @@ const RegisterEvent = () => {
     return (
         <>
             <div className={styles.main_wrap}>
-                {isLoading ? (
+                {isLoading || isEventDetailsLoading ? (
                     <DotLoader />
                 ) : (
                     showEventOverModal ?
+                    // false?
                         <div className={styles.event_over_modal}>
                             <h3>Registration for this event is over</h3>
                             <img
