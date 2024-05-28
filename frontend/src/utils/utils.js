@@ -2,7 +2,11 @@ import { currentBaseApiOrigin, isProduction, productionBackendSuffix } from "../
 import { PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, USER_DETAIL_KEY_IN_SESSION } from "./constants"
 import { io } from "socket.io-client";
 
-export const socketInstance = (isProduction) ? io(`/${productionBackendSuffix}`):io(`${currentBaseApiOrigin}`);
+export const socketInstance = (isProduction) ? io(`${currentBaseApiOrigin}`, {
+        path: `/${productionBackendSuffix}/socket.io`,
+    }) 
+    :
+io(`${currentBaseApiOrigin}`);
 
 export const getSavedUserFromSessionStorage = () => {
     try {
