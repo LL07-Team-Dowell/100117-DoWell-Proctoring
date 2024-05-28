@@ -22,7 +22,7 @@ const EventsPage = () => {
   const { currentUser } = useUserContext();
 
   useEffect(() => {
-    const page = searchParams.get("page");
+    const page = searchParams.get("page") || 1;
     if (page) {
       setCurrentPage(parseInt(page));
     }
@@ -62,7 +62,7 @@ const EventsPage = () => {
       ) : (
         <>
           <div className={styles.main__content}>
-            {eventsToShowForPage.map((event) => (
+            {allEventsData.map((event) => (
               <EventCard
                 key={event._id}
                 eventName={event.name}
@@ -72,20 +72,31 @@ const EventsPage = () => {
               />
             ))}
           </div>
-          <div>
-            <button onClick={() => handlePageChange(currentPage - 1)}>
+          <div className={styles.pagination}>
+            <button
+              className={`${styles.firstLast} ${styles.button}`}
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage <= 1}
+            >
               Prev
             </button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
-                disabled={currentPage === page}
+                className={`${styles.button} ${
+                  currentPage === page ? styles.current : ""
+                }`}
                 onClick={() => handlePageChange(page)}
+                disabled={currentPage === page}
               >
                 {page}
               </button>
             ))}
-            <button onClick={() => handlePageChange(currentPage + 1)}>
+            <button
+              className={`${styles.firstLast} ${styles.button}`}
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage >= totalPages}
+            >
               Next
             </button>
           </div>
