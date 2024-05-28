@@ -133,7 +133,7 @@ const ProctorLiveEventPage = () => {
                 email: userEmail,
                 isProctor: isProctor,
                 message: message,
-                createddate: messageCreatedDate,
+                createdAt: messageCreatedDate,
             }
 
             console.log('recieved message on proctor end', receivedMessage);
@@ -162,6 +162,7 @@ const ProctorLiveEventPage = () => {
             username: `${currentUser?.userinfo?.first_name} ${currentUser?.userinfo?.last_name}`,
             isProctor: true,
             message: newMessage.trim(),
+            createdAt: new Date(),
         };
 
         console.log('send message from proctor end', data);
@@ -269,7 +270,7 @@ const ProctorLiveEventPage = () => {
                         isChatLoading ? <div className={styles.chat__main} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><DotLoader /></div> :
                             <div ref={chatContainerRef} className={styles.chat__main}>
                                 {React.Children.toArray(chatMessages.map(message => {
-                                    const isCurrentUser = message.username === `${currentUser?.userinfo?.first_name} ${currentUser?.userinfo?.last_name}`;
+                                    const isCurrentUser = currentUser?.userinfo?.email === message.email && message.username === `${currentUser?.userinfo?.first_name} ${currentUser?.userinfo?.last_name}`;
                                     return (
                                         <div className={`${styles.chat_message} ${isCurrentUser ? styles.chat_messageRight : styles.chat_messageLeft}`}>
                                             <div className={styles.avatarContainer} style={{ display: isCurrentUser ? 'none' : 'block' }}>

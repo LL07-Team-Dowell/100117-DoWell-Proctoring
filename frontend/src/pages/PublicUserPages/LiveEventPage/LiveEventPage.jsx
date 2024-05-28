@@ -69,6 +69,7 @@ const EventRegistrationPage = () => {
             username: userDetails?.name,
             isProctor: false,
             message: newMessage.trim(),
+            createdAt: new Date(),
         };
 
         console.log('send message from public end', data);
@@ -96,7 +97,7 @@ const EventRegistrationPage = () => {
                 email: userEmail,
                 isProctor: isProctor,
                 message: message,
-                createddate: messageCreatedDate,
+                createdAt: messageCreatedDate,
             }
 
             console.log('recieved message on public end', receivedMessage);
@@ -278,7 +279,7 @@ const EventRegistrationPage = () => {
                                     setCurrentFormPage(nextPage);
                                 })
                                 .catch(err => {
-                                    toast.error(err?.response?.data?.message);
+                                    toast.error(err?.response ? err?.response?.data?.message : err?.message);
                                 }).finally(() => {
                                     setIsNextLoading(false);
                                 });
@@ -401,7 +402,7 @@ const EventRegistrationPage = () => {
                     isChatLoading ? <div className={styles.chat__main} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><DotLoader /></div> :
                         <div ref={chatContainerRef} className={styles.chat__main}>
                             {chatMessages.map((message, index) => {
-                                const isCurrentUser = userDetails?.name === message.username;
+                                const isCurrentUser = userDetails?.email === message.email && userDetails?.name === message.username;
                                 return (
                                     <div
                                         // className={styles.chat_message}

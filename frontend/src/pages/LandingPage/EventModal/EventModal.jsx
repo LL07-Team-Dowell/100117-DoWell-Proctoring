@@ -25,7 +25,7 @@ const AddEventModal = ({ handleCloseModal }) => {
   });
   console.log(event);
   const [loading, setLoading] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(true);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopiedId] = useState("");
   const [eventId, setEventId] = useState("");
 

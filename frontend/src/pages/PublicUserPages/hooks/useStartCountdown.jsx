@@ -24,8 +24,8 @@ export default function useStartCountDown(
             const now = new Date().getTime();
                 
             // Find the difference between now and the count down date
-            // const countdownDate = addHoursToDate(new Date(userDetails?.time_started), currentEventDetail?.duration_in_hours);
-            const countdownDate = addHoursToDate(dummyDate, currentEventDetail?.duration_in_hours);
+            const countdownDate = addHoursToDate(new Date(userDetails?.time_started), currentEventDetail?.duration_in_hours);
+            // const countdownDate = addHoursToDate(dummyDate, currentEventDetail?.duration_in_hours);
 
             const distance = countdownDate.getTime() - now;
                 
