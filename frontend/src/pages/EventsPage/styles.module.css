@@ -18,3 +18,44 @@
   grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
   gap: 1.5rem;
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #fcfcfc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 3rem;
+}
+
+.pagination button {
+  background: none;
+  border: none;
+  color: #005734;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin: 0 5px;
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 50%;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #f0f0f0;
+}
+
+.pagination button:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination button.current {
+  background-color: #005734;
+  color: white;
+}
+
+.pagination button.first-last {
+  font-weight: bold;
+}
