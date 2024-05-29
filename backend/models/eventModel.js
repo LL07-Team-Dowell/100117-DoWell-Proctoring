@@ -26,10 +26,6 @@ const eventSchema = new Schema({
         type: SchemaTypes.String,
         required: true,
     },
-    participants: {
-        type: SchemaTypes.Array,
-        default: []
-    },
     max_cap: {
         type: SchemaTypes.Number,
     },

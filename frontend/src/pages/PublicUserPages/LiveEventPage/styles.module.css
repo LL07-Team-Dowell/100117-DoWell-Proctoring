@@ -356,11 +356,16 @@
         width: 80%;
         padding: 1.3rem 1rem;
     }
+
+    .event__Live__Info {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
 }
 
 @media screen and (max-width: 500px) {
     .overlay {
         width: 60%;
-        height: 65%;
+        height: 80%;
     }
 }

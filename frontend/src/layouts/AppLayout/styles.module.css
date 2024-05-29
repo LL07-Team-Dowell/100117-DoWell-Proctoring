@@ -8,7 +8,7 @@
 
 .side__Nav {
   width: 20%;
-  height: 98%;
+  height: 97%;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
     rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
   display: flex;
@@ -59,6 +59,7 @@
   transition: 0.2s ease-in-out;
 }
 
+.user__Links__Wrap li.active,
 .user__Links__Wrap li:hover {
   background-color: #005734;
   color: #fff;
@@ -148,7 +149,7 @@
     left: 0;
     background-color: #fff;
     box-shadow: rgba(0, 0, 0, 0.1) 0px -10px 15px -3px, rgba(0, 0, 0, 0.05) 0px -4px 6px -2px;
-    padding: 0.5rem;
+    padding: 1.2rem 0.5rem;
     z-index: 1000;
   }
 
@@ -162,8 +163,9 @@
   }
 
   .user__Links__Wrap li {
-    padding: 0.5rem;
+    padding: 0.75rem 0.875rem;
     gap: 0.5rem;
+    font-size: 0.8rem;
   }
 
   .user__Info__Wrap {

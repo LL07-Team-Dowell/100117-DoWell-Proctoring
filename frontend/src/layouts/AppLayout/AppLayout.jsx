@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import logo from "../../assets/logo.png";
 import React, { useRef, useState } from "react";
 import { userNavLinks } from "./utils";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CiLogout } from "react-icons/ci";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useUserContext } from "../../contexts";
@@ -16,6 +16,7 @@ const AppLayout = ({ children }) => {
   const userActionWrapref = useRef();
 
   const { currentUser } = useUserContext();
+  const { pathname } = useLocation();
 
   const handleLogout = () => {
     window.location.replace(DOWELL_LOGOUT_URL);
@@ -35,7 +36,7 @@ const AppLayout = ({ children }) => {
             {React.Children.toArray(
               userNavLinks.map((linkItem) => {
                 return (
-                  <li onClick={() => navigate(linkItem?.path)}>
+                  <li className={pathname === linkItem?.path ? styles.active : ''} onClick={() => navigate(linkItem?.path)}>
                     <span>
                       <linkItem.icon />
                     </span>

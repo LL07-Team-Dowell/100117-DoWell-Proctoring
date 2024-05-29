@@ -56,7 +56,6 @@ const EventRegistrationPage = () => {
     const chatContainerRef = useRef(null);
     const [isChatLoading, setIsChatLoading] = useState(false);
     const [chatLoadedOnce, setChatLoadedOnce] = useState(false);
-    const [retrievedParticipantDetails, setRetrievedParticipantDetails] = useState(null);
     const [isNextLoading, setIsNextLoading] = useState(false);
     const [capturedImage, setCapturedImage] = useState(null);
 
@@ -245,7 +244,7 @@ const EventRegistrationPage = () => {
                 try {
                     await getPartcipantData(userDetails.email, searchParams.get('event_id')).then(res => {
                         console.log('particpant data', res?.data?.data[0]);
-                        setRetrievedParticipantDetails(res?.data?.data[0]);
+                        setUserDetails(res?.data?.data[0]);
                         setCurrentFormPage(nextPage);
                     }).catch(err => {
                         toast.error('Error getting your data, Please try again later')
@@ -264,7 +263,7 @@ const EventRegistrationPage = () => {
                         .then(async (canvas) => {
                             const dataURL = canvas.toDataURL('image/png');
                             const imageFile1 = dataURLtoFile(dataURL, 'image.png');
-                            const imageFile2 = dataURLtoFile(retrievedParticipantDetails?.user_image, 'image.png');
+                            const imageFile2 = dataURLtoFile(userDetails?.user_image, 'image.png');
                             // const imageFile2 = dataURLtoFile(dataURL, 'image.png');
                             // const testDownloadUrl = URL.createObjectURL(imageFile1)
                             // window.open(testDownloadUrl, '_blank')
@@ -309,34 +308,14 @@ const EventRegistrationPage = () => {
                     :
                     [];
 
-                try {
-                    const res = (await registerForEvent(copyOfUserDetails)).data;
-                    console.log(res?.data);
-
-                    updatedEventsForUser.push({ ...res?.data });
+                const eventDetailForUserIsAlreadySaved = updatedEventsForUser.find(item => item.event_id === searchParams.get('event_id'));
+                if (!eventDetailForUserIsAlreadySaved) {
+                    updatedEventsForUser.push(userDetails);
                     localStorage.setItem(PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, JSON.stringify(updatedEventsForUser));
-                    setUserDetails(res?.data);
-
-                    setEventRegistrationLoading(false);
-                    setEventStarted(true);
-                } catch (error) {
-                    if (error?.response?.status === 409) {
-                        const eventDetailForUserIsAlreadySaved = updatedEventsForUser.find(item => item.event_id === searchParams.get('event_id'));
-                        if (!eventDetailForUserIsAlreadySaved) {
-                            updatedEventsForUser.push(error?.response?.data?.data);
-                            localStorage.setItem(PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, JSON.stringify(updatedEventsForUser));
-                        }
-                        setUserDetails(error?.response?.data?.data);
-
-                        setEventRegistrationLoading(false);
-                        setEventStarted(true);
-
-                        return;
-                    }
-
-                    toast.error(error?.response?.data?.message);
-                    setEventRegistrationLoading(false);
                 }
+
+                setEventRegistrationLoading(false);
+                setEventStarted(true);
 
                 return;
             }
