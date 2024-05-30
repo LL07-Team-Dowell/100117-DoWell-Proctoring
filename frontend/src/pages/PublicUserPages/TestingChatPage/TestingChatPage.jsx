@@ -4,6 +4,7 @@ import { socketInstance } from "../../../utils/utils";
 import { toast } from 'sonner';
 import Peer from "peerjs";
 import { handleRequestCameraPermission } from "../../../utils/helpers";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function TestingChatPage() {
     const [ value, setValue ] = useState('');
@@ -13,8 +14,8 @@ export default function TestingChatPage() {
     const videoRef = useRef();
     
     const eventId = searchParams.get('event_id');
-    const testEmail = 'test@gmail.com';
-    const testUser = 'John Doe';
+    const testEmail = `test-${uuidv4()}@gmail.com`;
+    const testUser = `John Doe-${uuidv4()}`;
 
     let activityTimer
     const emmitter =(event,data) =>{
