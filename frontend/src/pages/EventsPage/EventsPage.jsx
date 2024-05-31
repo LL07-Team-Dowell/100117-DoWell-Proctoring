@@ -62,7 +62,7 @@ const EventsPage = () => {
       ) : (
         <>
           <div className={styles.main__content}>
-            {allEventsData.map((event) => (
+            {eventsToShowForPage.map((event) => (
               <EventCard
                 key={event._id}
                 eventName={event.name}
