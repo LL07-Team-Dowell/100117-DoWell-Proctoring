@@ -41,9 +41,8 @@ jobs:
           cd ${{ secrets.WORK_DIR }} && \
           git checkout ${{ secrets.MAIN_BRANCH }} && \
           git pull && \
-          # chmod +x run_docker.sh && \
-          # ./run_docker.sh prod \
-          echo "Github action file succesfull!!!"
+          chmod +x run_docker.sh && \
+          ./run_docker.sh prod \
           exit"
       - name: Cleanup SSH Keys
         run: rm -rf ~/.ssh
