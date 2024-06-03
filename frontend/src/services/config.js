@@ -1,49 +1,49 @@
-import axios from 'axios';
+import axios from "axios";
 
+const isProduction = import.meta.env.PROD; // for local frontend development, comment this
+// const isProduction = true; // Uncomment this For local frontend development only. DO NOT LEAVE THIS UNCOMMENTED AND PUSH
+const productionBackendSuffix = "dowellproctoring-backend";
 
 // different API base URLs
-const loginBaseUrl = 'https://100014.pythonanywhere.com/api/';
-const clientAdminBaseUrl = 'https://100093.pythonanywhere.com/api/';
-const currentBaseApiOrigin = 'http://localhost:5000'; // local
-//const currentBaseApiOrigin = 'https://www.dowellproctoring.uxlivinglab.online'; // prod
+const loginBaseUrl = "https://100014.pythonanywhere.com/api/";
+const clientAdminBaseUrl = "https://100093.pythonanywhere.com/api/";
 
-
-// CONFIG FOR PEERJS (TO USE LOCALLY: comment 17-20 and uncomment 12-15)
-// // Local environment usage
-const peerServerPort = 9000;
-const peerServerHost = 'localhost';
-const peerServerPath = '/myapp';
-
-// Default values for production environment
-// const peerServerPort = 9000;
-// const peerServerHost = 'dowellproctoring.uxlivinglab.online';
-// const peerServerPath = '/myapp'; //previous : '/dowellproctoring/peer/myapp'
-
+const currentBaseApiOrigin = isProduction
+  ? "https://www.dowellproctoring.uxlivinglab.online"
+  : "http://localhost:5000";
+const peerServerPort = isProduction ? 9000 : 9000;
+const peerServerHost = isProduction
+  ? "dowellproctoring.uxlivinglab.online"
+  : "localhost";
+const peerServerPath = isProduction ? "/peer/myapp" : "/myapp";
+const baseURL = isProduction
+  ? `${currentBaseApiOrigin}/${productionBackendSuffix}/api/v1/`
+  : `${currentBaseApiOrigin}/api/v1`;
 
 // creating separate axios instances for each API interaction
 const loginAxiosInstance = axios.create({
-    baseURL: loginBaseUrl,
-    withCredentials: true,
-})
+  baseURL: loginBaseUrl,
+  withCredentials: true,
+});
 
 const clientAdminAxiosInstance = axios.create({
-    baseURL: clientAdminBaseUrl,
-    withCredentials: true,
-})
+  baseURL: clientAdminBaseUrl,
+  withCredentials: true,
+});
 
 const defaultAxiosInstance = axios.create({
-    baseURL: `${currentBaseApiOrigin}/api/v1`, // local usage
-    //baseURL: `${currentBaseApiOrigin}/api/v1/`, // production usage //previous:`${currentBaseApiOrigin}/dowellproctoring-backend/api/v1/`
-    withCredentials: true,
-})
-
+  baseURL: baseURL,
+  withCredentials: true,
+});
 
 export {
-    loginAxiosInstance,
-    clientAdminAxiosInstance,
-    defaultAxiosInstance,
-    currentBaseApiOrigin,
-    peerServerHost,
-    peerServerPort,
-    peerServerPath,
-}
+  loginAxiosInstance,
+  clientAdminAxiosInstance,
+  defaultAxiosInstance,
+  currentBaseApiOrigin,
+  peerServerHost,
+  peerServerPort,
+  peerServerPath,
+  isProduction,
+  productionBackendSuffix,
+};

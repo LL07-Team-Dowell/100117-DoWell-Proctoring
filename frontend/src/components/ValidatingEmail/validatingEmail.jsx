@@ -51,18 +51,19 @@ const EmailInput = ({ newEvent, eventLink, closeModal }) => {
       name: emailObj.name,
     }));
 
-    const message = `Join ${newEvent} on ${eventLink}`;
+    const message = `Please use this ${eventLink} to register for ${newEvent}`;
     const email = emailAddresses;
 
     sendEmail(message, email, newEvent)
       .then((response) => {
         console.log("Email sent successfully:", response);
+        toast.success("Invitation(s) sent successfully");
         closeModal();
       })
       .catch((error) => {
         console.error("Error sending email:", error);
+        toast.error("An error occured while trying to send out the invitation emails");
       });
-    toast.success("Invitation sent successfully");
     console.log("Email addresses:", email);
   };
 
@@ -99,7 +100,7 @@ const EmailInput = ({ newEvent, eventLink, closeModal }) => {
           placeholder="Enter email address"
         />
       </div>
-      <button onClick={handleSendInvite} style={{ height: "3.5rem" }}>
+      <button onClick={handleSendInvite} style={{ height: "3rem" }}>
         Send Invite
       </button>
     </div>

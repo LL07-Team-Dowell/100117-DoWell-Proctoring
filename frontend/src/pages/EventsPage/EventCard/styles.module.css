@@ -1,5 +1,5 @@
 .card {
-  position: relative;
+  /* position: relative; */
 }
 
 .card__content {
@@ -15,10 +15,15 @@
   gap: 1.5rem;
 }
 
+.card__footer__container {
+  display: flex;
+  justify-content: space-between;
+}
+
 .card__footer {
-  position: absolute;
-  bottom: -0.1rem;
-  right: 0rem;
+  /* position: absolute; */
+  /* bottom: -0.1rem;
+  right: 0rem; */
   background-color: #fff;
   padding: 0.7rem;
   border-top-left-radius: 5px;
@@ -32,6 +37,7 @@
   padding: 0.5rem 1.5rem;
   border-radius: 5px;
   cursor: pointer;
+  border: none;
 }
 
 .title {

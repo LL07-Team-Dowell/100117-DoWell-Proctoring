@@ -16,6 +16,7 @@ import { allEventsData } from "../../services/eventsDataServices";
 import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
 const localizer = momentLocalizer(moment);
 
@@ -25,9 +26,7 @@ const LandingPage = () => {
   const [showAddEventModal, setShowAddEventModal] = useState(false);
   console.log(currentUser);
   const navigate = useNavigate();
-  const { allEvents } = useEventsContext();
-
-  // const visibleEvents = allEventsData?.slice(0, 3);
+  const { allEvents, eventsLoading } = useEventsContext();
 
   const handleShowAddEventModal = () => {
     setShowAddEventModal(true);
@@ -63,36 +62,44 @@ const LandingPage = () => {
               View All <MdKeyboardDoubleArrowRight className={styles.arrow} />
             </button>
           </div>
-          <section className={styles.main__content__wrapper}>
-            {allEvents?.slice(0, 5)?.map((event) => (
-              <EventCard
-                key={event._id}
-                eventName={event.name}
-                startTime={formatDate(event.start_time)}
-                endTime={formatDate(event.close_date)}
-                participants={event.participants}
-              />
-            ))}
-          </section>
-          <section className={styles.calendar__wrapper}>
-            <BigCalendar
-              localizer={localizer}
-              events={allEvents}
-              startAccessor="start"
-              endAccessor="end"
-              titleAccessor="title"
-              defaultDate={moment().toDate()}
-              eventPropGetter={() => {
-                return {
-                  style: {
-                    backgroundColor: "#005734",
-                    color: "#fff",
-                    borderRadius: "7px",
-                  },
-                };
-              }}
-            />
-          </section>
+          {eventsLoading ? (
+            <>
+              <LoadingSpinner />
+            </>
+          ) : (
+            <>
+              <section className={styles.main__content__wrapper}>
+                {allEvents?.slice(0, 5)?.map((event) => (
+                  <EventCard
+                    key={event._id}
+                    eventName={event.name}
+                    startTime={formatDate(event.start_time)}
+                    endTime={formatDate(event.close_date)}
+                    participants={event.participants}
+                  />
+                ))}
+              </section>
+              <section className={styles.calendar__wrapper}>
+                <BigCalendar
+                  localizer={localizer}
+                  events={allEvents}
+                  startAccessor="start"
+                  endAccessor="end"
+                  titleAccessor="title"
+                  defaultDate={moment().toDate()}
+                  eventPropGetter={() => {
+                    return {
+                      style: {
+                        backgroundColor: "#005734",
+                        color: "#fff",
+                        borderRadius: "7px",
+                      },
+                    };
+                  }}
+                />
+              </section>
+            </>
+          )}
         </div>
         {showAddEventModal && (
           <AddEventModal handleCloseModal={() => setShowAddEventModal(false)} />

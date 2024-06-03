@@ -15,12 +15,7 @@ export default function useSocketIo(
     useEffect(() => {
         if (!canStartUsing) return;
 
-        const peer = new Peer(undefined, {
-            host: peerServerHost,
-            // port: peerServerPort, // COMMENT FOR PROD
-            path: peerServerPath,
-            secure: true, // COMMENT THIS WHILE TESTING LOCALLY
-        });
+        const peer = new Peer(undefined);
 
         peer.on('open', (id) => {
             console.log('current user peer id::' + id + ', and email::' + userEmail);
@@ -37,14 +32,14 @@ export default function useSocketIo(
             })
         })
 
-        const handleNewUserConnect = (userPeerId, emailConnected, nameOfUserConnected) => {
-            console.log('new user connecting->>>>>', userPeerId, emailConnected, nameOfUserConnected);
+        const handleNewUserConnect = (userPeerId, emailConnected='', nameOfUserConnected='', userSocketId='') => {
+            console.log('new user connecting->>>>>', userPeerId, emailConnected, nameOfUserConnected, userSocketId);
             
             const peerCall = peer.call(userPeerId, currentUserStream);
             
             peerCall.on('stream', (passedStream) => {
                 console.log('new stream 2 ->', passedStream);
-                updateParticipants(userPeerId, passedStream);
+                updateParticipants(userPeerId, passedStream, false, nameOfUserConnected, userSocketId);
             })
 
             peerCall.on('close', () => {
@@ -54,9 +49,21 @@ export default function useSocketIo(
 
         socketInstance.on('user-connected', handleNewUserConnect);
 
-        const handleUserDisconnect = (userPeerId, emailConnected, nameOfUserDisconnected) => {
-            console.log('user disconnecting->>>>>', userPeerId, emailConnected, nameOfUserDisconnected);
-            updateParticipants(userPeerId, null, true);
+        const handleAddExistingUserStreamsForProctor = (userPeerIds) => {
+            if (Array.isArray(userPeerIds)) {
+                userPeerIds.forEach(item => {
+                    if (item?.peerId !== peer.id) {
+                        handleNewUserConnect(item?.peerId);
+                    }
+                })
+            }
+        }
+
+        socketInstance.on('current-connected-users', handleAddExistingUserStreamsForProctor);
+
+        const handleUserDisconnect = (userPeerId, emailConnected, nameOfUserDisconnected, userSocketId='') => {
+            console.log('user disconnecting->>>>>', userPeerId, emailConnected, nameOfUserDisconnected, userSocketId);
+            updateParticipants(userPeerId, null, true, nameOfUserDisconnected, userSocketId);
         };
 
         socketInstance.on('user-disconnected', handleUserDisconnect);
@@ -64,6 +71,7 @@ export default function useSocketIo(
         return (() => {
             socketInstance.off('user-connected', handleNewUserConnect);
             socketInstance.off('user-disconnected', handleUserDisconnect);
+            socketInstance.off('current-connected-users', handleAddExistingUserStreamsForProctor);
         })
 
     }, [canStartUsing])
