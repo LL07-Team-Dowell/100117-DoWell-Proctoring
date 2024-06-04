@@ -1,3 +1,8 @@
+.email_input_wrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .email-input {
   display: flex;
   flex-wrap: wrap;
@@ -38,6 +43,7 @@
 
 .email-input input {
   flex: 1;
+  flex-wrap: wrap;
   padding: 8px;
   border: none;
 }
@@ -45,4 +51,14 @@
 .email__textarea {
   outline: none;
   height: 0.2rem;
+}
+
+@media screen and (max-width: 768px) {
+  .email_input_wrapper {
+    flex-direction: column;
+  }
+
+  .email-input {
+    width: 100%;
+  }
 }

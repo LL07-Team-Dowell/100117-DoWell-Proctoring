@@ -44,3 +44,12 @@
   font-size: 1.2rem;
   color: #005734;
 }
+
+@media screen and (max-width: 768px) {
+  .card__content {
+    gap: 1.5rem;
+  }
+  .card__content h1 {
+    font-size: 0.9rem;
+  }
+}

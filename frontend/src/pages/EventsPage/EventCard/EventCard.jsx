@@ -4,7 +4,13 @@ import styles from "./styles.module.css";
 import Card from "../../../components/Card/Card";
 import UserIconsInfo from "../../../components/UsersIconsInfo/UserIconsInfo";
 
-const EventCard = ({ eventName, startTime, endTime, participants }) => {
+const EventCard = ({
+  eventName,
+  startTime,
+  endTime,
+  participants,
+  handleClick,
+}) => {
   return (
     <div className={styles.card}>
       <Card className={styles.card__content}>
@@ -14,11 +20,11 @@ const EventCard = ({ eventName, startTime, endTime, participants }) => {
         >
           <p>
             <b>Start Date:</b>{" "}
-            <span style={{ fontSize: "0.9rem" }}>{startTime}</span>
+            <span style={{ fontSize: "0.8rem" }}>{startTime}</span>
           </p>
           <p>
             <b>End Date:</b>{" "}
-            <span style={{ fontSize: "0.9rem" }}>{endTime}</span>
+            <span style={{ fontSize: "0.8rem" }}>{endTime}</span>
           </p>
         </div>
         <div className={styles.card__footer__container}>
@@ -30,7 +36,7 @@ const EventCard = ({ eventName, startTime, endTime, participants }) => {
             />
           </div>
           <div className={styles.card__footer}>
-            <button>View</button>
+            <button onClick={handleClick}>View</button>
           </div>
         </div>
       </Card>
