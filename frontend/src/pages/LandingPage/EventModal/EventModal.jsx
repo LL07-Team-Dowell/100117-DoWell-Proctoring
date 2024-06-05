@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-undef */
 import { useState } from "react";
@@ -8,7 +9,7 @@ import { BiRightTopArrowCircle } from "react-icons/bi";
 import styles from "./styles.module.css";
 import { toast } from "sonner";
 import { addNewEvent } from "../../../services/eventServices";
-import { useUserContext } from "../../../contexts";
+import { useEventsContext, useUserContext } from "../../../contexts";
 import EmailInput from "../../../components/ValidatingEmail/validatingEmail";
 import { TbCopy } from "react-icons/tb";
 import { PiArrowElbowRightThin } from "react-icons/pi";
@@ -30,6 +31,7 @@ const AddEventModal = ({ handleCloseModal }) => {
   const [eventId, setEventId] = useState("");
 
   const { currentUser } = useUserContext();
+  const { addEvent } = useEventsContext();
 
   const handleChange = (valueEntered, inputName) => {
     setEvent((prevValue) => ({
@@ -98,6 +100,8 @@ const AddEventModal = ({ handleCloseModal }) => {
       const id = res?.data?._id;
       setEventId(id);
       console.log(res);
+
+      addEvent(newEvent);
 
       setLoading(false);
 

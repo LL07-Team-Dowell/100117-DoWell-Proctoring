@@ -44,6 +44,10 @@ export default function EventsContextProvider({ children }) {
     getAllEventsData();
   }, [eventsLoaded, currentUser]);
 
+  const addEvent = (newEvent) => {
+    setAllEvents((prevEvents) => [...prevEvents, newEvent]);
+  };
+
   return (
     <>
       <EventsContext.Provider
@@ -56,6 +60,7 @@ export default function EventsContextProvider({ children }) {
           setEventsLoaded,
           totalPages,
           setTotalPages,
+          addEvent,
         }}
       >
         {children}
