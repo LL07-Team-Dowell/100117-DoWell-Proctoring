@@ -39,6 +39,13 @@ const LandingPage = () => {
 
     setGreeting("Good Evening");
   }, []);
+
+  const singleEventClick = (event) => {
+    const viewEvent = allEvents.find((item) => item.name === event);
+    if (viewEvent) {
+      return navigate(`/events/${viewEvent._id}`);
+    }
+  };
   return (
     <>
       <main className={styles.wrapper}>
@@ -69,15 +76,19 @@ const LandingPage = () => {
           ) : (
             <>
               <section className={styles.main__content__wrapper}>
-                {allEvents?.slice(0, 5)?.map((event) => (
-                  <EventCard
-                    key={event._id}
-                    eventName={event.name}
-                    startTime={formatDate(event.start_time)}
-                    endTime={formatDate(event.close_date)}
-                    participants={event.participants}
-                  />
-                ))}
+                {allEvents
+                  ?.reverse()
+                  ?.slice(0, 5)
+                  ?.map((event) => (
+                    <EventCard
+                      key={event._id}
+                      eventName={event.name}
+                      startTime={formatDate(event.start_time)}
+                      endTime={formatDate(event.close_date)}
+                      participants={event.participants}
+                      handleClick={() => singleEventClick(event.name)}
+                    />
+                  ))}
               </section>
               <section className={styles.calendar__wrapper}>
                 <BigCalendar

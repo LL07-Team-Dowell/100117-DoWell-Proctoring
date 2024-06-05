@@ -1,0 +1,19 @@
+.wrapper {
+  width: 90%;
+  margin: 0 auto;
+  padding-top: 3em;
+  padding-bottom: 5em;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #005734;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin: 0 5px;
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 20%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

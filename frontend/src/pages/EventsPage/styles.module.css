@@ -59,3 +59,16 @@
 .pagination button.first-last {
   font-weight: bold;
 }
+
+@media screen and (max-width: 768px) {
+  .wrapper {
+    width: 98%;
+    margin: 0 auto;
+    padding-top: 3em;
+    padding-bottom: 5em;
+  }
+  .main__content {
+    display: flex;
+    flex-direction: column;
+  }
+}

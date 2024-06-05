@@ -11,6 +11,7 @@ import {
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getEventsForPage } from "../../services/eventServices";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import SinglePageEvent from "./SinglePageEvent/SinglePageEvent";
 
 const EventsPage = () => {
   const { totalPages } = useEventsContext();
@@ -50,7 +51,14 @@ const EventsPage = () => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
     setSearchParams({ page: page });
-    navigate(`/events?page=${page}`);
+    // navigate(`/events?page=${page}`);
+  };
+
+  const singleEventClick = (event) => {
+    const viewEvent = eventsToShowForPage.find((item) => item.name === event);
+    if (viewEvent) {
+      return navigate(`/events/${viewEvent._id}`);
+    }
   };
 
   // console.log(allEventsData);
@@ -69,6 +77,7 @@ const EventsPage = () => {
                 startTime={formatDate(event.start_time)}
                 endTime={formatDate(event.close_date)}
                 participants={event.participants}
+                handleClick={() => singleEventClick(event.name)}
               />
             ))}
           </div>

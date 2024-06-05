@@ -1,5 +1,6 @@
 import AppLayout from "../layouts/AppLayout/AppLayout";
 import EventsPage from "../pages/EventsPage/EventsPage";
+import SinglePageEvent from "../pages/EventsPage/SinglePageEvent/SinglePageEvent";
 import LandingPage from "../pages/LandingPage/LandingPage";
 import ProctorLiveEventPage from "../pages/ProctorLiveEventPage/ProctorLiveEventPage";
 
@@ -25,18 +26,24 @@ export const loggedInUserRoutes = [
     },
   },
   {
+    route: "/events/:eventId",
+    component: () => {
+      return (
+        <AppLayout>
+          <SinglePageEvent />
+        </AppLayout>
+      );
+    },
+  },
+  {
     route: "/live/:eventId",
     component: ProctorLiveEventPage,
   },
   {
     route: "/reports",
     component: () => {
-      return (
-        <AppLayout>
-
-        </AppLayout>
-      );
-    }
+      return <AppLayout></AppLayout>;
+    },
   },
   {
     route: "*",

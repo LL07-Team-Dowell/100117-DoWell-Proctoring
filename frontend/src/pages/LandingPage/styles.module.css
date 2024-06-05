@@ -79,3 +79,32 @@
 .rbc-today {
   background-color: #005734;
 }
+
+/*Responsive Styles*/
+
+@media screen and (max-width: 768px) {
+  .nav__content h2 span {
+    font-size: 0.8rem;
+  }
+
+  .nav__content .greeting {
+    font-size: 1.3rem;
+  }
+
+  .event__header h3 {
+    font-size: 1rem;
+  }
+
+  .nav__content button {
+    padding: 0.5em 0.7em;
+  }
+
+  .event__header button {
+    font-size: 0.9rem;
+  }
+
+  .calendar__wrapper {
+    padding: 4rem 0;
+    height: 20rem;
+  }
+}
