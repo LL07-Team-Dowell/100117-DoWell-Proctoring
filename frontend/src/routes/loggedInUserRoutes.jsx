@@ -29,6 +29,16 @@ export const loggedInUserRoutes = [
     component: ProctorLiveEventPage,
   },
   {
+    route: "/reports",
+    component: () => {
+      return (
+        <AppLayout>
+
+        </AppLayout>
+      );
+    }
+  },
+  {
     route: "*",
     component: () => {
       return <>Page not found</>;

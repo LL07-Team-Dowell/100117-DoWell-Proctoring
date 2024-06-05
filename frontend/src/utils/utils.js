@@ -1,9 +1,12 @@
-import { currentBaseApiOrigin } from "../services/config";
+import { currentBaseApiOrigin, isProduction, productionBackendSuffix } from "../services/config";
 import { PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, USER_DETAIL_KEY_IN_SESSION } from "./constants"
 import { io } from "socket.io-client";
 
-//export const socketInstance = io('/dowellproctoring-backend'); // prod
-export const socketInstance = io(`${currentBaseApiOrigin}`); // local
+export const socketInstance = (isProduction) ? io(`${currentBaseApiOrigin}`, {
+        path: `/${productionBackendSuffix}/socket.io`,
+    }) 
+    :
+io(`${currentBaseApiOrigin}`);
 
 export const getSavedUserFromSessionStorage = () => {
     try {

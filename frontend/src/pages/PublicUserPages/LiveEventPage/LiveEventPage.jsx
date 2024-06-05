@@ -56,7 +56,6 @@ const EventRegistrationPage = () => {
     const chatContainerRef = useRef(null);
     const [isChatLoading, setIsChatLoading] = useState(false);
     const [chatLoadedOnce, setChatLoadedOnce] = useState(false);
-    const [retrievedParticipantDetails, setRetrievedParticipantDetails] = useState(null);
     const [isNextLoading, setIsNextLoading] = useState(false);
     const [capturedImage, setCapturedImage] = useState(null);
 
@@ -69,11 +68,12 @@ const EventRegistrationPage = () => {
             username: userDetails?.name,
             isProctor: false,
             message: newMessage.trim(),
+            createdAt: new Date(),
         };
 
         console.log('send message from public end', data);
 
-        setChatMessages(prevMessages => [...prevMessages, { ...data, user: 'me' }]);
+        setChatMessages(prevMessages => [...prevMessages, { ...data }]);
         setNewMessage('');
 
         socketInstance.emit('incoming-message', data);
@@ -96,7 +96,7 @@ const EventRegistrationPage = () => {
                 email: userEmail,
                 isProctor: isProctor,
                 message: message,
-                createddate: messageCreatedDate,
+                createdAt: messageCreatedDate,
             }
 
             console.log('recieved message on public end', receivedMessage);
@@ -244,7 +244,7 @@ const EventRegistrationPage = () => {
                 try {
                     await getPartcipantData(userDetails.email, searchParams.get('event_id')).then(res => {
                         console.log('particpant data', res?.data?.data[0]);
-                        setRetrievedParticipantDetails(res?.data?.data[0]);
+                        setUserDetails(res?.data?.data[0]);
                         setCurrentFormPage(nextPage);
                     }).catch(err => {
                         toast.error('Error getting your data, Please try again later')
@@ -263,11 +263,11 @@ const EventRegistrationPage = () => {
                         .then(async (canvas) => {
                             const dataURL = canvas.toDataURL('image/png');
                             const imageFile1 = dataURLtoFile(dataURL, 'image.png');
-                            // const imageFile2 = dataURLtoFile(retrievedParticipantDetails?.user_image, 'image.png');
-                            const imageFile2 = dataURLtoFile(dataURL, 'image.png');
-                            const testDownloadUrl = URL.createObjectURL(imageFile1)
-                            window.open(testDownloadUrl, '_blank')
-                            URL.revokeObjectURL(testDownloadUrl);
+                            const imageFile2 = dataURLtoFile(userDetails?.user_image, 'image.png');
+                            // const imageFile2 = dataURLtoFile(dataURL, 'image.png');
+                            // const testDownloadUrl = URL.createObjectURL(imageFile1)
+                            // window.open(testDownloadUrl, '_blank')
+                            // URL.revokeObjectURL(testDownloadUrl);
                             const payLoadData = new FormData();
                             payLoadData.append('image1', imageFile1);
                             payLoadData.append('image2', imageFile2);
@@ -278,7 +278,7 @@ const EventRegistrationPage = () => {
                                     setCurrentFormPage(nextPage);
                                 })
                                 .catch(err => {
-                                    toast.error(err?.response?.data?.message);
+                                    toast.error(err?.response ? err?.response?.data?.message : err?.message);
                                 }).finally(() => {
                                     setIsNextLoading(false);
                                 });
@@ -308,34 +308,14 @@ const EventRegistrationPage = () => {
                     :
                     [];
 
-                try {
-                    const res = (await registerForEvent(copyOfUserDetails)).data;
-                    console.log(res?.data);
-
-                    updatedEventsForUser.push({ ...res?.data });
+                const eventDetailForUserIsAlreadySaved = updatedEventsForUser.find(item => item.event_id === searchParams.get('event_id'));
+                if (!eventDetailForUserIsAlreadySaved) {
+                    updatedEventsForUser.push(userDetails);
                     localStorage.setItem(PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, JSON.stringify(updatedEventsForUser));
-                    setUserDetails(res?.data);
-
-                    setEventRegistrationLoading(false);
-                    setEventStarted(true);
-                } catch (error) {
-                    if (error?.response?.status === 409) {
-                        const eventDetailForUserIsAlreadySaved = updatedEventsForUser.find(item => item.event_id === searchParams.get('event_id'));
-                        if (!eventDetailForUserIsAlreadySaved) {
-                            updatedEventsForUser.push(error?.response?.data?.data);
-                            localStorage.setItem(PUBLIC_USER_DETAIL_KEY_IN_LOCAL_STORAGE, JSON.stringify(updatedEventsForUser));
-                        }
-                        setUserDetails(error?.response?.data?.data);
-
-                        setEventRegistrationLoading(false);
-                        setEventStarted(true);
-
-                        return;
-                    }
-
-                    toast.error(error?.response?.data?.message);
-                    setEventRegistrationLoading(false);
                 }
+
+                setEventRegistrationLoading(false);
+                setEventStarted(true);
 
                 return;
             }
@@ -400,24 +380,46 @@ const EventRegistrationPage = () => {
                 {
                     isChatLoading ? <div className={styles.chat__main} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><DotLoader /></div> :
                         <div ref={chatContainerRef} className={styles.chat__main}>
-                            {chatMessages.map((message, index) => (
-                                <div
-                                    className={styles.chat_message}
-                                    key={index}  // Use index as key
-                                >
-                                    <div className={styles.avatarContainer}>
-                                        <div className={styles.avatar}>
-                                            {message.username[0].toUpperCase()}
+                            {chatMessages.map((message, index) => {
+                                const isCurrentUser = userDetails?.email === message.email && userDetails?.name === message.username;
+                                return (
+                                    <div
+                                        // className={styles.chat_message}
+                                        key={index}
+                                        style={{
+                                            justifyContent: isCurrentUser ? 'end':'flex-start'
+                                        }}
+                                    >
+                                        <div className={`${styles.chat_message} ${isCurrentUser ? styles.chat_messageRight : styles.chat_messageLeft}`} >
+                                            <div className={styles.avatarContainer} style={{ display: isCurrentUser ? 'none' : 'block' }}>
+                                                <div className={styles.avatar}>
+                                                    {message.username[0].toUpperCase()}
+                                                </div>
+                                            </div>
+                                            <div className={styles.main_msg_content} >
+                                                <div className={`${styles.username_date} ${styles.username__}`} style={{ justifyContent: isCurrentUser ? 'end' : 'space-between'}}>
+                                                    <strong className={styles.username_} style={{ display: isCurrentUser ? 'none' : 'block' }}>
+                                                        {message.username}
+                                                    </strong>
+                                                    <p>{new Date(message.createdAt).toLocaleString()}</p>
+                                                </div>
+                                                <div className={styles.message_}>
+                                                    <div key={message.eventId} className={styles.chat__message} style={{ width: isCurrentUser ? 'max-content' : '100%' }}>
+                                                        <div className={styles.messageContent}>
+                                                            {message.message}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className={styles.avatarContainer} style={{ display: isCurrentUser ? 'none' : 'none' }}>
+                                                <div className={styles.avatar}>
+                                                    {message.username[0].toUpperCase()}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className={styles.chat__message}>
-                                        <div className={styles.messageContent}>
-                                            <strong>{message.username}: </strong>
-                                            {message.message}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                         </div>
                 }
 
@@ -466,8 +468,8 @@ const EventRegistrationPage = () => {
                             </div>
                         </>
                             :
-                            // new Date().getTime() > new Date(foundEventDetail?.close_date).getTime() ?
-                            false ?
+                            new Date().getTime() > new Date(foundEventDetail?.close_date).getTime() ?
+                            // false ?
                                 <>
                                     <h3>This event is over</h3>
                                     <img
@@ -514,20 +516,22 @@ const EventRegistrationPage = () => {
                                                     currentFormPage === 2 ?
                                                         <div className={styles.user__Detail}>
                                                             {!capturedImage ?
-                                                                <video ref={videoRef}
-                                                                    autoPlay
-                                                                    playsInline
-                                                                    controls={false}
-                                                                    controlsList="nofullscreen"
-                                                                    className={`${styles.video__Item} ${!cameraPermissionGranted ? styles.no__Display : ''}`}
-                                                                >
-
-                                                                </video> :
+                                                                <div className={styles.container}>
+                                                                    <video ref={videoRef}
+                                                                        autoPlay
+                                                                        playsInline
+                                                                        controls={false}
+                                                                        controlsList="nofullscreen"
+                                                                        className={`${styles.video__Item} ${!cameraPermissionGranted ? styles.no__Display : ''}`}
+                                                                    >
+                                                                    </video>
+                                                                    <div className={`${styles.overlay} ${!cameraPermissionGranted ? styles.no__Display : ''}`}></div>
+                                                                </div> :
                                                                 <img src={capturedImage} alt="Captured" className={styles.video__Item} />
                                                             }
                                                             {
                                                                 cameraPermissionGranted ? <>
-                                                                    <p>Please ensure your face is fully visible in the frame before clicking &apos; Next &apos;</p>
+                                                                    <p>Please ensure your face is fully visible and inside overlay in the frame before clicking &apos; Next &apos;</p>
                                                                 </> :
                                                                     <>
                                                                         <p>Please grant access to your video and audio by clicking the button below</p>

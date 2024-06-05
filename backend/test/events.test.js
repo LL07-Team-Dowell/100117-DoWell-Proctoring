@@ -26,7 +26,6 @@ describe('Event API Tests', function () {
                 close_date: "2024-04-01T09:00:00.000Z",
                 duration_in_hours: 3,
                 user_id: "user_1234543",
-                participants: [],
                 active_participants: [],
                 max_cap: 50,
                 link: "http://abc.com/meeting"

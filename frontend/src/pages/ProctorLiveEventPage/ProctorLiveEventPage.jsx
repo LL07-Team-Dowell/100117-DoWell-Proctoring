@@ -14,6 +14,7 @@ import { IoMdClose } from "react-icons/io";
 import { socketInstance } from "../../utils/utils";
 import { getMessages } from "../../services/eventServices";
 import DotLoader from "../../components/DotLoader/DotLoader";
+import { MdClose } from "react-icons/md";
 
 // let activeUsers = [];
 let currentUserPeerId = null;
@@ -35,35 +36,73 @@ const ProctorLiveEventPage = () => {
     const chatContainerRef = useRef(null);
     const [isChatLoading, setIsChatLoading] = useState(false);
     const [chatLoadedOnce, setChatLoadedOnce] = useState(false);
+    const [allCurrentUsers, setAllCurrentUsers] = useState([]);
+    const [currentUserEmailBeingMonitored, setCurrentUserEmailBeingMonitored] = useState(null);
 
     const participantVideosRef = useRef();
+    const singleUserVideRef = useRef();
 
-    const handleUpdateUsers = (peerId, userStream, userIsLeaving = false) => {
+    const handleUpdateUsers = (peerId, userStream, userIsLeaving = false, socketId) => {
         console.log('-----adding new user stream----', userStream);
+        
+        // // FOR DEBUGGING
+        // if (userStream){
+        //     const videoTracks = userStream?.getVideoTracks();
+        //     console.log('vid tracks -> ', videoTracks);
+        // }
+
         const copyOfActiveUsers = activeUsers.slice();
 
         const foundId = userIsLeaving ?
             copyOfActiveUsers.find(item => item?.peerId === peerId)
             :
             copyOfActiveUsers.find(item => item?.id === userStream?.id);
+        
+        const foundExistingSocketId = copyOfActiveUsers.find(item => item.socketId === socketId);
 
         if (userIsLeaving === true) {
             console.log('active users ->', copyOfActiveUsers);
             console.log('---removing user----', peerId);
             console.log(foundId);
-            foundId
+            
+            if (foundId) {
+                const updatedUsers = copyOfActiveUsers.filter(item => item.peerId !== peerId);
+                setActiveUsers(updatedUsers);
+            }
+
             return;
         }
 
         console.log(foundId);
-        if (foundId) return;
+        if (foundId || foundExistingSocketId) return;
         if (peerId === currentUserPeerId) return;
 
         copyOfActiveUsers.push({
             stream: userStream,
-            peerId
+            peerId,
+            socketId,
         });
         setActiveUsers(copyOfActiveUsers);
+    }
+
+    const addStreamToVideoElement = (video, stream) => {
+        if (!video) return;
+        
+        video.srcObject = stream;
+        video.muted = true;
+
+        video.onloadedmetadata = () => {
+            console.log('Metadata loaded, playing new user video');
+            video.play().catch(error => {
+                console.error('Error playing new user video:', error);
+            });
+        };
+
+        // Adding an error event listener
+        video.onerror = (error) => {
+            console.error('Error with video element:', error);
+        };
+
     }
 
     useSocketIo(
@@ -95,7 +134,7 @@ const ProctorLiveEventPage = () => {
 
         // if (new Date(existingEventDetails?.close_date).getTime() > new Date().getTime()) return;
 
-        handleRequestCameraPermission(false, true).then(res => {
+        handleRequestCameraPermission().then(res => {
             if (res.error) {
                 toast.info(res.error);
                 return;
@@ -114,12 +153,24 @@ const ProctorLiveEventPage = () => {
 
         Array.from(participantVideosRef.current?.children).forEach((child, index) => {
             if (typeof activeUsers[index]?.stream === 'object') {
-                child.srcObject = activeUsers[index]?.stream;
-                child.muted = true;
+                const videoElement = Array.from(child?.children)[0];
+                if (videoElement && videoElement?.nodeName === 'VIDEO') {
+                    addStreamToVideoElement(videoElement, activeUsers[index]?.stream);
+                }
             }
         });
 
-    }, [activeUsers])
+        socketInstance.emit('get-users-in-event', eventId);
+
+        const handleGetUsers = (users) => setAllCurrentUsers(users);
+
+        socketInstance.on('current-users', handleGetUsers);
+
+        return (() => {
+            socketInstance.off('current-users', handleGetUsers);
+        })
+
+    }, [activeUsers, currentUserEmailBeingMonitored])
 
     useEffect(() => {
 
@@ -133,7 +184,7 @@ const ProctorLiveEventPage = () => {
                 email: userEmail,
                 isProctor: isProctor,
                 message: message,
-                createddate: messageCreatedDate,
+                createdAt: messageCreatedDate,
             }
 
             console.log('recieved message on proctor end', receivedMessage);
@@ -152,6 +203,32 @@ const ProctorLiveEventPage = () => {
         };
     }, [socketInstance]);
 
+    useEffect(() => {
+        if (!currentUserEmailBeingMonitored) return;
+
+        if (singleUserVideRef.current) {
+            const userPeerId = allCurrentUsers?.find(user => user?.email === currentUserEmailBeingMonitored)?.peerId;
+            const foundUserStream = activeUsers.find(user => user.peerId === userPeerId);
+            if (!foundUserStream) return;
+
+            singleUserVideRef.current.srcObject = foundUserStream.stream;
+            singleUserVideRef.current.muted = true;
+
+            singleUserVideRef.current.onloadedmetadata = () => {
+                console.log('Metadata loaded, playing video of user being monitored');
+                singleUserVideRef.current.play().catch(error => {
+                    console.error('Error playing video of user being monitored:', error);
+                });
+            };
+
+            // Adding an error event listener
+            singleUserVideRef.current.onerror = (error) => {
+                console.error('Error with video element:', error);
+            };
+        }
+
+    }, [currentUserEmailBeingMonitored])
+
     const handleSendMessage = () => {
         console.log('connesction', socketInstance);
         if (newMessage.trim() === '') return;
@@ -162,6 +239,7 @@ const ProctorLiveEventPage = () => {
             username: `${currentUser?.userinfo?.first_name} ${currentUser?.userinfo?.last_name}`,
             isProctor: true,
             message: newMessage.trim(),
+            createdAt: new Date(),
         };
 
         console.log('send message from proctor end', data);
@@ -226,36 +304,84 @@ const ProctorLiveEventPage = () => {
                 />
             </nav>
             <div className={styles.live_event_wrap}>
-                <div ref={participantVideosRef} className={styles.participants__Wrap}>
-                    {/* {
-                        React.Children.toArray(
-                            [...Array(20).fill(0).map(() => ({}))].map(() => {
-                                return <video
-                                    autoPlay
-                                    playsInline
-                                    controls={false}
-                                    controlsList="nofullscreen"
-                                    muted
-                                >
-                                    <source src={sampleVideo} type="video/mp4" />
-                                </video>
-                            })
-                        )
-                    } */}
+                {
+                    currentUserEmailBeingMonitored ?
+                        <>
+                            <div className={styles.monitor__Wrap}>
+                                <section className={styles.video__Section}>
+                                    <MdClose 
+                                        size={'1.2rem'}
+                                        onClick={() => setCurrentUserEmailBeingMonitored(null)}
+                                        style={{
+                                            display: 'block',
+                                            marginLeft: 'auto',
+                                            cursor: 'pointer',
+                                        }}
+                                    />
 
-                    {
-                        React.Children.toArray(activeUsers.map(userStreamItem => {
-                            return <video
-                                autoPlay
-                                playsInline
-                                controls={false}
-                                controlsList="nofullscreen"
-                                muted
-                            >
-                            </video>
-                        }))
-                    }
-                </div>
+                                    <video className={styles.single__User__Vid} ref={singleUserVideRef}></video>
+                                </section>
+                                <section className={styles.info__Section}>
+                                    <h3>User Info</h3>
+
+                                    <section className={styles.info}>
+                                        <p>Name: {allCurrentUsers?.find(user => user?.email === currentUserEmailBeingMonitored)?.nameOfUser}</p>
+                                        <p>Number of times user navigated away: 0</p>
+                                        <p>Time spent: 1min</p>
+                                        <p>Location: Lagos, Nigeria</p>
+                                    </section>
+                                </section>
+                            </div>
+                        </>
+                    :
+                    <>
+                        <div ref={participantVideosRef} className={styles.participants__Wrap}>
+                            {/* {
+                                React.Children.toArray(
+                                    [...Array(20).fill(0).map(() => ({}))].map(() => {
+                                        return <video
+                                            autoPlay
+                                            playsInline
+                                            controls={false}
+                                            controlsList="nofullscreen"
+                                            muted
+                                        >
+                                            <source src={sampleVideo} type="video/mp4" />
+                                        </video>
+                                    })
+                                )
+                            } */}
+
+                            {
+                                React.Children.toArray(activeUsers.map(userItem => {
+                                    return <div className={styles.user__Video__Item}>
+                                        <video
+                                            playsInline
+                                            controls={false}
+                                            controlsList="nofullscreen"
+                                            muted
+                                        >
+                                        </video>
+                                        {
+                                            allCurrentUsers?.find(user => user?.peerId === userItem?.peerId) &&
+                                            <>
+                                                <span>{allCurrentUsers?.find(user => user?.peerId === userItem?.peerId)?.nameOfUser}</span>
+                                                <br />
+                                                <button 
+                                                    className={styles.view__Participant__Details}
+                                                    onClick={() => setCurrentUserEmailBeingMonitored(allCurrentUsers?.find(user => user?.peerId === userItem?.peerId)?.email)}
+                                                >
+                                                    <span>Monitor User</span>
+                                                </button>                             
+                                            </>
+                                        }
+                                    </div>
+                                }))
+                            }
+                        </div>
+                    </>
+                }
+
                 <div className={styles.proctor__chat} style={{ display: isChatOpen ? 'block' : 'none' }}>
                     <div className={styles.chat__bar}>
                         <h1 className={styles.chat__heading}>Chats</h1>
@@ -269,7 +395,7 @@ const ProctorLiveEventPage = () => {
                         isChatLoading ? <div className={styles.chat__main} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><DotLoader /></div> :
                             <div ref={chatContainerRef} className={styles.chat__main}>
                                 {React.Children.toArray(chatMessages.map(message => {
-                                    const isCurrentUser = message.username === `${currentUser?.userinfo?.first_name} ${currentUser?.userinfo?.last_name}`;
+                                    const isCurrentUser = currentUser?.userinfo?.email === message.email && message.username === `${currentUser?.userinfo?.first_name} ${currentUser?.userinfo?.last_name}`;
                                     return (
                                         <div className={`${styles.chat_message} ${isCurrentUser ? styles.chat_messageRight : styles.chat_messageLeft}`}>
                                             <div className={styles.avatarContainer} style={{ display: isCurrentUser ? 'none' : 'block' }}>
@@ -284,7 +410,7 @@ const ProctorLiveEventPage = () => {
                                                     </strong>
                                                     <p>{new Date(message.createdAt).toLocaleString()}</p>
                                                 </div>
-                                                <div className={styles.message_} style={{}}>
+                                                <div className={styles.message_}>
                                                     <div key={message.eventId} className={styles.chat__message} style={{ width: isCurrentUser ? 'max-content' : '100%' }}>
                                                         <div className={styles.messageContent}>
                                                             {message.message}

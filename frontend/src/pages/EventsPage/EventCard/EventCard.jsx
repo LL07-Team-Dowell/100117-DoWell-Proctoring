@@ -9,25 +9,31 @@ const EventCard = ({ eventName, startTime, endTime, participants }) => {
     <div className={styles.card}>
       <Card className={styles.card__content}>
         <h1 className={styles.title}>{eventName}</h1>
-        <div>
+        <div
+          style={{ display: "flex", gap: "0.8rem", flexDirection: "column" }}
+        >
           <p>
-            Start Date: <span>{startTime}</span>
+            <b>Start Date:</b>{" "}
+            <span style={{ fontSize: "0.9rem" }}>{startTime}</span>
           </p>
           <p>
-            End Date: <span>{endTime}</span>
+            <b>End Date:</b>{" "}
+            <span style={{ fontSize: "0.9rem" }}>{endTime}</span>
           </p>
         </div>
-        <div>
-          <UserIconsInfo
-            items={participants}
-            numberOfIcons={3}
-            isNotParticipantItem={true}
-          />
+        <div className={styles.card__footer__container}>
+          <div>
+            <UserIconsInfo
+              items={participants}
+              numberOfIcons={3}
+              isNotParticipantItem={true}
+            />
+          </div>
+          <div className={styles.card__footer}>
+            <button>View</button>
+          </div>
         </div>
       </Card>
-      <div className={styles.card__footer}>
-        <button>View</button>
-      </div>
     </div>
   );
 };

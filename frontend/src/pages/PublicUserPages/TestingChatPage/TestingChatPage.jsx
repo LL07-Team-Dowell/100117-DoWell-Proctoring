@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { useSearchParams } from "react-router-dom";
 import { socketInstance } from "../../../utils/utils";
 import { toast } from 'sonner';
+import Peer from "peerjs";
+import { handleRequestCameraPermission } from "../../../utils/helpers";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function TestingChatPage() {
     const [ value, setValue ] = useState('');
     const [ messages, setMessages ] = useState([]);
     const [ searchParams, setSearchParams ] = useSearchParams();
+    const [ userStream, setUserStream ] = useState(null);
+    const videoRef = useRef();
     
     const eventId = searchParams.get('event_id');
-    const testEmail = 'test@gmail.com';
-    const testUser = 'John Doe';
+    const testEmail = `test-${uuidv4()}@gmail.com`;
+    const testUser = `John Doe-${uuidv4()}`;
 
     let activityTimer
     const emmitter =(event,data) =>{
@@ -93,7 +98,33 @@ export default function TestingChatPage() {
     
     useEffect(() => {
         
-        socketInstance.emit('join-event', eventId, crypto.randomUUID(), testEmail, testUser);
+        const peer = new Peer(undefined);
+
+        handleRequestCameraPermission().then(res => {
+            setUserStream(res);
+
+            if (videoRef.current) {
+                videoRef.current.srcObject = res;
+                videoRef.current.muted = true;
+            }
+
+            peer.on('open', (id) => {
+                console.log('testing user peer id::' + id);
+                socketInstance.emit('join-event', eventId, id, testEmail, testUser);
+            });
+            
+            peer.on('call', (call) => {
+                call.answer(res);
+    
+                call.on('stream', (passedStream) => {
+                    console.log('new stream 1 ->', passedStream);
+                })
+            })
+
+        }).catch(err => {
+            socketInstance.emit('join-event', eventId, crypto.randomUUID(), testEmail, testUser);
+        })
+        
         
     }, [eventId])
 
@@ -103,8 +134,24 @@ export default function TestingChatPage() {
             alignItems: 'center',
             flexDirection: 'column',
             gap: '1rem',
+            position: 'relative',
         }}
     >
+        <video ref={videoRef}
+            autoPlay
+            playsInline
+            controls={false}
+            controlsList="nofullscreen"
+            style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                width: 300,
+                height: 300,
+            }}
+        >
+        </video>
+
         <br />
         <h2>Live Chat</h2>
         <input 

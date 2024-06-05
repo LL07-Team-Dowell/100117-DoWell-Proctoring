@@ -15,7 +15,7 @@ export const userNavLinks = [
   },
   {
     icon: FiBarChart,
-    path: "/",
+    path: "/reports",
     name: "reports",
   },
 ];

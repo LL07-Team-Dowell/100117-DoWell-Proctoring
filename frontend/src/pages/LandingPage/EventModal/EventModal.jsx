@@ -123,7 +123,7 @@ const AddEventModal = ({ handleCloseModal }) => {
         {showShareModal ? (
           <div style={{ width: "100%" }}>
             <h2 style={{ marginBottom: "1rem", color: "#005734" }}>
-              Invite people to your event
+              Invite people to register for your event
             </h2>
             <label htmlFor="link" className={styles.event__share__modal}>
               <div style={{ marginBottom: "0.4rem" }}>
@@ -134,13 +134,13 @@ const AddEventModal = ({ handleCloseModal }) => {
                   type="text"
                   name={"link"}
                   placeholder="Event link"
-                  value={`${window.location.origin}/?view=public&event_id=${eventId}`}
+                  value={`${window.location.origin}/register-event?view=public&event_id=${eventId}`}
                   style={{ width: "100%" }}
                 />
                 <button
                   onClick={async () => {
                     await navigator.clipboard.writeText(
-                      `${window.location.origin}/?view=public&event_id=${eventId}`
+                      `${window.location.origin}/register-event?view=public&event_id=${eventId}`
                     );
 
                     setCopiedId("write-text");
@@ -188,7 +188,7 @@ const AddEventModal = ({ handleCloseModal }) => {
               </div>
               <EmailInput
                 newEvent={event.name}
-                eventLink={`${window.location.origin}/?view=public&event_id=${eventId}`}
+                eventLink={`${window.location.origin}/register-event?view=public&event_id=${eventId}`}
                 closeModal={handleCloseModal}
               />
             </label>
