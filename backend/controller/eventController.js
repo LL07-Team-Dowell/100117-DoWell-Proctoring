@@ -68,6 +68,11 @@ class EventController {
                 }
             },
             {
+              $sort: {
+                  createdAt: -1 // Sort by createdAt field in descending order
+              }
+            },
+            {
                 $skip: skip
             },
             {

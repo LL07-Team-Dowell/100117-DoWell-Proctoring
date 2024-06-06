@@ -2,6 +2,7 @@ const { generateDefaultResponseObject } = require("../utils/defaultResponseObjec
 const { validateParticipantData, Participant } = require("../models/participantModel");
 const { ResponseObject } = require("../utils/defaultResponseObject");
 const { Event } = require("../models/eventModel");
+const { compressString} = require("../utils/imageoptimizer");
 
 exports.add_new_participant = async (req, res) => {
     const { error, value } = validateParticipantData(req.body);
@@ -48,7 +49,11 @@ exports.add_new_participant = async (req, res) => {
         message: `Sorry, this event closed on ${new Date(foundEvent?.close_date).toDateString()} at ${new Date(foundEvent?.close_date).toLocaleTimeString()}`,
     }));
 
-    const newParticipant = new Participant({ ...value, email: value.email.toLocaleLowerCase() });
+    const newParticipant = new Participant({
+        ...value,
+        email: value.email.toLocaleLowerCase(),
+        user_image: compressString(value.user_image)
+    });
 
     try {
         await newParticipant.save();
