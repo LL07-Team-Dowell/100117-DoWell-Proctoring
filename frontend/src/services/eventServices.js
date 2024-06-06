@@ -16,6 +16,10 @@ export const getAllEvents = async (userId) => {
   );
 };
 
+export const getSingleEvent = async (eventId) => {
+  return await defaultAxiosInstance.get(`${eventRoutePrefix}/${eventId}`);
+};
+
 export const getEventsForPage = async (userId, page) => {
   return await defaultAxiosInstance.get(
     `${eventRoutePrefix}/all?user_id=${userId}&page=${page}`

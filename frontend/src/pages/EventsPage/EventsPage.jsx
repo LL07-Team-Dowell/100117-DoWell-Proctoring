@@ -76,7 +76,9 @@ const EventsPage = () => {
                 eventName={event.name}
                 startTime={formatDate(event.start_time)}
                 endTime={formatDate(event.close_date)}
-                participants={event.participants}
+                participants={event.active_participants.map(
+                  (participant) => participant.name
+                )}
                 handleClick={() => singleEventClick(event.name)}
               />
             ))}
