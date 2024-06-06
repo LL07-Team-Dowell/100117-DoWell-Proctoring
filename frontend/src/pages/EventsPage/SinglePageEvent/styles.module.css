@@ -64,7 +64,8 @@
   width: 40%;
 }
 
-.single_event_info_container p {
+.single_event_info_container p,
+.insights p {
   display: flex;
   justify-content: space-between;
   font-weight: 600;
@@ -80,4 +81,11 @@
 .user_icons_info {
   margin-top: 1rem;
   justify-content: space-between;
+}
+
+.insights__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin: 2rem 0;
 }

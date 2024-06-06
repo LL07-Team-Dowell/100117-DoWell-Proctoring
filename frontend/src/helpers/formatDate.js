@@ -72,5 +72,27 @@ export function formatSingleEventDate(isoString) {
 
   return `${day}${daySuffix(
     day
-  )} ${month} ${year}, ${hours}:${minutesStr} ${ampm}`;
+  )} ${month} ${year} at ${hours}:${minutesStr} ${ampm}`;
 }
+
+export function convertToDateTimeLocal(inputDate) {
+  // Parse the input date string into a Date object
+  const date = new Date(inputDate);
+
+  // Extract the date components
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  // Format the components into a string suitable for datetime-local
+  const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+  return formattedDate;
+}
+
+// Example usage:
+const inputDate = "2024-04-21T10:07:00.000Z";
+const dateTimeLocal = convertToDateTimeLocal(inputDate);
+console.log(dateTimeLocal); // Output: "2024-04-21T10:07"
