@@ -35,7 +35,7 @@ const eventSchema = new Schema({
             return new Date(this.start_time.getTime() - 24 * 60 * 60 * 1000);
         }
     },
-});
+},{ timestamps: true });
 
 
 const validateEvent = (eventData, isExistingData = false) => {
