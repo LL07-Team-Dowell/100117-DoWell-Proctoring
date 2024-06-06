@@ -13,6 +13,8 @@ import { useEventsContext, useUserContext } from "../../../contexts";
 import EmailInput from "../../../components/ValidatingEmail/validatingEmail";
 import { TbCopy } from "react-icons/tb";
 import { PiArrowElbowRightThin } from "react-icons/pi";
+import { ShareModal } from "../../../components/ShareModal/ShareModal";
+import { FormModal } from "../../../components/FormModal/FormModal";
 
 const AddEventModal = ({ handleCloseModal }) => {
   const [event, setEvent] = useState({
@@ -27,7 +29,6 @@ const AddEventModal = ({ handleCloseModal }) => {
   console.log(event);
   const [loading, setLoading] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [copied, setCopiedId] = useState("");
   const [eventId, setEventId] = useState("");
 
   const { currentUser } = useUserContext();
@@ -125,202 +126,30 @@ const AddEventModal = ({ handleCloseModal }) => {
           />
         </div>
         {showShareModal ? (
-          <div style={{ width: "100%" }}>
-            <h2 style={{ marginBottom: "1rem", color: "#005734" }}>
-              Invite people to register for your event
-            </h2>
-            <label htmlFor="link" className={styles.event__share__modal}>
-              <div style={{ marginBottom: "0.4rem" }}>
-                <span>Share Event link</span>
-              </div>
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <input
-                  type="text"
-                  name={"link"}
-                  placeholder="Event link"
-                  value={`${window.location.origin}/register-event?view=public&event_id=${eventId}`}
-                  style={{ width: "100%" }}
-                />
-                <button
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(
-                      `${window.location.origin}/register-event?view=public&event_id=${eventId}`
-                    );
-
-                    setCopiedId("write-text");
-                  }}
-                >
-                  {copied === "write-text" ? (
-                    <>
-                      <PiArrowElbowRightThin /> Copied
-                    </>
-                  ) : (
-                    <>
-                      <TbCopy /> Copy
-                    </>
-                  )}
-                </button>
-              </div>
-            </label>
-            <div
-              style={{
-                display: "flex",
-                gap: "0.5rem",
-                alignItems: "center",
-                marginTop: "1rem",
-              }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  height: "1px",
-                  backgroundColor: "#005734",
-                }}
-              ></div>
-              <p>or</p>
-              <div
-                style={{
-                  width: "100%",
-                  height: "1px",
-                  backgroundColor: "#005734",
-                }}
-              ></div>
-            </div>
-            <label htmlFor="emails" className={styles.event__share__modal}>
-              <div style={{ margin: "0.4rem 0" }}>
-                <span>Invite via email</span>
-              </div>
-              <EmailInput
-                newEvent={event.name}
-                eventLink={`${window.location.origin}/register-event?view=public&event_id=${eventId}`}
-                closeModal={handleCloseModal}
-              />
-            </label>
-          </div>
+          <ShareModal
+            header={"Invite people to register for your event"}
+            eventId={eventId}
+            eventName={event.name}
+            handleCloseModal={handleCloseModal}
+          />
         ) : (
-          <form onSubmit={handleSubmit} className={styles.event__form}>
-            <h2>Add Event</h2>
-            <p className={styles.required__indicator__label}>*Required</p>
-            <label htmlFor="name">
-              <div>
-                <span>Event Title</span>{" "}
-                <span className={styles.required__indicator}>*</span>
-              </div>
-              <input
-                type="text"
-                name={"name"}
-                placeholder="Event title"
-                value={event.name}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-              />
-            </label>
-            <div className={styles.event_body}>
-              <div className={styles.event_desc}>
-                <label htmlFor="start_time">
-                  <div>
-                    <span>Start Date</span>{" "}
-                    <span className={styles.required__indicator}>*</span>
-                  </div>
-                  <input
-                    type="datetime-local"
-                    name={"start_time"}
-                    placeholder="Start date"
-                    value={event.start_time}
-                    className={styles.event__input}
-                    onChange={(e) =>
-                      handleChange(e.target.value, e.target.name)
-                    }
-                  />
-                </label>
-                <label htmlFor="close_date">
-                  <div>
-                    <span>Close Date</span>{" "}
-                    <span className={styles.required__indicator}>*</span>
-                  </div>
-                  <input
-                    type="datetime-local"
-                    name={"close_date"}
-                    placeholder="Close date"
-                    value={event.close_date}
-                    className={styles.event__input}
-                    onChange={(e) =>
-                      handleChange(e.target.value, e.target.name)
-                    }
-                  />
-                </label>
-                <label htmlFor="registration_end_date">
-                  <div>
-                    <span>Registration End Date</span>{" "}
-                    <span className={styles.required__indicator}>*</span>
-                  </div>
-                  <input
-                    type="datetime-local"
-                    name={"registration_end_date"}
-                    placeholder="Registration End Date"
-                    value={event.registration_end_date}
-                    className={styles.event__input}
-                    onChange={(e) =>
-                      handleChange(e.target.value, e.target.name)
-                    }
-                  />
-                </label>
-              </div>
-              <div className={styles.event_desc}>
-                <label htmlFor="duration_in_hours">
-                  <div>
-                    <span>Duration in Hours</span>{" "}
-                    <span className={styles.required__indicator}>*</span>
-                  </div>
-                  <input
-                    type="text"
-                    name={"duration_in_hours"}
-                    placeholder="Duration in Hours"
-                    value={event.duration_in_hours}
-                    onChange={(e) =>
-                      handleNumericChange(e.target.value, e.target.name)
-                    }
-                  />
-                </label>
-                <label htmlFor="max_cap">
-                  <div>
-                    <span>Maximum Participants</span>
-                  </div>
-                  <input
-                    type="text"
-                    name={"max_cap"}
-                    placeholder="Max participants"
-                    value={event.max_cap}
-                    onChange={(e) =>
-                      handleNumericChange(e.target.value, e.target.name)
-                    }
-                  />
-                </label>
-              </div>
-              <label htmlFor="link">
-                <div>
-                  <span>Event link</span>{" "}
-                  <span className={styles.required__indicator}>*</span>
-                </div>
-                <input
-                  type="text"
-                  name={"link"}
-                  placeholder="Event link"
-                  value={event.link}
-                  onChange={(e) => handleChange(e.target.value, e.target.name)}
-                />
-              </label>
-            </div>
-            <div className={styles.event__actions}>
-              <button type="submit" onClick={handleSubmit} disabled={loading}>
-                <BiRightTopArrowCircle />
-                {loading ? "Saving..." : "Submit"}
-              </button>
-              <button onClick={handleCloseModal} disabled={loading}>
-                <MdOutlineDeleteOutline />
-                <span>Cancel</span>
-              </button>
-            </div>
-          </form>
+          <>
+            <FormModal
+              title={"Add Event"}
+              handleSubmit={handleSubmit}
+              handleCloseModal={handleCloseModal}
+              loading={loading}
+              handleChange={handleChange}
+              handleNumericChange={handleNumericChange}
+              name={event.name}
+              start_time={event.start_time}
+              close_date={event.close_date}
+              registration_end_date={event.registration_end_date}
+              duration_in_hours={event.duration_in_hours}
+              max_cap={event.max_cap}
+              link={event.link}
+            />
+          </>
         )}
       </section>
     </Overlay>

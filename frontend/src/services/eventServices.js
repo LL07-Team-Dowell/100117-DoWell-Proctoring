@@ -16,6 +16,17 @@ export const getAllEvents = async (userId) => {
   );
 };
 
+export const getSingleEvent = async (eventId) => {
+  return await defaultAxiosInstance.get(`${eventRoutePrefix}/${eventId}`);
+};
+
+export const updateSingleEvent = async (eventId, data) => {
+  return await defaultAxiosInstance.patch(
+    `${eventRoutePrefix}/${eventId}`,
+    data
+  );
+};
+
 export const getEventsForPage = async (userId, page) => {
   return await defaultAxiosInstance.get(
     `${eventRoutePrefix}/all?user_id=${userId}&page=${page}`

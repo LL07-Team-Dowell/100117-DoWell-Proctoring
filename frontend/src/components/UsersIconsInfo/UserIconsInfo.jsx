@@ -8,11 +8,12 @@ export default function UserIconsInfo({
   items,
   numberOfIcons,
   isNotParticipantItem,
+  className,
 }) {
   if (!items || !Array.isArray(items) || isNaN(numberOfIcons)) return <></>;
 
   return (
-    <div className={styles.nav__Users__Content}>
+    <div className={`${styles.nav__Users__Content} ${className}`}>
       <>
         {React.Children.toArray(
           items?.slice(0, numberOfIcons)?.map((applicant) => {

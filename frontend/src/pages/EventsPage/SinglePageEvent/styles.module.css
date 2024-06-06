@@ -5,6 +5,12 @@
   padding-bottom: 5em;
 }
 
+.single_event_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .backButton {
   background: none;
   border: none;
@@ -16,4 +22,70 @@
   transition: background-color 0.3s, color 0.3s;
   border-radius: 20%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.edit_button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.share_button,
+.join_button {
+  padding: 0.8rem 1rem;
+  border: none;
+  background-color: #005734;
+  color: #fff;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.single_event_body {
+  margin-top: 2rem;
+  padding: 1rem 3rem;
+}
+
+.single_event_info_container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  width: 40%;
+}
+
+.single_event_info_container p,
+.insights p {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.single_event_details {
+  margin-top: 2rem;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user_icons_info {
+  margin-top: 1rem;
+  justify-content: space-between;
+}
+
+.insights__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin: 2rem 0;
 }
