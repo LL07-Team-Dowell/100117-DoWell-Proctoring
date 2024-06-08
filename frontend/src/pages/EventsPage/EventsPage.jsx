@@ -14,7 +14,7 @@ import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import SinglePageEvent from "./SinglePageEvent/SinglePageEvent";
 
 const EventsPage = () => {
-  const { totalPages } = useEventsContext();
+  const { totalPages, allEvents, eventsLoaded } = useEventsContext();
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,9 +23,15 @@ const EventsPage = () => {
   const { currentUser } = useUserContext();
 
   useEffect(() => {
-    const page = searchParams.get("page") || 1;
-    if (page) {
-      setCurrentPage(parseInt(page));
+    const page = searchParams.get("page");
+
+    if (!page) {
+      if (!eventsLoaded) return;
+
+      setEventsToShowForPage(allEvents);
+      setCurrentPage(1);
+      setEventsForPageLoading(false);
+      return;
     }
 
     const eventsForPage = async () => {

@@ -86,43 +86,47 @@ const EmailInput = ({ newEvent, eventLink, closeModal }) => {
   };
 
   return (
-    <div className="email_input_wrapper">
-      <div className={`email-input ${notValid ? "notValid" : "valid"}`}>
-        {emails.map((email, index) => (
-          <div
-            key={index}
-            className={`email ${email.isValid ? "valid" : "invalid"}`}
-          >
+    <>
+      <div className="email_input_wrapper">
+        <div className={`email-input ${notValid ? "notValid" : "valid"}`}>
+          {emails.map((email, index) => (
             <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.4rem",
-              }}
+              key={index}
+              className={`email ${email.isValid ? "valid" : "invalid"}`}
             >
-              {email.email}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                }}
+              >
+                {email.email}
 
-              <MdCancel
-                style={{ fontSize: "1rem" }}
-                onClick={() => removeEmail(index)}
-              />
+                <MdCancel
+                  style={{ fontSize: "1rem" }}
+                  onClick={() => removeEmail(index)}
+                />
+              </div>
             </div>
-          </div>
-        ))}
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyPress={handleKeyPress}
-          onPaste={handlePaste}
-          className="email__textarea"
-          placeholder="Enter email address"
-        />
+          ))}
+          <textarea
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            onPaste={handlePaste}
+            className="email__textarea"
+            placeholder="abc@email.com, abc@email.com"
+            rows={5}
+          ></textarea>
+        </div>
+        <button onClick={handleSendInvite} style={{ height: "3rem" }}>
+          Send Invite
+        </button>
       </div>
-      <button onClick={handleSendInvite} style={{ height: "3rem" }}>
-        Send Invite
-      </button>
-    </div>
+      <p className={'email__Info__Separator'}>You can paste multiple emails at once separated by a comma</p>
+    </>
   );
 };
 

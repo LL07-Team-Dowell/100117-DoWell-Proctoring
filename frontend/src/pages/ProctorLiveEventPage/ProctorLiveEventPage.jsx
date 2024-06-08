@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useUserContext } from "../../contexts";
 import useSocketIo from "../../hooks/useSocketIo";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import { socketInstance } from "../../utils/utils";
 import { getMessages } from "../../services/eventServices";
 import DotLoader from "../../components/DotLoader/DotLoader";
 import { MdClose } from "react-icons/md";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 
 // let activeUsers = [];
 let currentUserPeerId = null;
@@ -41,6 +42,8 @@ const ProctorLiveEventPage = () => {
 
     const participantVideosRef = useRef();
     const singleUserVideRef = useRef();
+
+    const navigate = useNavigate();
 
     const handleUpdateUsers = (peerId, userStream, userIsLeaving = false, socketId) => {
         console.log('-----adding new user stream----', userStream);
@@ -288,12 +291,21 @@ const ProctorLiveEventPage = () => {
     return <>
         <div className={styles.wrapper}>
             <nav className={styles.nav__Wrapper}>
-                <img
-                    className={styles.logo}
-                    src={dowellLogo}
-                    alt="logo"
-                />
-                <h3>{existingEventDetails?.name}</h3>
+                <button 
+                    className={styles.back_}
+                    onClick={() => navigate(-1)}
+                >
+                    <AiOutlineArrowLeft />
+                    <span>Back</span>
+                </button>
+                <div className={styles.logo__Wrap}>
+                    <img
+                        className={styles.logo}
+                        src={'https://ll07-team-dowell.github.io/100098-DowellJobPortal/static/media/landing-logo.13cfa69b57d9bdf1e3da.png'}
+                        alt="logo"
+                    />
+                    <h3>{existingEventDetails?.name}</h3>
+                </div>
                 <BsFillChatTextFill
                     className={styles.chat__icon}
                     color="#005734"
@@ -389,6 +401,7 @@ const ProctorLiveEventPage = () => {
                             fontSize={'28px'}
                             color=""
                             onClick={() => setIsChatOpen(!isChatOpen)}
+                            cursor={'pointer'}
                         />
                     </div>
                     {
@@ -411,7 +424,7 @@ const ProctorLiveEventPage = () => {
                                                     <p>{new Date(message.createdAt).toLocaleString()}</p>
                                                 </div>
                                                 <div className={styles.message_}>
-                                                    <div key={message.eventId} className={styles.chat__message} style={{ width: isCurrentUser ? 'max-content' : '100%' }}>
+                                                    <div key={message.eventId} className={styles.chat__message} style={{ width: '100%' }}>
                                                         <div className={styles.messageContent}>
                                                             {message.message}
                                                         </div>

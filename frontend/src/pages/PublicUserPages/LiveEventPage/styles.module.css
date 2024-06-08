@@ -258,7 +258,7 @@
 .chat_message {
     display: flex;
     margin-bottom: 10px;
-    align-items: center;
+    align-items: flex-end;
     /* justify-content:end; */
 }
 

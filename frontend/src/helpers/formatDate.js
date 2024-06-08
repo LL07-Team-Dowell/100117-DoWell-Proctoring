@@ -41,6 +41,7 @@ export const formatDate = (inputDate) => {
 
 export function formatSingleEventDate(isoString) {
   const date = new Date(isoString);
+  if (date == 'Invalid Date') return '1st January 1999 at 12:00 AM';
 
   const day = date.getUTCDate();
   const month = date.toLocaleString("default", {

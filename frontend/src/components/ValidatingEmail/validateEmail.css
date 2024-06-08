@@ -50,7 +50,14 @@
 
 .email__textarea {
   outline: none;
-  height: 0.2rem;
+  border: none;
+  font-size: 0.85rem;
+}
+
+.email__Info__Separator {
+  font-size: 0.75rem;
+  color: #808080;
+  margin-top: 0.3rem;
 }
 
 @media screen and (max-width: 768px) {

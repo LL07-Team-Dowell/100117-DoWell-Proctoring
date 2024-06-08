@@ -64,14 +64,14 @@ export const ShareModal = ({
               display: "flex",
               gap: "0.5rem",
               alignItems: "center",
-              marginTop: "1rem",
+              margin: "2rem 0",
             }}
           >
             <div
               style={{
                 width: "100%",
                 height: "1px",
-                backgroundColor: "#005734",
+                backgroundColor: "#d3d3d3",
               }}
             ></div>
             <p>or</p>
@@ -79,7 +79,7 @@ export const ShareModal = ({
               style={{
                 width: "100%",
                 height: "1px",
-                backgroundColor: "#005734",
+                backgroundColor: "#d3d3d3",
               }}
             ></div>
           </div>

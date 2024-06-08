@@ -20,6 +20,7 @@ import { Doughnut } from "react-chartjs-2";
 import { ShareModal } from "../../../components/ShareModal/ShareModal";
 import { FormModal } from "../../../components/FormModal/FormModal";
 import { convertToDateTimeLocal } from "../../../helpers/formatDate";
+import { useEventsContext } from "../../../contexts";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -31,6 +32,7 @@ const SinglePageEvent = () => {
   const [loading, setLoading] = useState(false);
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const { eventsLoaded, allEvents } = useEventsContext();
 
   const handleChange = (valueEntered, inputName) => {
     setSingleEvent((prevValue) => ({
@@ -48,6 +50,11 @@ const SinglePageEvent = () => {
   };
 
   useEffect(() => {
+    if (eventsLoaded) {
+      const foundEvent = allEvents.find(item => item._id === eventId);
+      if (foundEvent) return setSingleEvent(foundEvent);
+    }
+
     const fetchSingleEvent = async () => {
       try {
         const event = (await getSingleEvent(eventId)).data;
@@ -173,16 +180,17 @@ const SinglePageEvent = () => {
           </button>
         </div>
         <div>
-          <h3>Participants</h3>
+          <h3>Participants ({singleEvent?.active_participants?.length})</h3>
           <UserIconsInfo
             items={singleEvent?.active_participants?.map(
               (participant) => participant.name
             )}
-            numberOfIcons={10}
+            numberOfIcons={singleEvent?.active_participants?.length}
             isNotParticipantItem={true}
             className={styles.user_icons_info}
           />
         </div>
+        <br />
         <div className={styles.single_event_details}>
           {currentDate < new Date(singleEvent.start_time) ? (
             <div style={{ textAlign: "center" }}>
@@ -196,7 +204,7 @@ const SinglePageEvent = () => {
             </div>
           ) : (
             <div className={styles.insights}>
-              <h3 style={{ color: "#005734" }}>Insight</h3>
+              <h3 style={{ color: "#005734" }}>Insights</h3>
               <div className={styles.insights__content}>
                 <p>
                   Average Time Spent <span>2.8hrs</span>

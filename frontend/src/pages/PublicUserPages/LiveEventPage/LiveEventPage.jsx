@@ -404,7 +404,7 @@ const EventRegistrationPage = () => {
                                                     <p>{new Date(message.createdAt).toLocaleString()}</p>
                                                 </div>
                                                 <div className={styles.message_}>
-                                                    <div key={message.eventId} className={styles.chat__message} style={{ width: isCurrentUser ? 'max-content' : '100%' }}>
+                                                    <div key={message.eventId} className={styles.chat__message} style={{ width: '100%' }}>
                                                         <div className={styles.messageContent}>
                                                             {message.message}
                                                         </div>

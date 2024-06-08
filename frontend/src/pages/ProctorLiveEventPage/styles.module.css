@@ -4,14 +4,32 @@
 
 .nav__Wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
     gap: 1.8rem;
 }
 
+.logo__Wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.back_ {
+    outline: none;
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+}
+
 .logo {
-    width: 6rem;
-    height: 6rem;
+    width: 4rem;
+    height: 4rem;
     object-fit: cover;
 }
 
@@ -93,7 +111,8 @@
 .proctor__chat {
     border: 1px solid black;
     background-color: #f7f7f7; 
-    width: 350px;
+    min-width: 350px;
+    max-width: 400px;
     padding: 1rem;
     height: 80vh; 
     overflow-y: auto; 
@@ -203,7 +222,7 @@
 .chat_message {
     display: flex;
     margin-bottom: 10px;
-    align-items:center;
+    align-items: flex-end;
     justify-content:flex-start;
 }
 
@@ -214,6 +233,7 @@
 .chat__icon {
     font-size: 35px;
     margin-right: 1%;
+    cursor: pointer;
 }
 
 .chat__bar {
