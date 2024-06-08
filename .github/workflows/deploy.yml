@@ -1,5 +1,4 @@
 name: DoWell Proctoring Workflow
-
 on:
   push:
     branches:
@@ -15,25 +14,25 @@ jobs:
       - name: Echo New Changes
         run: echo 'New changes made to main'
 
-      # Clean up SSH directory
+      # THIS IS THE ACTUAL WORKFLOW FILE CONTENT
       - name: Cleanup SSH Directory
         run: rm -rf ~/.ssh
 
-      # Install SSH Key
+      # - name: Install SSH Keys for Secure Connection
+      #   run: |
+      #     install -m 600 -D /dev/null ~/.ssh/id_rsa
+      #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+      #     ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2.7.0
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
 
-      # Add known hosts
       - name: Adding Known Hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-        shell: bash
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      # Connect to Server, Pull Latest Code, and Rebuild Containers with Docker Script
       - name: Connect to Server, Pull Latest Code, and Rebuild Containers with Docker Script
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
@@ -44,9 +43,7 @@ jobs:
           git pull && \
           chmod +x run_docker.sh && \
           ./run_docker.sh prod \
+          # echo "Github action file succesfull!!!"
           exit"
-        shell: bash
-
-      # Cleanup SSH Keys
       - name: Cleanup SSH Keys
         run: rm -rf ~/.ssh
