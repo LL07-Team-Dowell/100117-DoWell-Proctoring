@@ -111,10 +111,10 @@
 .proctor__chat {
     border: 1px solid black;
     background-color: #f7f7f7; 
-    min-width: 350px;
+    width: 350px;
     max-width: 400px;
     padding: 1rem;
-    height: 80vh; 
+    height: 75vh; 
     overflow-y: auto; 
     position: sticky; 
     top: 0;
@@ -123,6 +123,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
     display: flex;
     flex-direction: column;
+    z-index: 999;
 }
 
 .chat__heading {
@@ -135,7 +136,7 @@
 
 .chat__main {
     overflow-y: auto;
-    max-height: 67vh;
+    max-height: 60vh;
     flex: 1;
 }
 
@@ -184,6 +185,9 @@
     left: 0;
     right: 0;
     padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .chat__input input {
@@ -222,7 +226,7 @@
 .chat_message {
     display: flex;
     margin-bottom: 10px;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content:flex-start;
 }
 
@@ -246,4 +250,50 @@
     font-size: 0.8em;
     color: #666;
     margin-left: 0.5rem;
+}
+
+/* Responsive styles for .proctor__chat */
+@media screen and (max-width: 768px) {
+    .proctor__chat {
+        width: 100%;
+        max-width: none;
+        height: 80vh;
+        margin-left: 0;
+        box-shadow: none;
+        padding: 0.5rem;
+        margin-top: 10px;
+    }
+
+    .chat__heading {
+        font-size: 25px;
+        margin-bottom: 0.5rem;
+    }
+
+    .chat__main {
+        max-height: 65vh;
+    }
+    .chat__input input {
+        width: 90%;
+        padding: 0.4rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .proctor__chat {
+        height: 78vh;
+    }
+
+    .chat__heading {
+        font-size: 16px;
+        margin-bottom: 0.3rem;
+    }
+
+    .chat__main {
+        max-height: 67vh;
+    }
+
+    .chat__input input {
+        width: 85%;
+        padding: 0.3rem;
+    }
 }

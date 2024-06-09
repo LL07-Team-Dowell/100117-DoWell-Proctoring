@@ -16,3 +16,7 @@ export const getPartcipantData = async (email, eventId) => {
 export const faceCompare = async (data) => {
     return await defaultAxiosInstance.post(`facecompare`,data);
 }
+
+export const getParticipantDetails = async (email) => {
+    return await defaultAxiosInstance.get(`${participantRoutePrefix}/get?email=${email}`);
+}
