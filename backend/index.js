@@ -11,8 +11,7 @@ const { Participant } = require("./models/participantModel");
 const { addmessage } = require('./controller/messageController'); 
 const adminInit = require('./utils/admin.kafka');
 const {callProducer,producerRun, consumerRun} = require('./utils/kafka');
-const TOPIC = process.env.KAFKA_TOPIC;
-
+const TOPICS = JSON.parse(process.env.KAFKA_TOPIC);
 
 // creating a new express application
 const app = express();
@@ -99,7 +98,6 @@ io.on("connection", (socket) => {
         message: data.message,
         tagged: participant.filter(i => data.message.includes('@' + i._id)).map(i => i._id),
       };
-      //addmessage(message);
       await producerRun(message);  
             
     } catch (error) {
@@ -122,8 +120,8 @@ io.on("connection", (socket) => {
 function startServer() {
   httpServer.listen(PORT, async () => {
     console.log(`Server running on port ${PORT}`);
-    await adminInit(TOPIC);
-    await consumerRun("realtime-messages", [TOPIC]);
+    await adminInit(TOPICS);
+    await consumerRun("realtime-messages", TOPICS);
 
     // testing the producer-----
     // const message = {

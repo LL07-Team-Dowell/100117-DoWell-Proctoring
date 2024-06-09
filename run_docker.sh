@@ -14,11 +14,20 @@ fi
 
 echo -e "${GREEN}✓${NC} Intializing ..."
 
+#mongodburi------------------------
+mongodb_uri='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'
+
+#topics-----------------------------
+topic1=MESSAGES
+kafka_topics="[\"$topic1\"]" #kafka_topics="[\"$topic1\", \"$topic2\", \"$topic3\"]"
+
+#frontendurls------------------------------
 front_url1='http://localhost:4173'
 front_url2='http://localhost:5173'
 front_url3='http://192.64.86.227:4173'
 
 json_array="[\"$front_url1\", \"$front_url2\", \"$front_url3\"]"
+
 
 # Check if the system is running Linux
 if [ "$(uname)" == "Linux" ]; then
@@ -41,10 +50,10 @@ if [ "$(uname)" == "Linux" ]; then
 
 
     if grep -q "^MONGO_DB_URI=" .env; then
-        sed -i "s/^MONGO_DB_URI=.*/MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" .env
+        sed -i "s/^MONGO_DB_URI=.*/MONGO_DB_URI=$mongodb_uri" .env
     else
         echo "" >> .env
-        echo "MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" >> .env
+        echo "MONGO_DB_URI=$mongodb_uri" >> .env
     fi
     
 
@@ -68,9 +77,9 @@ if [ "$(uname)" == "Linux" ]; then
     fi
 
     if grep -q "^KAFKA_TOPIC=" .env; then
-        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
+        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=$kafka_topics/" .env
     else
-        echo "KAFKA_TOPIC=MESSAGES" >> .env
+        echo "KAFKA_TOPIC=$kafka_topics" >> .env
     fi
     
     cd ..
@@ -83,9 +92,9 @@ if [ "$(uname)" == "Linux" ]; then
     fi
 
     if grep -q "^KAFKA_TOPIC=" .env; then
-        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
+        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=$kafka_topics/" .env
     else
-        echo "KAFKA_TOPIC=MESSAGES" >> .env
+        echo "KAFKA_TOPIC=$kafka_topics" >> .env
     fi
     echo -e "${GREEN}✓${NC} Created env kafka"
 
@@ -108,10 +117,10 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
     fi
 
     if grep -q "^MONGO_DB_URI=" .env; then
-        sed -i "s/^MONGO_DB_URI=.*/MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" .env
+        sed -i "s/^MONGO_DB_URI=.*/MONGO_DB_URI=$mongodb_uri" .env
     else
         echo "" >> .env
-        echo "MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" >> .env
+        echo "MONGO_DB_URI=$mongodb_uri" >> .env
     fi
 
     # Check if the variables exist in the .env file
@@ -135,9 +144,9 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
     fi
 
     if grep -q "^KAFKA_TOPIC=" .env; then
-        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
+        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=$kafka_topics/" .env
     else
-        echo "KAFKA_TOPIC=MESSAGES" >> .env
+        echo "KAFKA_TOPIC=$kafka_topics" >> .env
     fi
     
     cd ..
@@ -150,9 +159,9 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
     fi
 
     if grep -q "^KAFKA_TOPIC=" .env; then
-        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
+        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=$kafka_topics/" .env
     else
-        echo "KAFKA_TOPIC=MESSAGES" >> .env
+        echo "KAFKA_TOPIC=$kafka_topics" >> .env
     fi
     echo -e "\e[32m✓\e[0m Created env kafka"
 
@@ -184,10 +193,10 @@ elif [ "$(uname)" == "Darwin" ]; then
     fi
 
     if grep -q "^MONGO_DB_URI=" .env; then
-        sed -i "s/^MONGO_DB_URI=.*/MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" .env
+        sed -i "s/^MONGO_DB_URI=.*/MONGO_DB_URI=$mongodb_uri" .env
     else
         echo "" >> .env
-        echo "MONGO_DB_URI='mongodb+srv://ayoolaaoloyede:bcfmMesLQFS9i0eO@cluster0.zufcwxa.mongodb.net/proctoring-db?retryWrites=true&w=majority'" >> .env
+        echo "MONGO_DB_URI=$mongodb_uri" >> .env
     fi
 
     if grep -q "^KAFKA_HOST=" .env; then
@@ -197,9 +206,9 @@ elif [ "$(uname)" == "Darwin" ]; then
     fi
 
     if grep -q "^KAFKA_TOPIC=" .env; then
-        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
+        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=$kafka_topics/" .env
     else
-        echo "KAFKA_TOPIC=MESSAGES" >> .env
+        echo "KAFKA_TOPIC=$kafka_topics" >> .env
     fi
     
     
@@ -213,9 +222,9 @@ elif [ "$(uname)" == "Darwin" ]; then
     fi
 
     if grep -q "^KAFKA_TOPIC=" .env; then
-        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=MESSAGES/" .env
+        sed -i "s/^KAFKA_TOPIC=.*/KAFKA_TOPIC=$kafka_topics/" .env
     else
-        echo "KAFKA_TOPIC=MESSAGES" >> .env
+        echo "KAFKA_TOPIC=$kafka_topics" >> .env
     fi
     echo -e "${GREEN}✓${NC} Created env kafka"
 

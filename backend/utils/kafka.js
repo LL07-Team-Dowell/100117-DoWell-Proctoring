@@ -38,7 +38,7 @@ const consumerRun = async (groupId, topics) => {
     const handleMessage = async ({ topic, partition, message }) => {
       console.log(`Topic - ${topic}, Partition - ${partition},`);
       try {
-            //addmessage(JSON.parse(message.value.toString()));
+            addmessage(JSON.parse(message.value.toString()));
             console.log(`Consumer caught ${message.value.toString()} successfully.`);
         } catch (err) {
             console.error(`Error processing ${topic}: `, err);
