@@ -16,6 +16,9 @@ import { getMessages } from "../../services/eventServices";
 import DotLoader from "../../components/DotLoader/DotLoader";
 import { MdClose } from "react-icons/md";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { getParticipantDetails } from "../../services/participantServices";
+import axios from "axios";
+import { IoMdSend } from "react-icons/io";
 
 // let activeUsers = [];
 let currentUserPeerId = null;
@@ -39,6 +42,8 @@ const ProctorLiveEventPage = () => {
     const [chatLoadedOnce, setChatLoadedOnce] = useState(false);
     const [allCurrentUsers, setAllCurrentUsers] = useState([]);
     const [currentUserEmailBeingMonitored, setCurrentUserEmailBeingMonitored] = useState(null);
+    const [userDetailsBeingMonitored, setUserDetailsBeingMonitored] = useState();
+    const [location, setLocation] = useState(null);
 
     const participantVideosRef = useRef();
     const singleUserVideRef = useRef();
@@ -286,6 +291,23 @@ const ProctorLiveEventPage = () => {
         }
     };
 
+    const handleUserDetailsBeingRetrieved = async (email) => {
+        // await getParticipantDetails('ayeshakhalil432@gmail.com').then( async (res)=>{
+            await getParticipantDetails(email).then( async (res)=>{
+            console.log('participants',res?.data?.data[0]);
+            setUserDetailsBeingMonitored(res.data?.data[0]);
+            await axios.get(`https://100090.pythonanywhere.com/lat_long_service/?lat=${res.data?.data[0]?.user_lat}&long=${res.data?.data[0]?.user_lon}`).then(res => {
+                setLocation(res?.data);
+                // console.log('location',res?.data);
+            }).catch(error => {
+                toast.error('Error getting participants location')
+            })      
+        }).catch(error =>{
+            console.log(error);
+            toast.error('Error getting participants data.')
+        })
+    }
+
     if (eventLoading) return <LoadingPage />
 
     return <>
@@ -333,16 +355,28 @@ const ProctorLiveEventPage = () => {
 
                                     <video className={styles.single__User__Vid} ref={singleUserVideRef}></video>
                                 </section>
-                                <section className={styles.info__Section}>
+                                
+                                {
+                                    !userDetailsBeingMonitored?<DotLoader />:<section className={styles.info__Section}>
                                     <h3>User Info</h3>
 
                                     <section className={styles.info}>
-                                        <p>Name: {allCurrentUsers?.find(user => user?.email === currentUserEmailBeingMonitored)?.nameOfUser}</p>
+                                        <p>Name: {userDetailsBeingMonitored?.name}</p>
                                         <p>Number of times user navigated away: 0</p>
-                                        <p>Time spent: 1min</p>
-                                        <p>Location: Lagos, Nigeria</p>
+                                        <p>Time spent: {userDetailsBeingMonitored?.hours_spent_in_event} hrs</p>
+                                        {/* <p>Location: Lagos, Nigeria</p> */}
+                                        <div>
+      <h1>Country: {location?.response?.country}</h1>
+      <iframe
+        title="Location Map"
+        src={location?.response?.map}
+        style={{ border: 0, width: "100%", height: "400px" }}
+        allowFullScreen
+        loading="lazy"
+      ></iframe>
+    </div>
                                     </section>
-                                </section>
+                                </section>}
                             </div>
                         </>
                     :
@@ -363,7 +397,7 @@ const ProctorLiveEventPage = () => {
                                     })
                                 )
                             } */}
-
+                            {console.log('all',allCurrentUsers)}
                             {
                                 React.Children.toArray(activeUsers.map(userItem => {
                                     return <div className={styles.user__Video__Item}>
@@ -381,7 +415,10 @@ const ProctorLiveEventPage = () => {
                                                 <br />
                                                 <button 
                                                     className={styles.view__Participant__Details}
-                                                    onClick={() => setCurrentUserEmailBeingMonitored(allCurrentUsers?.find(user => user?.peerId === userItem?.peerId)?.email)}
+                                                    onClick={() => {
+                                                        setCurrentUserEmailBeingMonitored(allCurrentUsers?.find(user => user?.peerId === userItem?.peerId)?.email);
+                                                        handleUserDetailsBeingRetrieved(allCurrentUsers?.find(user => user?.peerId === userItem?.peerId)?.email);
+                                                    }}
                                                 >
                                                     <span>Monitor User</span>
                                                 </button>                             
@@ -450,6 +487,11 @@ const ProctorLiveEventPage = () => {
                             onChange={(e) => setNewMessage(e.target.value)}
                             onKeyPress={handleKeyPress}
                             disabled={isChatLoading}
+                        />
+                        <IoMdSend 
+                        fontSize={'2rem'} 
+                        style={{marginLeft:'10px'}}
+                        onClick={handleSendMessage}
                         />
                     </div>
                 </div>
