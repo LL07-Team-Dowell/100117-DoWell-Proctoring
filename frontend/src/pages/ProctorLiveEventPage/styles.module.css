@@ -1,5 +1,8 @@
 .wrapper {
     padding: 0.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
 .nav__Wrapper {
@@ -101,6 +104,10 @@
     width: 40%;
 }
 
+.info__Section .info {
+    font-size: 0.95rem;
+}
+
 .single__User__Vid {
     width: 300px;
     height: 300px;
@@ -116,8 +123,9 @@
     padding: 1rem;
     height: 75vh; 
     overflow-y: auto; 
-    position: sticky; 
-    top: 0;
+    position: fixed; 
+    top: 15%;
+    right: 3%;
     margin-left: 10px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
@@ -254,6 +262,10 @@
 
 /* Responsive styles for .proctor__chat */
 @media screen and (max-width: 768px) {
+    .logo__Wrap h3 {
+        display: none;
+    }
+
     .proctor__chat {
         width: 100%;
         max-width: none;
@@ -262,6 +274,7 @@
         box-shadow: none;
         padding: 0.5rem;
         margin-top: 10px;
+        width: 85%;
     }
 
     .chat__heading {
@@ -275,6 +288,25 @@
     .chat__input input {
         width: 90%;
         padding: 0.4rem;
+    }
+
+    .monitor__Wrap {
+        flex-direction: column;
+    }
+
+    .info__Section,
+    .video__Section {
+        width: 100%;
+    }
+
+    .video__Section {
+        padding: 1rem;
+    }
+
+    .single__User__Vid {
+        width: 100%;
+        margin-right: 0;
+        height: 100%;
     }
 }
 

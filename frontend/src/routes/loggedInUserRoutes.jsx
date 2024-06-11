@@ -3,6 +3,7 @@ import EventsPage from "../pages/EventsPage/EventsPage";
 import SinglePageEvent from "../pages/EventsPage/SinglePageEvent/SinglePageEvent";
 import LandingPage from "../pages/LandingPage/LandingPage";
 import ProctorLiveEventPage from "../pages/ProctorLiveEventPage/ProctorLiveEventPage";
+import ReportsPage from "../pages/ReportsPage/ReportsPage";
 
 export const loggedInUserRoutes = [
   {
@@ -42,7 +43,9 @@ export const loggedInUserRoutes = [
   {
     route: "/reports",
     component: () => {
-      return <AppLayout></AppLayout>;
+      return <AppLayout>
+        <ReportsPage />
+      </AppLayout>;
     },
   },
   {

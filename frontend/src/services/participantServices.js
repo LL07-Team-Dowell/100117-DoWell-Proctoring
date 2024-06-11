@@ -9,14 +9,10 @@ export const updateParticipantDetailForEvent = async (updateType, data) => {
     return await defaultAxiosInstance.patch(`${participantRoutePrefix}/update/${updateType}`, data);
 }
 
-export const getPartcipantData = async (email, eventId) => {
+export const getParticipantData = async (email, eventId) => {
     return await defaultAxiosInstance.get(`${participantRoutePrefix}/get?email=${email}&event_id=${eventId}`);
 }
 
 export const faceCompare = async (data) => {
     return await defaultAxiosInstance.post(`facecompare`,data);
-}
-
-export const getParticipantDetails = async (email) => {
-    return await defaultAxiosInstance.get(`${participantRoutePrefix}/get?email=${email}`);
 }

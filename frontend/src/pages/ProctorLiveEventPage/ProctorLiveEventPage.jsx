@@ -16,7 +16,7 @@ import { getMessages } from "../../services/eventServices";
 import DotLoader from "../../components/DotLoader/DotLoader";
 import { MdClose } from "react-icons/md";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { getParticipantDetails } from "../../services/participantServices";
+import { getParticipantData } from "../../services/participantServices";
 import axios from "axios";
 import { IoMdSend } from "react-icons/io";
 
@@ -44,6 +44,7 @@ const ProctorLiveEventPage = () => {
     const [currentUserEmailBeingMonitored, setCurrentUserEmailBeingMonitored] = useState(null);
     const [userDetailsBeingMonitored, setUserDetailsBeingMonitored] = useState();
     const [location, setLocation] = useState(null);
+    const [userDetailsLoading, setUserDetailsLoading] = useState(false);
 
     const participantVideosRef = useRef();
     const singleUserVideRef = useRef();
@@ -292,20 +293,39 @@ const ProctorLiveEventPage = () => {
     };
 
     const handleUserDetailsBeingRetrieved = async (email) => {
-        // await getParticipantDetails('ayeshakhalil432@gmail.com').then( async (res)=>{
-            await getParticipantDetails(email).then( async (res)=>{
-            console.log('participants',res?.data?.data[0]);
-            setUserDetailsBeingMonitored(res.data?.data[0]);
-            await axios.get(`https://100090.pythonanywhere.com/lat_long_service/?lat=${res.data?.data[0]?.user_lat}&long=${res.data?.data[0]?.user_lon}`).then(res => {
-                setLocation(res?.data);
-                // console.log('location',res?.data);
-            }).catch(error => {
-                toast.error('Error getting participants location')
-            })      
-        }).catch(error =>{
+        setUserDetailsLoading(true);
+
+        try {
+            // const participantResponse = (await getParticipantData('ayeshakhalil432@gmail.com', eventId)).data;
+            const participantResponse = (await getParticipantData(email, eventId)).data;
+            const dummyParticipant = {
+                name: 'John Doe',
+                hours_spent_in_event: 4,
+                user_lat: 37.4218708,
+                user_lon: -122.0841223,
+            }
+            const participantDetails = participantResponse?.data[0];
+            console.log('participant', participantDetails);
+
+            setUserDetailsBeingMonitored(participantDetails);
+            // setUserDetailsBeingMonitored(dummyParticipant);
+
+            try {
+                if (!participantDetails) return setUserDetailsLoading(false);
+
+                const location = (await axios.get(`https://100090.pythonanywhere.com/lat_long_service/?lat=${participantDetails?.user_lat}&long=${participantDetails?.user_lon}`)).data
+                console.log('location', location);
+                setLocation(location);
+                setUserDetailsLoading(false);
+            } catch (error) {
+                toast.error('Error getting participants location');
+                setUserDetailsLoading(false);
+            }
+        } catch (error) {
             console.log(error);
-            toast.error('Error getting participants data.')
-        })
+            setUserDetailsLoading(false);
+            toast.error('Error getting participants data.');
+        }
     }
 
     if (eventLoading) return <LoadingPage />
@@ -323,7 +343,7 @@ const ProctorLiveEventPage = () => {
                 <div className={styles.logo__Wrap}>
                     <img
                         className={styles.logo}
-                        src={'https://ll07-team-dowell.github.io/100098-DowellJobPortal/static/media/landing-logo.13cfa69b57d9bdf1e3da.png'}
+                        src={dowellLogo}
                         alt="logo"
                     />
                     <h3>{existingEventDetails?.name}</h3>
@@ -356,27 +376,42 @@ const ProctorLiveEventPage = () => {
                                     <video className={styles.single__User__Vid} ref={singleUserVideRef}></video>
                                 </section>
                                 
-                                {
-                                    !userDetailsBeingMonitored?<DotLoader />:<section className={styles.info__Section}>
+                                <section className={styles.info__Section}>
                                     <h3>User Info</h3>
 
                                     <section className={styles.info}>
-                                        <p>Name: {userDetailsBeingMonitored?.name}</p>
-                                        <p>Number of times user navigated away: 0</p>
-                                        <p>Time spent: {userDetailsBeingMonitored?.hours_spent_in_event} hrs</p>
-                                        {/* <p>Location: Lagos, Nigeria</p> */}
-                                        <div>
-      <h1>Country: {location?.response?.country}</h1>
-      <iframe
-        title="Location Map"
-        src={location?.response?.map}
-        style={{ border: 0, width: "100%", height: "400px" }}
-        allowFullScreen
-        loading="lazy"
-      ></iframe>
-    </div>
+                                        {
+                                            userDetailsLoading ?
+                                                <>
+                                                    <DotLoader />
+                                                </>
+                                            :
+                                            !userDetailsBeingMonitored ?
+                                                <>
+                                                    <p>Participant Details not found</p>
+                                                </>
+                                            :
+                                            <>
+                                                <p>Name: {userDetailsBeingMonitored?.name}</p>
+                                                <p>Number of times user navigated away: 0</p>
+                                                <p>Time spent: {userDetailsBeingMonitored?.hours_spent_in_event} hrs</p>
+                                                <p>Location: {location?.response?.nearestPlace}, {location?.response?.country}</p>
+                                                
+                                                <div>
+                                                    <br />
+                                                    {/* <h1>Location: {location?.response?.nearestPlace}, {location?.response?.country}</h1> */}
+                                                    <iframe
+                                                        title="Location Map"
+                                                        src={location?.response?.map}
+                                                        style={{ border: 0, width: "100%", height: "400px" }}
+                                                        allowFullScreen
+                                                        loading="lazy"
+                                                    ></iframe>
+                                                </div>
+                                            </>
+                                        }
                                     </section>
-                                </section>}
+                                </section>
                             </div>
                         </>
                     :

@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// const localOrigin = "http://127.0.0.1:4173";
-const productionOrigin = "http://0.0.0.0:4173";
+// const origin = "http://127.0.0.1:4173"; // local
+const origin = "http://0.0.0.0:4173"; // production
 
 const publicBasePath = '/';
 
@@ -14,6 +14,6 @@ export default defineConfig({
     port: 4173,
     strictPort: true,
     host: true,
-    origin: productionOrigin,
+    origin: origin,
   },
 })

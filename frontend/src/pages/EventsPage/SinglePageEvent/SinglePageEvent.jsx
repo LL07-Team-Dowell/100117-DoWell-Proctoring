@@ -170,10 +170,8 @@ const SinglePageEvent = () => {
             className={styles.join_button}
             onClick={() => navigate(`/live/${eventId}`)}
             disabled={
-              currentDate >= new Date(singleEvent.start_time) &&
-              currentDate <= new Date(singleEvent.close_date) &&
-              currentDate <= new Date(singleEvent.registration_end_date) &&
-              true
+              currentDate <= new Date(singleEvent.start_time) ||
+              currentDate >= new Date(singleEvent.close_date)
             }
           >
             Join

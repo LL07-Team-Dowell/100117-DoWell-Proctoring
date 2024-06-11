@@ -98,6 +98,11 @@
   /* justify-content: space-between; */
 }
 
+.user_icons_info > div {
+  position: relative;
+  left: unset !important;
+}
+
 .insights__content {
   display: flex;
   flex-direction: column;

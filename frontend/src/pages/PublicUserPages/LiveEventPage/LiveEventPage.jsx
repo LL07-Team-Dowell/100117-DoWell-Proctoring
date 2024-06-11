@@ -1,5 +1,5 @@
 import { React, useEffect, useRef, useState } from "react";
-import { registerForEvent, getPartcipantData, faceCompare } from "../../../services/participantServices";
+import { registerForEvent, getParticipantData, faceCompare } from "../../../services/participantServices";
 import { useSearchParams } from "react-router-dom";
 import styles from "./styles.module.css";
 import dowellLogo from "../../../assets/logo.png";
@@ -242,7 +242,7 @@ const EventRegistrationPage = () => {
 
                 setIsNextLoading(true);
                 try {
-                    await getPartcipantData(userDetails.email, searchParams.get('event_id')).then(res => {
+                    await getParticipantData(userDetails.email, searchParams.get('event_id')).then(res => {
                         console.log('particpant data', res?.data?.data[0]);
                         setUserDetails(res?.data?.data[0]);
                         setCurrentFormPage(nextPage);
