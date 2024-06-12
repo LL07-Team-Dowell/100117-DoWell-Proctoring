@@ -117,42 +117,34 @@ const AddEventModal = ({ handleCloseModal }) => {
   };
 
   return (
-    <Overlay>
-      <section className={styles.event__Modal__wrapper}>
-        <div style={{ width: "100%" }}>
-          <AiOutlineClose
-            onClick={handleCloseModal}
-            className={styles.close__event__modal}
-          />
-        </div>
-        {showShareModal ? (
-          <ShareModal
-            header={"Invite people to register for your event"}
-            eventId={eventId}
-            eventName={event.name}
+    <>
+      {showShareModal ? (
+        <ShareModal
+          header={"Invite people to register for your event"}
+          eventId={eventId}
+          eventName={event.name}
+          handleCloseModal={handleCloseModal}
+        />
+      ) : (
+        <>
+          <FormModal
+            title={"Add Event"}
+            handleSubmit={handleSubmit}
             handleCloseModal={handleCloseModal}
+            loading={loading}
+            handleChange={handleChange}
+            handleNumericChange={handleNumericChange}
+            name={event.name}
+            start_time={event.start_time}
+            close_date={event.close_date}
+            registration_end_date={event.registration_end_date}
+            duration_in_hours={event.duration_in_hours}
+            max_cap={event.max_cap}
+            link={event.link}
           />
-        ) : (
-          <>
-            <FormModal
-              title={"Add Event"}
-              handleSubmit={handleSubmit}
-              handleCloseModal={handleCloseModal}
-              loading={loading}
-              handleChange={handleChange}
-              handleNumericChange={handleNumericChange}
-              name={event.name}
-              start_time={event.start_time}
-              close_date={event.close_date}
-              registration_end_date={event.registration_end_date}
-              duration_in_hours={event.duration_in_hours}
-              max_cap={event.max_cap}
-              link={event.link}
-            />
-          </>
-        )}
-      </section>
-    </Overlay>
+        </>
+      )}
+    </>
   );
 };
 
