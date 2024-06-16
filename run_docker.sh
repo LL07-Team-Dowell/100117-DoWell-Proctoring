@@ -25,8 +25,9 @@ kafka_topics="[\"$topic1\"]" #kafka_topics="[\"$topic1\", \"$topic2\", \"$topic3
 front_url1='http://localhost:4173'
 front_url2='http://localhost:5173'
 front_url3='http://192.64.86.227:4173'
+front_url4='https://4173-oscaroguled-starterflas-3air1wazx19.ws-eu114.gitpod.io'
 
-json_array="[\"$front_url1\", \"$front_url2\", \"$front_url3\"]"
+json_array="[\"$front_url1\", \"$front_url2\", \"$front_url3\", \"$front_url4\"]"
 
 
 # Check if the system is running Linux
