@@ -2,9 +2,7 @@ const { kafkaClient } = require("../config/kafka.config");
 const { addmessage } = require('../controller/messageController');
 const { Partitioners } = require("kafkajs");
 
-const TOPIC = process.env.KAFKA_TOPIC;
-
-const producerRun = async (message) => {
+const producerRun = async (topic,message) => {
   const producer = kafkaClient.producer({
     createPartitioner: Partitioners.LegacyPartitioner,
   });
@@ -12,7 +10,7 @@ const producerRun = async (message) => {
   await producer.connect();
   
   await producer.send({
-    topic: TOPIC,
+    topic: topic,
 
     messages: [
       {
@@ -24,9 +22,9 @@ const producerRun = async (message) => {
 };
 
 // Define a function to call producerRun() asynchronously every 5 seconds
-function callProducer(message) {
+function callProducer(topic,message) {
   setInterval(async () => {
-      await producerRun(message);
+      await producerRun(topic,message);
   }, 5000); // 5000 milliseconds = 5 seconds
 }
 
@@ -38,8 +36,9 @@ const consumerRun = async (groupId, topics) => {
     const handleMessage = async ({ topic, partition, message }) => {
       console.log(`Topic - ${topic}, Partition - ${partition},`);
       try {
-            addmessage(JSON.parse(message.value.toString()));
-            console.log(`Consumer caught ${message.value.toString()} successfully.`);
+            const savemessage = addmessage(JSON.parse(message.value.toString()));
+            console.log(`Consumer caught ${message.value.toString()} successfully.\n`);
+            console.log(`Message successfully saved ${savemessage}`)
         } catch (err) {
             console.error(`Error processing ${topic}: `, err);
             pause();
