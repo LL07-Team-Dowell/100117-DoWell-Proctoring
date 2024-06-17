@@ -1,3 +1,6 @@
+const {
+  generateDefaultResponseObject,
+} = require("../utils/defaultResponseObject");
 const { Event } = require("../models/eventModel");
 const { Participant } = require("../models/participantModel");
 const { Message } = require("../models/messageModel");
@@ -18,15 +21,19 @@ class DashboardController {
   static async getDashboardData(req, res) {
     try {
       const { startDate, endDate } = req.query;
+      const userId = req.user.id;
       const dateRangeFilter = DashboardController.getDateRangeFilter(
         startDate,
         endDate
       );
 
-      // Fetch the number of events
-      const events = await Event.find({ start_time: dateRangeFilter });
+      // Fetch the number of events for the specific user
+      const events = await Event.find({
+        start_time: dateRangeFilter,
+        user_id: userId,
+      });
 
-      // Fetch participants and messages
+      // Fetch participants and messages for the specific user's events
       const participants = await Participant.find({
         event_id: { $in: events.map((event) => event._id) },
       });
