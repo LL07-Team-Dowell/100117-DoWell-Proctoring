@@ -20,8 +20,7 @@ class DashboardController {
 
   static async getDashboardData(req, res) {
     try {
-      const { startDate, endDate } = req.query;
-      const userId = req.user.id;
+      const { userId, startDate, endDate } = req.query;
       const dateRangeFilter = DashboardController.getDateRangeFilter(
         startDate,
         endDate
