@@ -47,6 +47,7 @@ class EventController {
   static async getAllEvents(req, res) {
     try {
       const { user_id, page = 1 } = req.query;
+      console.log(`hiiii: ${user_id}`)
       const limit = 20;
       const skip = (page - 1) * limit;
 
@@ -255,6 +256,72 @@ class EventController {
       );
     }
   }
+
+  static async getEventReport(req, res) {
+    try {
+        const { id } = req.params;
+        console.log(`Fetching event report for ID: ${id}`);
+
+        const event = await Event.findById(id);
+        console.log(`Event fetched: ${event}`);
+        if (!event) {
+            return res.status(404).json(
+                generateDefaultResponseObject({
+                    success: false,
+                    message: "Requested resource unavailable!",
+                    data: null,
+                    error: null,
+                })
+            );
+        }
+
+        const active_participants = Array.isArray(event.active_participants) ? event.active_participants : [];
+
+        const report = {
+            proctors: {
+                total: 1,
+                ids: [event.user_id]
+            },
+            active_participants: {
+                total: active_participants.length,
+                ids: active_participants.map(participant => ({
+                    id: participant._id,
+                    time_joined: participant.createdAt,
+                    time_registered: participant.updatedAt,
+                    location: {
+                        lat: participant.user_lat,
+                        lon: participant.user_lon
+                    }
+                })),
+                good: {},
+                bad: {}
+            },
+            duration: event.duration_in_hours + " hours",
+            start_time: event.start_time,
+            end_time: event.close_date,
+            locations: {} // This will be filled up by frontend as mentioned
+        };
+
+        return res.status(200).json(
+            generateDefaultResponseObject({
+                success: true,
+                message: "Successfully fetched event report",
+                data: report,
+                error: null,
+            })
+        );
+    } catch (error) {
+        console.error(`Error fetching event report: ${error.message}`);
+        return res.status(500).json(
+            generateDefaultResponseObject({
+                success: false,
+                message: error.message,
+                data: null,
+                error: error.message,
+            })
+        );
+    }
+``}
 }
 
 module.exports = EventController;

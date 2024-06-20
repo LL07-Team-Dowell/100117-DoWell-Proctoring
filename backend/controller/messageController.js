@@ -5,10 +5,11 @@ const { generateDefaultResponseObject } = require("../utils/defaultResponseObjec
 const { Event } = require('../models/eventModel');
 const { Participant } = require("../models/participantModel");
 
-exports.addmessage = (data) => {
+exports.addmessage = async (data) => {
     try {
         // Validate request body
         const { error, value } = validateMessage(data);
+        //const { error, value } = validateEventsChatStore(data);
         if (error) {
             return {
                 success: false,
@@ -19,7 +20,7 @@ exports.addmessage = (data) => {
         }
 
         // Check if the event referenced by event_id exists
-        const foundEvent = Event.findById(value.eventId);
+        const foundEvent = await Event.findById(value.eventId);
         if (!foundEvent) {
             // If event not found, return 404
             return {
@@ -38,7 +39,7 @@ exports.addmessage = (data) => {
         });
         console.log("3")
         // Save the event chat entry to the database
-        message.save();
+        await message.save();
 
         // Return the created event chat entry
         return {
@@ -309,4 +310,6 @@ exports.softdelete = async (req, res) => {
         });
     }
 }
+
+
 

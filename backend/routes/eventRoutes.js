@@ -10,5 +10,7 @@ router.get('/:id', EventController.getEventById);
 router.post('/new', EventController.createEvent);
 router.patch('/:id', [validateMongoIdParam], EventController.updateEvent);
 router.delete('/:id', [validateMongoIdParam], EventController.deleteEvent);
+router.get('/eventreport/:id', EventController.getEventReport);
 
 module.exports = router;
+
