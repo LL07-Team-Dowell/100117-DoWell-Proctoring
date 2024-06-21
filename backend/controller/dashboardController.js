@@ -21,6 +21,16 @@ class DashboardController {
   static async getDashboardData(req, res) {
     try {
       const { userId, startDate, endDate } = req.query;
+      if (!userId) {
+        return res.status(400).json(
+          generateDefaultResponseObject({
+            success: false,
+            message: "User ID is required",
+            data: null,
+            error: null,
+          })
+        );
+      }
       const dateRangeFilter = DashboardController.getDateRangeFilter(
         startDate,
         endDate
@@ -100,25 +110,39 @@ class DashboardController {
 
       // Prepare response
       const response = {
-        number_of_events_with_participants: numberOfEventsWithParticipants,
-        number_of_events_with_messages: numberOfEventsWithMessages,
-        number_of_participants_per_event: {
-          total: validParticipants.length,
-          ids: participantsPerEvent,
+        events: {
+          all: events.length,
+          withParticipants: numberOfEventsWithParticipants,
+          withMessages: numberOfEventsWithMessages,
         },
-        number_of_participants: validParticipants.length,
-        number_of_messages: messages.length,
-        number_of_messages_per_event: {
-          total: messages.length,
-          ids: messagesPerEvent,
+        participants: {
+          all: participants.length,
+          valid: validParticipants.length,
         },
-        most_common_location: mostCommonLocation,
-        least_common_location: leastCommonLocation,
+        messages: messages.length,
+        participantsPerEvent,
+        messagesPerEvent,
+        mostCommonLocation,
+        leastCommonLocation,
       };
 
-      res.json(response);
+      res.status(200).json(
+        generateDefaultResponseObject({
+          success: true,
+          message: "Success",
+          data: response,
+          error: null,
+        })
+      );
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json(
+        generateDefaultResponseObject({
+          success: false,
+          message: error.message,
+          data: null,
+          error: null,
+        })
+      );
     }
   }
 }

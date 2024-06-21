@@ -25,7 +25,7 @@ module.exports = (app) => {
   app.use("/api/v1/facecompare", faceCompareRoutes);
   app.use("/api/v1/youtubeupload", youtubeUploadRoutes);
   app.use("/api/v1/dashboard", dashboardRoutes);
-  app.use('/auth', authRoutes);
+  // app.use('/auth', authRoutes);
   // handle unknown routes
   app.use(handle_404_requests);
 };
