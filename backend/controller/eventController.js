@@ -259,69 +259,117 @@ class EventController {
 
   static async getEventReport(req, res) {
     try {
-        const { id } = req.params;
-        console.log(`Fetching event report for ID: ${id}`);
-
-        const event = await Event.findById(id);
-        console.log(`Event fetched: ${event}`);
-        if (!event) {
-            return res.status(404).json(
-                generateDefaultResponseObject({
-                    success: false,
-                    message: "Requested resource unavailable!",
-                    data: null,
-                    error: null,
-                })
-            );
-        }
-
-        const active_participants = Array.isArray(event.active_participants) ? event.active_participants : [];
-
-        const report = {
-            proctors: {
-                total: 1,
-                ids: [event.user_id]
-            },
-            active_participants: {
-                total: active_participants.length,
-                ids: active_participants.map(participant => ({
-                    id: participant._id,
-                    time_joined: participant.createdAt,
-                    time_registered: participant.updatedAt,
-                    location: {
-                        lat: participant.user_lat,
-                        lon: participant.user_lon
-                    }
-                })),
-                good: {},
-                bad: {}
-            },
-            duration: event.duration_in_hours + " hours",
-            start_time: event.start_time,
-            end_time: event.close_date,
-            locations: {} // This will be filled up by frontend as mentioned
-        };
-
-        return res.status(200).json(
-            generateDefaultResponseObject({
-                success: true,
-                message: "Successfully fetched event report",
-                data: report,
-                error: null,
-            })
+      const { id } = req.params;
+      console.log(`Fetching event report for ID: ${id}`);
+  
+      const pipeline = [
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId(id),
+          }
+        },
+        {
+          $lookup: {
+            from: "participants", 
+            localField: "_id", // The field from the "events" collection
+            foreignField: "event_id", // The field from the "participants" collection
+            as: "active_participants" 
+          }
+        },
+      ];
+  
+      const matchingEvent = await Event.aggregate(pipeline);
+      const event = matchingEvent?.length > 0 ? matchingEvent[0] : null;
+  
+      if (!event) {
+        console.log(`Event not found for ID: ${id}`);
+        return res.status(404).json(
+          generateDefaultResponseObject({
+            success: false,
+            message: "Event not found",
+            data: null,
+            error: null,
+          })
         );
+      }
+  
+      console.log(`Event fetched: ${JSON.stringify(event, null, 2)}`);
+  
+      const activeParticipants = Array.isArray(event.active_participants) ? event.active_participants : [];
+      console.log(`Active participants fetched: ${JSON.stringify(activeParticipants, null, 2)}`);
+  
+      const goodParticipants = activeParticipants.filter(p => p.user_lat != null);
+      const badParticipants = activeParticipants.filter(p => p.user_lat == null);
+  
+      const report = {
+        proctors: {
+          total: 1,
+          ids: [event.user_id]
+        },
+        active_participants: {
+          total: activeParticipants.length,
+          ids: activeParticipants.map(participant => ({
+            id: participant._id,
+            time_joined: participant.createdAt,
+            time_registered: participant.updatedAt,
+            location: {
+              lat: participant.user_lat,
+              lon: participant.user_lon
+            }
+          })),
+          good: {
+            total: goodParticipants.length,
+            ids: goodParticipants.map(p => ({
+              id: p._id,
+              time_joined: p.createdAt,
+              time_registered: p.updatedAt,
+              location: {
+                lat: p.user_lat,
+                lon: p.user_lon
+              }
+            }))
+          },
+          bad: {
+            total: badParticipants.length,
+            ids: badParticipants.map(p => ({
+              id: p._id,
+              time_joined: p.createdAt,
+              time_registered: p.updatedAt,
+              location: {
+                lat: p.user_lat,
+                lon: p.user_lon
+              }
+            }))
+          }
+        },
+        duration: event.duration_in_hours + " hours",
+        start_time: event.start_time,
+        end_time: event.close_date,
+        locations: {} // This will be filled up by frontend as mentioned
+      };
+  
+      console.log(`Generated report: ${JSON.stringify(report, null, 2)}`);
+  
+      return res.status(200).json(
+        generateDefaultResponseObject({
+          success: true,
+          message: "Successfully fetched event report",
+          data: report,
+          error: null,
+        })
+      );
     } catch (error) {
-        console.error(`Error fetching event report: ${error.message}`);
-        return res.status(500).json(
-            generateDefaultResponseObject({
-                success: false,
-                message: error.message,
-                data: null,
-                error: error.message,
-            })
-        );
+      console.error(`Error fetching event report: ${error.message}`);
+      return res.status(500).json(
+        generateDefaultResponseObject({
+          success: false,
+          message: error.message,
+          data: null,
+          error: error.message,
+        })
+      );
     }
-``}
+  }
 }
 
 module.exports = EventController;
