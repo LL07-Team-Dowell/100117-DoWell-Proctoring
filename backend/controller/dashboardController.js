@@ -119,7 +119,7 @@ class DashboardController {
           total_participants: participants.length,
           valid_participants: validParticipants.length,
         },
-        participants_Per_Event,
+        participantsPerEvent,
         total_messages_exchanged_in_events: messages.length,
         messagesPerEvent,
         mostCommonLocation,
