@@ -111,16 +111,16 @@ class DashboardController {
       // Prepare response
       const response = {
         events: {
-          all: events.length,
-          withParticipants: numberOfEventsWithParticipants,
-          withMessages: numberOfEventsWithMessages,
+          total_events: events.length,
+          events_with_registered_participants: numberOfEventsWithParticipants,
+          event_with_messages: numberOfEventsWithMessages,
         },
         participants: {
-          all: participants.length,
-          valid: validParticipants.length,
+          total_participants: participants.length,
+          valid_participants: validParticipants.length,
         },
-        messages: messages.length,
-        participantsPerEvent,
+        participants_Per_Event,
+        total_messages_exchanged_in_events: messages.length,
         messagesPerEvent,
         mostCommonLocation,
         leastCommonLocation,
