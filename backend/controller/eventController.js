@@ -260,7 +260,6 @@ class EventController {
   static async getEventReport(req, res) {
     try {
       const { id } = req.params;
-      console.log(`Fetching event report for ID: ${id}`);
   
       const pipeline = [
         {
@@ -282,7 +281,6 @@ class EventController {
       const event = matchingEvent?.length > 0 ? matchingEvent[0] : null;
   
       if (!event) {
-        console.log(`Event not found for ID: ${id}`);
         return res.status(404).json(
           generateDefaultResponseObject({
             success: false,
@@ -293,26 +291,22 @@ class EventController {
         );
       }
   
-      console.log(`Event fetched: ${JSON.stringify(event, null, 2)}`);
-  
       const activeParticipants = Array.isArray(event.active_participants) ? event.active_participants : [];
-      console.log(`Active participants fetched: ${JSON.stringify(activeParticipants, null, 2)}`);
   
       // Define your behavior-based criteria here
       const goodParticipants = activeParticipants.filter(p => {
         return p.hours_spent_in_event > 1 && !p.deleted;
       });
-      console.log(`Good participants: ${JSON.stringify(goodParticipants, null, 2)}`);
   
       const badParticipants = activeParticipants.filter(p => {
         return p.hours_spent_in_event <= 1 || p.deleted;
       });
-      console.log(`Bad participants: ${JSON.stringify(badParticipants, null, 2)}`);
+      
   
       // Calculate average time spent
       const totalHoursSpent = activeParticipants.reduce((sum, participant) => sum + (participant.hours_spent_in_event || 0), 0);
       const averageTimeSpent = activeParticipants.length > 0 ? (totalHoursSpent / activeParticipants.length) : 0;
-      console.log(`Average time spent: ${averageTimeSpent}`);
+      
   
       const report = {
         proctors: {
@@ -362,8 +356,6 @@ class EventController {
         average_time_spent: averageTimeSpent // New field added here
       };
   
-      console.log(`Generated report: ${JSON.stringify(report, null, 2)}`);
-  
       return res.status(200).json(
         generateDefaultResponseObject({
           success: true,
@@ -373,7 +365,6 @@ class EventController {
         })
       );
     } catch (error) {
-      console.error(`Error fetching event report: ${error.message}`);
       return res.status(500).json(
         generateDefaultResponseObject({
           success: false,
