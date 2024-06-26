@@ -10,7 +10,7 @@ const eyetrackingpositionRoutes = require("./eyetrackingpositionRoutes");
 const faceCompareRoutes = require("./faceCompareRoutes");
 const youtubeUploadRoutes = require("./youtubeUploadRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
-const authRoutes = require('./authRoutes'); 
+const authRoutes = require("./authRoutes");
 
 module.exports = (app) => {
   // declaring all the different parent paths to be used in the api
