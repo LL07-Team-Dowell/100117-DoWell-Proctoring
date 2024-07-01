@@ -4,9 +4,9 @@ import useSocketIo from "../../hooks/useSocketIo";
 import { toast } from "sonner";
 import React, { useEffect, useRef, useState } from "react";
 import styles from './styles.module.css';
-import { handleRequestCameraPermission } from "../../utils/helpers";
+import { addStreamToVideoElement, handleRequestCameraPermission } from "../../utils/helpers";
 import dowellLogo from "../../assets/logo.png";
-import sampleVideo from "../../assets/test.mp4";
+// import sampleVideo from "../../assets/test.mp4";
 import { getEventById } from "../../services/eventServices";
 import LoadingPage from "../LoadingPage/LoadingPage";
 import { BsFillChatTextFill } from "react-icons/bs";
@@ -19,6 +19,7 @@ import { AiOutlineArrowLeft } from "react-icons/ai";
 import { getParticipantData } from "../../services/participantServices";
 import axios from "axios";
 import { IoMdSend } from "react-icons/io";
+import useReceiveMessage from "../../hooks/useReceiveMessage";
 
 // let activeUsers = [];
 let currentUserPeerId = null;
@@ -36,11 +37,11 @@ const ProctorLiveEventPage = () => {
     const [chatMessages, setChatMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [activeUsers, setActiveUsers] = useState([]);
+    const [activeUserStreams, setActiveUserStreams] = useState([]);
     const chatContainerRef = useRef(null);
     const [isChatLoading, setIsChatLoading] = useState(false);
     const [chatLoadedOnce, setChatLoadedOnce] = useState(false);
-    const [allCurrentUsers, setAllCurrentUsers] = useState([]);
+    const [allConnectedUsers, setAllConnectedUsers] = useState([]);
     const [currentUserEmailBeingMonitored, setCurrentUserEmailBeingMonitored] = useState(null);
     const [userDetailsBeingMonitored, setUserDetailsBeingMonitored] = useState();
     const [location, setLocation] = useState(null);
@@ -48,11 +49,19 @@ const ProctorLiveEventPage = () => {
 
     const participantVideosRef = useRef();
     const singleUserVideRef = useRef();
+    // const proctorVideoRef = useRef();
 
     const navigate = useNavigate();
 
     const handleUpdateUsers = (peerId, userStream, userIsLeaving = false, socketId) => {
-        console.log('-----adding new user stream----', userStream);
+        const newUser = {
+            peerId,
+            userStream,
+            userIsLeaving,
+            socketId,
+        };
+
+        console.log('----incoming/outgoing user-----', newUser);
         
         // // FOR DEBUGGING
         // if (userStream){
@@ -60,30 +69,30 @@ const ProctorLiveEventPage = () => {
         //     console.log('vid tracks -> ', videoTracks);
         // }
 
-        const copyOfActiveUsers = activeUsers.slice();
-
+        const copyOfActiveUsers = activeUserStreams.slice();
         const foundId = userIsLeaving ?
-            copyOfActiveUsers.find(item => item?.peerId === peerId)
+            copyOfActiveUsers.find(item => item?.peerId === peerId || item?.socketId === socketId)
             :
-            copyOfActiveUsers.find(item => item?.id === userStream?.id);
+            copyOfActiveUsers.find(item => item?.id === userStream?.id || item?.socketId === socketId);
         
-        const foundExistingSocketId = copyOfActiveUsers.find(item => item.socketId === socketId);
+        // const foundExistingSocketId = copyOfActiveUsers.find(item => item.socketId === socketId);
 
         if (userIsLeaving === true) {
             console.log('active users ->', copyOfActiveUsers);
             console.log('---removing user----', peerId);
-            console.log(foundId);
+            console.log('found existing user id ->', foundId);
             
             if (foundId) {
                 const updatedUsers = copyOfActiveUsers.filter(item => item.peerId !== peerId);
-                setActiveUsers(updatedUsers);
+                setActiveUserStreams(updatedUsers);
             }
 
             return;
         }
 
-        console.log(foundId);
-        if (foundId || foundExistingSocketId) return;
+        console.log('found existing user id ->', foundId);
+        
+        if (foundId) return;
         if (peerId === currentUserPeerId) return;
 
         copyOfActiveUsers.push({
@@ -91,27 +100,7 @@ const ProctorLiveEventPage = () => {
             peerId,
             socketId,
         });
-        setActiveUsers(copyOfActiveUsers);
-    }
-
-    const addStreamToVideoElement = (video, stream) => {
-        if (!video) return;
-        
-        video.srcObject = stream;
-        video.muted = true;
-
-        video.onloadedmetadata = () => {
-            console.log('Metadata loaded, playing new user video');
-            video.play().catch(error => {
-                console.error('Error playing new user video:', error);
-            });
-        };
-
-        // Adding an error event listener
-        video.onerror = (error) => {
-            console.error('Error with video element:', error);
-        };
-
+        setActiveUserStreams(copyOfActiveUsers);
     }
 
     useSocketIo(
@@ -124,6 +113,12 @@ const ProctorLiveEventPage = () => {
         (passedPeerId, passedUserStream, userLeft) => handleUpdateUsers(passedPeerId, passedUserStream, userLeft),
         (passedPeerId) => currentUserPeerId = passedPeerId,
     );
+
+    useReceiveMessage({
+        userType: 'proctor',
+        chatContainerRef,
+        updateChatMessages: setChatMessages,
+    });
 
     useEffect(() => {
         if (existingEventDetails) return setEventLoading(false);
@@ -149,6 +144,11 @@ const ProctorLiveEventPage = () => {
                 return;
             }
 
+            // if (proctorVideoRef.current) {
+            //     proctorVideoRef.current.srcObject = res;
+            //     proctorVideoRef.current.muted = true;
+            // }
+
             setCameraPermissionGranted(true);
             setActiveUserStream(res);
         }).catch(err => {
@@ -161,17 +161,17 @@ const ProctorLiveEventPage = () => {
         if (!participantVideosRef.current) return;
 
         Array.from(participantVideosRef.current?.children).forEach((child, index) => {
-            if (typeof activeUsers[index]?.stream === 'object') {
+            if (typeof activeUserStreams[index]?.stream === 'object') {
                 const videoElement = Array.from(child?.children)[0];
                 if (videoElement && videoElement?.nodeName === 'VIDEO') {
-                    addStreamToVideoElement(videoElement, activeUsers[index]?.stream);
+                    addStreamToVideoElement(videoElement, activeUserStreams[index]?.stream);
                 }
             }
         });
 
         socketInstance.emit('get-users-in-event', eventId);
 
-        const handleGetUsers = (users) => setAllCurrentUsers(users);
+        const handleGetUsers = (users) => setAllConnectedUsers(users);
 
         socketInstance.on('current-users', handleGetUsers);
 
@@ -179,45 +179,14 @@ const ProctorLiveEventPage = () => {
             socketInstance.off('current-users', handleGetUsers);
         })
 
-    }, [activeUsers, currentUserEmailBeingMonitored])
-
-    useEffect(() => {
-
-        if (!socketInstance) return;
-
-        const handleNewMessage = (eventId, userName, userEmail, isProctor, message, messageCreatedDate) => {
-
-            const receivedMessage = {
-                eventId: eventId,
-                username: userName,
-                email: userEmail,
-                isProctor: isProctor,
-                message: message,
-                createdAt: messageCreatedDate,
-            }
-
-            console.log('recieved message on proctor end', receivedMessage);
-
-            setChatMessages(prevMessages => [...prevMessages, receivedMessage]);
-
-            if (chatContainerRef.current) {
-                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-            }
-        };
-
-        socketInstance.on('new-message', handleNewMessage);
-
-        return () => {
-            socketInstance.off('new-message', handleNewMessage);
-        };
-    }, [socketInstance]);
+    }, [activeUserStreams, currentUserEmailBeingMonitored])
 
     useEffect(() => {
         if (!currentUserEmailBeingMonitored) return;
 
         if (singleUserVideRef.current) {
-            const userPeerId = allCurrentUsers?.find(user => user?.email === currentUserEmailBeingMonitored)?.peerId;
-            const foundUserStream = activeUsers.find(user => user.peerId === userPeerId);
+            const userPeerId = allConnectedUsers?.find(user => user?.email === currentUserEmailBeingMonitored)?.peerId;
+            const foundUserStream = activeUserStreams.find(user => user.peerId === userPeerId);
             if (!foundUserStream) return;
 
             singleUserVideRef.current.srcObject = foundUserStream.stream;
@@ -298,12 +267,12 @@ const ProctorLiveEventPage = () => {
         try {
             // const participantResponse = (await getParticipantData('ayeshakhalil432@gmail.com', eventId)).data;
             const participantResponse = (await getParticipantData(email, eventId)).data;
-            const dummyParticipant = {
-                name: 'John Doe',
-                hours_spent_in_event: 4,
-                user_lat: 37.4218708,
-                user_lon: -122.0841223,
-            }
+            // const dummyParticipant = {
+            //     name: 'John Doe',
+            //     hours_spent_in_event: 4,
+            //     user_lat: 37.4218708,
+            //     user_lon: -122.0841223,
+            // }
             const participantDetails = participantResponse?.data[0];
             console.log('participant', participantDetails);
 
@@ -328,6 +297,14 @@ const ProctorLiveEventPage = () => {
         }
     }
 
+    const handleExitEvent = () => {
+        activeUserStream?.getTracks()?.forEach(track => {
+            track.stop();
+        });
+
+        navigate(-1);
+    }
+
     if (eventLoading) return <LoadingPage />
 
     return <>
@@ -335,10 +312,10 @@ const ProctorLiveEventPage = () => {
             <nav className={styles.nav__Wrapper}>
                 <button 
                     className={styles.back_}
-                    onClick={() => navigate(-1)}
+                    onClick={handleExitEvent}
                 >
                     <AiOutlineArrowLeft />
-                    <span>Back</span>
+                    <span>Exit Event</span>
                 </button>
                 <div className={styles.logo__Wrap}>
                     <img
@@ -432,9 +409,11 @@ const ProctorLiveEventPage = () => {
                                     })
                                 )
                             } */}
-                            {console.log('all',allCurrentUsers)}
+                            {/* {console.log('all',allCurrentUsers)}
+                            {console.log('peer',activeUsers)} */}
+
                             {
-                                React.Children.toArray(activeUsers.map(userItem => {
+                                React.Children.toArray(activeUserStreams.map(userItem => {
                                     return <div className={styles.user__Video__Item}>
                                         <video
                                             playsInline
@@ -444,15 +423,15 @@ const ProctorLiveEventPage = () => {
                                         >
                                         </video>
                                         {
-                                            allCurrentUsers?.find(user => user?.peerId === userItem?.peerId) &&
+                                            allConnectedUsers?.find(user => user?.peerId === userItem?.peerId) &&
                                             <>
-                                                <span>{allCurrentUsers?.find(user => user?.peerId === userItem?.peerId)?.nameOfUser}</span>
+                                                <span>{allConnectedUsers?.find(user => user?.peerId === userItem?.peerId)?.nameOfUser}</span>
                                                 <br />
                                                 <button 
                                                     className={styles.view__Participant__Details}
                                                     onClick={() => {
-                                                        setCurrentUserEmailBeingMonitored(allCurrentUsers?.find(user => user?.peerId === userItem?.peerId)?.email);
-                                                        handleUserDetailsBeingRetrieved(allCurrentUsers?.find(user => user?.peerId === userItem?.peerId)?.email);
+                                                        setCurrentUserEmailBeingMonitored(allConnectedUsers?.find(user => user?.peerId === userItem?.peerId)?.email);
+                                                        handleUserDetailsBeingRetrieved(allConnectedUsers?.find(user => user?.peerId === userItem?.peerId)?.email);
                                                     }}
                                                 >
                                                     <span>Monitor User</span>
@@ -524,14 +503,33 @@ const ProctorLiveEventPage = () => {
                             disabled={isChatLoading}
                         />
                         <IoMdSend 
-                        fontSize={'2rem'} 
-                        style={{marginLeft:'10px'}}
-                        onClick={handleSendMessage}
+                            fontSize={'2rem'} 
+                            style={{marginLeft:'10px'}}
+                            onClick={handleSendMessage}
+                            cursor={newMessage.length < 1 ? 'default' : 'pointer'}
+                            color={newMessage.length < 1 ? '#000' : '#005734'}
                         />
                     </div>
                 </div>
             </div>
         </div>
+        
+        {/* <video ref={proctorVideoRef}
+            autoPlay
+            playsInline
+            controls={false}
+            controlsList="nofullscreen"
+            muted
+            style={{
+                position: 'fixed',
+                bottom: '10px',
+                right: '10px',
+                width: 250,
+                height: 200,
+                objectFit: 'cover',
+            }}
+        >
+        </video> */}
     </>
 }
 

@@ -33,17 +33,18 @@ export default function useSocketIo(
         })
 
         const handleNewUserConnect = (userPeerId, emailConnected='', nameOfUserConnected='', userSocketId='') => {
-            console.log('new user connecting->>>>>', userPeerId, emailConnected, nameOfUserConnected, userSocketId);
+            console.log('new userr connecting->>>>>', userPeerId, emailConnected, nameOfUserConnected, userSocketId);
             
             const peerCall = peer.call(userPeerId, currentUserStream);
             
             peerCall.on('stream', (passedStream) => {
                 console.log('new stream 2 ->', passedStream);
-                updateParticipants(userPeerId, passedStream, false, nameOfUserConnected, userSocketId);
+                updateParticipants(userPeerId, passedStream, false, userSocketId);
             })
 
             peerCall.on('close', () => {
                 console.log('enddnd');
+                updateParticipants(userPeerId, null, true, userSocketId);
             })
         };
 
@@ -52,9 +53,9 @@ export default function useSocketIo(
         const handleAddExistingUserStreamsForProctor = (userPeerIds) => {
             if (Array.isArray(userPeerIds)) {
                 userPeerIds.forEach(item => {
-                    if (item?.peerId !== peer.id) {
-                        handleNewUserConnect(item?.peerId);
-                    }
+                    if (item?.peerId === peer.id || item?.socketId === socketInstance.id) return;
+                    
+                    handleNewUserConnect(item?.peerId, item?.email, item?.nameOfUser, item?.socketId);
                 })
             }
         }
@@ -63,7 +64,7 @@ export default function useSocketIo(
 
         const handleUserDisconnect = (userPeerId, emailConnected, nameOfUserDisconnected, userSocketId='') => {
             console.log('user disconnecting->>>>>', userPeerId, emailConnected, nameOfUserDisconnected, userSocketId);
-            updateParticipants(userPeerId, null, true, nameOfUserDisconnected, userSocketId);
+            updateParticipants(userPeerId, null, true, userSocketId);
         };
 
         socketInstance.on('user-disconnected', handleUserDisconnect);

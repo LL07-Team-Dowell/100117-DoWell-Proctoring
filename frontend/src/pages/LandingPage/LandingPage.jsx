@@ -77,7 +77,7 @@ const LandingPage = () => {
             <>
               <section className={styles.main__content__wrapper}>
                 {allEvents
-                  ?.reverse()
+                  // ?.reverse()
                   ?.slice(0, 5)
                   ?.map((event) => (
                     <EventCard
@@ -85,7 +85,7 @@ const LandingPage = () => {
                       eventName={event.name}
                       startTime={formatDate(event.start_time)}
                       endTime={formatDate(event.close_date)}
-                      participants={event.active_participants.map(
+                      participants={event?.active_participants?.map(
                         (participant) => participant.name
                       )}
                       handleClick={() => singleEventClick(event.name)}

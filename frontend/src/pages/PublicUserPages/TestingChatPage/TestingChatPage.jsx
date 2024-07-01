@@ -126,7 +126,7 @@ export default function TestingChatPage() {
         })
         
         
-    }, [eventId])
+    }, [])
 
     return <div
         style={{
@@ -146,8 +146,8 @@ export default function TestingChatPage() {
                 position: 'absolute',
                 top: 0,
                 right: 0,
-                width: 300,
-                height: 300,
+                width: 200,
+                height: 200,
             }}
         >
         </video>

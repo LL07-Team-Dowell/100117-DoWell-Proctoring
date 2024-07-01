@@ -11,7 +11,14 @@ const { Participant } = require("./models/participantModel");
 const { addmessage } = require('./controller/messageController'); 
 const adminInit = require('./utils/admin.kafka');
 const {callProducer,producerRun, consumerRun} = require('./utils/kafka');
-const TOPICS = JSON.parse(process.env.KAFKA_TOPIC);
+
+let TOPICS;
+
+try {
+  TOPICS = JSON.parse(process.env.KAFKA_TOPIC);
+} catch (error) {
+  TOPICS = [];
+}
 
 // creating a new express application
 const app = express();
@@ -48,7 +55,7 @@ io.on("connection", (socket) => {
   
 
   // join event
-  socket.on("join-event", (eventId, userPeerId, userEmail, nameOfUser, userSocketId) => {
+  socket.on("join-event", (eventId, userPeerId, userEmail, nameOfUser) => {
     console.log(nameOfUser + " with email '" + userEmail + "' and peer id: '" + userPeerId + "' joined event: " + eventId);
     socket.join(eventId);
 
@@ -56,27 +63,32 @@ io.on("connection", (socket) => {
       peerId: userPeerId,
       email: userEmail,
       nameOfUser,
-      socketId: userSocketId,
+      socketId: socket.id,
     };
 
+    console.log('current connected users: ', eventDictForPeerIds[eventId]);
+
     if (eventDictForPeerIds[eventId]) {
-      if (!eventDictForPeerIds[eventId]?.find(item => item.peerId === userPeerId || item.email === userEmail)) eventDictForPeerIds[eventId]?.push(newPeerForEvent);
+      if (!eventDictForPeerIds[eventId]?.find(item => item.socketId === socket.id)) eventDictForPeerIds[eventId]?.push(newPeerForEvent);
     } else {
       eventDictForPeerIds[eventId] = [newPeerForEvent];
     }
 
+    console.log('updated connected users: ', eventDictForPeerIds[eventId]);
+
     io.to(socket.id).emit('current-connected-users', eventDictForPeerIds[eventId]);
 
-    socket.broadcast.to(eventId).emit('user-connected', userPeerId, userEmail, nameOfUser, userSocketId); 
+    socket.broadcast.to(eventId).emit('user-connected', userPeerId, userEmail, nameOfUser, socket.id); 
 
-    socket.on('disconnect', async (reason) => {
+    socket.on('disconnect', (reason) => {
       console.log("User with socket id disconnected: '" + socket.id +"' because '" + reason + "'");
       if (eventDictForPeerIds[eventId]) {
         const copyOfCurrentIds = [...eventDictForPeerIds[eventId]];
-        eventDictForPeerIds[eventDictForPeerIds] = copyOfCurrentIds.filter(item => item.peerId !== userPeerId || item.email === userEmail);
+        eventDictForPeerIds[eventId] = copyOfCurrentIds.filter(item => item.socketId !== socket.id);
+        console.log('updated after disconnect -> ', eventDictForPeerIds[eventId]);
       }
 
-      socket.broadcast.to(eventId).emit('user-disconnected', userPeerId, userEmail, nameOfUser, userSocketId);
+      socket.broadcast.to(eventId).emit('user-disconnected', userPeerId, userEmail, nameOfUser, socket.id);
     });
   })
 
@@ -120,8 +132,8 @@ io.on("connection", (socket) => {
 function startServer() {
   httpServer.listen(PORT, async () => {
     console.log(`Server running on port ${PORT}`);
-    await adminInit(TOPICS);
-    await consumerRun("realtime-messages", TOPICS);
+    // await adminInit(TOPICS);
+    // await consumerRun("realtime-messages", TOPICS);
 
     // testing the producer-----
     // const message = {

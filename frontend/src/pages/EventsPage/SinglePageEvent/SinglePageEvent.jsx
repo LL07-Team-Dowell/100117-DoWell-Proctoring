@@ -193,7 +193,7 @@ const SinglePageEvent = () => {
           {currentDate < new Date(singleEvent.start_time) ? (
             <div style={{ textAlign: "center" }}>
               <img
-                src="../../../../public/Loading-bro.svg"
+                src="/Loading-bro.svg"
                 alt="Event Not Started"
                 width={350}
                 height={350}

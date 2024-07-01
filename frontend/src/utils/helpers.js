@@ -21,3 +21,24 @@ export const handleRequestCameraPermission = async (
         error: 'Your device does not have a camera'
     };
 }
+
+export const addStreamToVideoElement = (video, stream) => {
+    if (!video) return;
+    
+    video.srcObject = stream;
+    video.muted = true;
+
+    video.onloadedmetadata = () => {
+        console.log('Metadata loaded, playing stream in video element');
+        
+        video.play().catch(error => {
+            console.error('Error playing strwam in video element:', error);
+        });
+    };
+
+    // Adding an error event listener
+    video.onerror = (error) => {
+        console.error('Error with video element:', error);
+    };
+
+}

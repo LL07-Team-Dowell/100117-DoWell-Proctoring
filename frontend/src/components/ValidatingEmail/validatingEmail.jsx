@@ -67,6 +67,8 @@ const EmailInput = ({ newEvent, eventLink, closeModal }) => {
       name: emailObj.name,
     }));
 
+    if (emailAddresses.length < 1) return;
+
     const message = `Please use this ${eventLink} to register for ${newEvent}`;
     const email = emailAddresses;
 
