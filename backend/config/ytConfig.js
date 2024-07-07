@@ -5,9 +5,11 @@ const fs = require("fs");
 const readline = require("readline");
 const { google } = require("googleapis");
 
+const path = require("path");
+
 // If modifying these scopes, delete token.json.
 const SCOPES = ["https://www.googleapis.com/auth/youtube.upload"];
-const TOKEN_PATH = "token.json";
+const TOKEN_PATH = path.join(__dirname, "../config/token.json");
 
 function authorize(credentials, callback, videoPath, videoDetails, res) {
   const { client_secret, client_id, redirect_uris } = credentials.web;

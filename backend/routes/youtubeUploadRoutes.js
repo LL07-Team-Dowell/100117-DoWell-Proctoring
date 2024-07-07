@@ -1,8 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const multer = require("multer");
 const fs = require("fs");
+const express = require("express");
+const multer = require("multer");
 const uploadVideoController = require("../controller/uploadController");
+
+const router = express.Router();
 
 // Ensure upload directory exists
 const uploadDir = "./uploads";
