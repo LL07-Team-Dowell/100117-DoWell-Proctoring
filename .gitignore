@@ -10,6 +10,14 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
+
+credentials.json
+credentials.json*
+credentials*
+token.json
+token.json*
+token*
+*.mp4
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 

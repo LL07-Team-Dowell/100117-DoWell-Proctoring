@@ -3,7 +3,7 @@ const { google } = require("googleapis");
 const oAuth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
-  `http://localhost:${process.env.PORT}/oauth2callback`
+  process.env.REDIRECT_URI
 );
 
 const SCOPES = ["https://www.googleapis.com/auth/youtube"];
@@ -18,8 +18,7 @@ class AuthController {
 
       // Dynamically import the open module
       const { default: open } = await import("open");
-      await open(authUrl);
-      res.send("Authentication in progress...");
+      res.json({ authUrl });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
