@@ -1,0 +1,35 @@
+.card__content {
+  background-color: white;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  border-radius: 8px;
+  width: 26%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 2rem;
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  flex-direction: column;
+  scrollbar-width: thin;
+  overflow-y: auto;
+  max-height: 75%;
+  overflow-y: auto;
+}
+
+.card__details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.close__event__modal {
+  margin-left: auto;
+  display: block;
+  height: 1.2rem;
+  width: 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+}

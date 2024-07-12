@@ -21,8 +21,11 @@ import { ShareModal } from "../../../components/ShareModal/ShareModal";
 import { FormModal } from "../../../components/FormModal/FormModal";
 import { convertToDateTimeLocal } from "../../../helpers/formatDate";
 import { useEventsContext } from "../../../contexts";
+import { ParticipantDetails } from "./components/PartcipantDetails";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
+
+const singleEventExample = sampleEventResponse?.data?.events[1];
 
 const SinglePageEvent = () => {
   const [singleEvent, setSingleEvent] = useState({});
@@ -33,6 +36,8 @@ const SinglePageEvent = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const { eventsLoaded, allEvents } = useEventsContext();
+  const [showParticipantDetails, setShowParticipantDetails] = useState(false);
+  const [participantDetails, setParticipantDetails] = useState({});
 
   const handleChange = (valueEntered, inputName) => {
     setSingleEvent((prevValue) => ({
@@ -51,7 +56,7 @@ const SinglePageEvent = () => {
 
   useEffect(() => {
     if (eventsLoaded) {
-      const foundEvent = allEvents.find(item => item._id === eventId);
+      const foundEvent = allEvents.find((item) => item._id === eventId);
       if (foundEvent) return setSingleEvent(foundEvent);
     }
 
@@ -88,7 +93,12 @@ const SinglePageEvent = () => {
     }
   };
 
-  // const singleEventExample = sampleEventResponse?.data?.events[1];
+  const handleShowPartcipantDetails = (participant) => {
+    setShowParticipantDetails(true);
+    setParticipantDetails(participant);
+    console.log(participant);
+    // setShowParticipantDetails(details);
+  };
 
   if (!singleEvent) return <LoadingSpinner />;
 
@@ -99,9 +109,8 @@ const SinglePageEvent = () => {
           <button onClick={() => navigate(-1)} className={styles.backButton}>
             <MdKeyboardArrowLeft size={30} />
           </button>
-          <h1 style={{ fontSize: "1.3rem", color: "#005734" }}>
-            {singleEvent.name}
-          </h1>
+          <h1 style={{ fontSize: "1.3rem", color: "#005734" }}></h1>
+          {singleEvent.name}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1em" }}>
           <span
@@ -186,7 +195,20 @@ const SinglePageEvent = () => {
             numberOfIcons={singleEvent?.active_participants?.length}
             isNotParticipantItem={true}
             className={styles.user_icons_info}
+            onIconClick={(participant) =>
+              handleShowPartcipantDetails(
+                singleEvent?.active_participants?.filter(
+                  (p) => p.name === participant
+                )
+              )
+            }
           />
+          {showParticipantDetails && (
+            <ParticipantDetails
+              participants={participantDetails}
+              handleCloseModal={() => setShowParticipantDetails(false)}
+            />
+          )}
         </div>
         <br />
         <div className={styles.single_event_details}>
