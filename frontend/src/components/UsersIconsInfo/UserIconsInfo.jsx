@@ -21,7 +21,7 @@ export default function UserIconsInfo({
             return (
               <ParticipantItem
                 key={index}
-                item={applicant}
+                item={applicant?.name}
                 isImageItem={true}
                 isNotParticipantItem={isNotParticipantItem}
                 onClick={() => onIconClick(applicant)}

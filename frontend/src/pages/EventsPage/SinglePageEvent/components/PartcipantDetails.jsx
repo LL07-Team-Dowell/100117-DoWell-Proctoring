@@ -8,7 +8,7 @@ import { AiOutlineClose } from "react-icons/ai";
 
 export const ParticipantDetails = ({ participants, handleCloseModal }) => {
   console.log("Participants: ", participants);
-  if (!participants || !Array.isArray(participants)) return null;
+  if (!participants) return null;
   return (
     <Overlay>
       <div className={styles.card__content}>
@@ -21,19 +21,18 @@ export const ParticipantDetails = ({ participants, handleCloseModal }) => {
         <div className={styles.card__details}>
           <h1>Participants</h1>
           <UserIconsInfo
-            items={participants[0].name}
+            items={participants?.name}
             numberOfIcons={1}
             isNotParticipantItem={true}
           />
-          <p>Name: {participants[0].name}</p>
-          <p>Email: {participants[0].email}</p>
-          <p>Latitude: {participants[0].user_lat}</p>
-          <p>Longitude: {participants[0].user_lon}</p>
+          <p>Name: {participants.name}</p>
+          <p>Email: {participants.email}</p>
+          <p>Latitude: {participants.user_lat}</p>
+          <p>Longitude: {participants.user_lon}</p>
           <p>
-            Time Started:{" "}
-            {new Date(participants[0].time_started).toLocaleString()}
+            Time Started: {new Date(participants.time_started).toLocaleString()}
           </p>
-          <p>Hours Spent: {participants[0].hours_spent_in_event}</p>
+          <p>Hours Spent: {participants.hours_spent_in_event}</p>
         </div>
       </div>
     </Overlay>

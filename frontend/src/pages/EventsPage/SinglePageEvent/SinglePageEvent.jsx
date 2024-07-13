@@ -96,8 +96,7 @@ const SinglePageEvent = () => {
   const handleShowPartcipantDetails = (participant) => {
     setShowParticipantDetails(true);
     setParticipantDetails(participant);
-    console.log(participant);
-    // setShowParticipantDetails(details);
+    // console.log(participant);
   };
 
   if (!singleEvent) return <LoadingSpinner />;
@@ -189,18 +188,12 @@ const SinglePageEvent = () => {
         <div>
           <h3>Participants ({singleEvent?.active_participants?.length})</h3>
           <UserIconsInfo
-            items={singleEvent?.active_participants?.map(
-              (participant) => participant.name
-            )}
+            items={singleEvent?.active_participants}
             numberOfIcons={singleEvent?.active_participants?.length}
             isNotParticipantItem={true}
             className={styles.user_icons_info}
             onIconClick={(participant) =>
-              handleShowPartcipantDetails(
-                singleEvent?.active_participants?.filter(
-                  (p) => p.name === participant
-                )
-              )
+              handleShowPartcipantDetails(participant)
             }
           />
           {showParticipantDetails && (
