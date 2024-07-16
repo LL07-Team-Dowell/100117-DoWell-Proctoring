@@ -6,10 +6,11 @@ export default function ParticipantItem({
   item,
   isImageItem,
   isNotParticipantItem,
+  onClick,
 }) {
   return (
     <>
-      <div>
+      <div onClick={onClick}>
         {isImageItem ? (
           <Avatar
             name={isNotParticipantItem ? item : item?.applicant}
