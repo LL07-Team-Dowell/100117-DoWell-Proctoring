@@ -8,7 +8,7 @@ const router = express.Router();
 // Ensure upload directory exists
 const uploadDir = "./uploads";
 if (!fs.existsSync(uploadDir)) {
-  console.log("Creating uploads directory >>>>>>>>>>>>>");
+  // console.log("Creating uploads directory >>>>>>>>>>>>>");
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
