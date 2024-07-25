@@ -1,64 +1,54 @@
-exports.compressString = (str) => {
-    if (!str) return '';
-    let compressed = '';
-    let count = 1;
+const zlib = require('zlib');
 
-    for (let i = 0; i < str.length; i++) {
-        let char;
-        if (Number(str[i])>=0) {
-            char = "~" + str[i];
-        } else {
-            char = str[i];
-        }
-        if (char === str[i + 1]) {
-            count++;
-        } else {
-            compressed += char + (count > 1 ? count : '');
-            count = 1;
-        }
-        //console.log(compressed);
-    }
-    return compressed;
-}
-function checkDigits(str) {
-    const digitPattern = /\d/;
-    return digitPattern.test(str);
-  }
-exports.decompressString = (compressedStr) => {
-    let decompressed = '';
-    let currentChar = '';
-    let countStr = '';
+// Function to compress a string using gzip with adjustable compression level
+exports.compressString = function(inputString) {
+    return new Promise((resolve, reject) => {
+        // Convert the input string to a buffer
+        const inputBuffer = Buffer.from(inputString, 'utf-8');
+        
+        // Get size of original buffer
+        console.log(`Original size: ${inputBuffer.length} bytes`);
 
-    for (let i = 0; i < compressedStr.length; i++) {
-        const char = compressedStr[i];
-        if (char === '~') {
-            let x= 1
-            while (checkDigits(compressedStr[i + x])){
-                decompressed +=compressedStr[i + x];
-                x++;
+        // Create gzip options with specified compression level
+        const gzipOptions = { level: 9 };
+
+        zlib.gzip(inputBuffer, gzipOptions, (err, buffer) => {
+            if (err) {
+                reject(err);
+            } else {
+                // Convert the compressed buffer to a Base64 string
+                const compressedString = buffer.toString('base64');
+
+                // Get size of compressed buffer
+                //console.log(`Compressed size: ${buffer.length} bytes`);
+
+                resolve(compressedString);
             }
-
-            //countStr += compressedStr[i + x];
-            
-            i++; // Skip the tilde
-        } else if (!isNaN(char)) {
-            countStr += char;
-        } else {
-            if (countStr) {
-                decompressed += currentChar.repeat(Number(countStr)-1);
-                countStr = '';
-            }
-            // Add the current character to the decompressed string
-            decompressed += char;
-            currentChar = char;
-        }
-    }
-
-    // Append the remaining characters if any
-    if (countStr) {
-        decompressed += currentChar.repeat(Number(countStr));
-    }
-    
-    return decompressed;
+        });
+    });
 }
 
+// Function to decompress a gzip-compressed Base64 string and display sizes
+exports.decompressString = function(compressedString) {
+    return new Promise((resolve, reject) => {
+        // Convert Base64 string back to a buffer
+        const buffer = Buffer.from(compressedString, 'base64');
+        
+        // Get size of compressed buffer
+        console.log(`Compressed size: ${buffer.length} bytes`);
+
+        zlib.gunzip(buffer, (err, decompressedBuffer) => {
+            if (err) {
+                reject(err);
+            } else {
+                // Convert the decompressed buffer to a string
+                const decompressedString = decompressedBuffer.toString();
+
+                // Get size of decompressed buffer
+                //console.log(`Decompressed size: ${decompressedBuffer.length} bytes`);
+
+                resolve(decompressedString);
+            }
+        });
+    });
+}
