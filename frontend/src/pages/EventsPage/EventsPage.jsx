@@ -13,6 +13,8 @@ import { getEventsForPage } from "../../services/eventServices";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import SinglePageEvent from "./SinglePageEvent/SinglePageEvent";
 
+const singleEventExample = sampleEventResponse?.data?.events[1];
+
 const EventsPage = () => {
   const { totalPages, allEvents, eventsLoaded } = useEventsContext();
   const [currentPage, setCurrentPage] = useState(1);
