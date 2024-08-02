@@ -33,6 +33,7 @@ const EventCard = ({
               items={participants}
               numberOfIcons={3}
               isNotParticipantItem={true}
+              allApplicants={true}
             />
           </div>
           <div className={styles.card__footer}>

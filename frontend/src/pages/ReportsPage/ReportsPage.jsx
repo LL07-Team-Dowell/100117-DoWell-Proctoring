@@ -1,22 +1,11 @@
-import constructionIllustration from '../../assets/under-construction.png';
-
+import styles from "./styles.module.css";
 
 const ReportsPage = () => {
-    return <section style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-    }}>
-        <img 
-            src={constructionIllustration}
-            alt="construction"
-            style={{
-                maxWidth: '100%',
-                width: '30%'
-            }}
-        />
+  return (
+    <section className={styles.wrapper}>
+      <h1 className={styles.title}>Events Report</h1>
     </section>
-}
+  );
+};
 
 export default ReportsPage;

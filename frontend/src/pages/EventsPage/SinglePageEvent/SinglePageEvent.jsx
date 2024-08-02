@@ -195,6 +195,7 @@ const SinglePageEvent = () => {
             onIconClick={(participant) =>
               handleShowPartcipantDetails(participant)
             }
+            allApplicants={false}
           />
           {showParticipantDetails && (
             <ParticipantDetails

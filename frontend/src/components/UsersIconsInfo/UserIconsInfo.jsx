@@ -10,6 +10,7 @@ export default function UserIconsInfo({
   isNotParticipantItem,
   className,
   onIconClick,
+  allApplicants,
 }) {
   if (!items || !Array.isArray(items) || isNaN(numberOfIcons)) return <></>;
 
@@ -21,7 +22,7 @@ export default function UserIconsInfo({
             return (
               <ParticipantItem
                 key={index}
-                item={applicant?.name}
+                item={allApplicants ? applicant : applicant?.name}
                 isImageItem={true}
                 isNotParticipantItem={isNotParticipantItem}
                 onClick={() => onIconClick(applicant)}
